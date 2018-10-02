@@ -4,6 +4,7 @@ title
 
 abstract
 % Do at end
+% Might not be needed for workshop since 3 page limit anyway
 
 Introduction
 
@@ -152,6 +153,12 @@ This means that large magnitute values for $Z$, i.e. ($|Z| > 2$), reject the hyp
 % TODO cite each of these.
 To correct any miscalibration we then use the held out calibration set to calibrate $D$ using either logistic regression, isotonic regression, or beta calibration.
 
+% note how requirement not that strong with calib and manifold
+Note that in this context the assumption that $D$ is perfect can be weakend for two reasons:
+1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
+2)~Because the discriminiator is only ever evaluated at samples from $G$ or the initial real sample $x_0$, $D$ only needs to be accurate on the manifold of samples from $G$ and the real data.
+This is almost as equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
+
 The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
 In this process we can initialize $\vec x_0$ with a random draw of real data (ideally held out)\@.
 Now, marginally $\vec x_0 ~ P_R$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k ~ P_R$ exactly as well, even if $P_G \neq P_R$.
@@ -159,6 +166,12 @@ However, if the generator $G$ is too poor we will never receive a proposal sampl
 Another interesting note is that we do not actually need to store real data samples to for this initialization procedure.
 Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample P_R$.
 This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necesarily exceed, to be accepted.
+
+% discuss what to do if we can't get a synth sample
+Some strategy must be employed if we do not accept a single synthetic sample after we have exhausted the computational budget for a single chain $K$.
+A simple approach is to simply replay the same chain using the same chain using the same samples, but instead initializing at a synthetic sample.
+This, of course, invalidates the guarantee that guarantee that $\vec x_K \sample P_R$.
+However, the potential discrepancy is observable by monitoring the portion of chains that reach time step $K$ without accepting a single sample.
 
 % Maybe discuss using side discriminator, but only is adds anything
 
@@ -180,45 +193,78 @@ This maximum procedure is a reduction and is therefore easily parallelizable.
 
 Results
 
-% Toy example with two gauss, std example with D and G
-%   Show MH at diff num epochs
+Toy Data
+We first demonstrate the the MCMC GAN on the toy two Gaussians example presented in~\citet{}.
+Figure~\ref{} shows how the convergence of samples to the true distribution over MCMC iterations.
+Note that if we don't strictly require all chains to end with a synthetic sample then the MCMC GAN samples match the true distribution exactly at any number of MCMC iterations.
+% TODO insert distribution with Gaussians at different iters, and non-reject real
+% TODO plot end with synethic prob as function of chain length
 
+Real Data
+% TODO check caps and add refs
+For real data experiments we considered three different data sets: celeb-A, CIFAR 10, and LSUN\@.
+We consider the traditional DC-GAN and as well as the popular WGAN\@.  % TODO refs
+We first examine the performance of the discriminator on held out data with and without calibration for DC-GAN\@.
+For WGAN we can only use the calibrated discriminator as it does not output a probability.
 % Look at losses for discriminator
 %    maybe rescale all loses to 0-1 scale for plotting
-
-% Method taken for dealing with non-accepts
+We also show the results of the calibration statistic $Z$ from~\eqref{}.
+These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
 
 % Look at incep score over 3 method on 3 data sets per epoch
 % Can also show results by MH iteration
 % DC GAN, WGAN, PGAN
 % Use JY scatter plot
+To evaluate the performance of the resulting wrapper generator $G'$, plot inception scores per epoch.
+The error bars are computed using a t-test on the variation per batch across different splits of the inception score.
+We see a consistent and statistically significant boost in inception score from $G'$ above $G$.
+
+In Figure~\ref{} we also plot the inception score, per MCMC iteration, at epoch XXX.  % TODO
+We see that most of gains are made in the first XXX iterations, but smaller gains continue up to iteration XXX.  % TODO
 
 % Look at distn on D to make look more like real
 %   both on synth and real
-
-% Show how calib needed in scores, and calib test
+We also consider the distribution on discriminator scores.
+In Figure~\ref{}, the distributions on scores from real and fake images are well seperated, but still contain \emph{some overlap}.
+We can see that MCMC shifts the distribution of the fakes to match well the distribution on true images.
+In this case, our deterministic approximation focuses too much on the mode as a result of the overlap, but still makes an improvement over the base generator $G$.
 
 % Qualitative examples
+Finally, in Figure~\ref{} we show some qualitative examples of samples comparing the base generator $G$ and the improved MCMC version $G'$.
 
 Discusion
 
 % How many MH iters usually needed, what about computation burden
+The wrapped GAN $G'$ will indeed have $K$ times the computational burden of $G$ when drawing samples.
+However, the large computational burden of GANs is during training not during drawing samples.
+Therefore, in applications where the test speed is not the bottleneck the wrapped GAN $G'$ is a good option.
 
 % What does cherry picking perf say about distns in question
 %    examples for resampling when overlap and no overlap
 %    how it effects cherry pick approx
-
+The deterministic approximation often has very similar behavior and performance to the full MCMC GAN\@.
+This validates the common view that base of support between $P_G$ and $P_R$ have little overlap.
 % Implications on how it can be applied more generally
 %   Will be most interesting cases where might be some overlap
+However, applications where there is non-negligible overlap between $P_G$ and $P_R$ are perhaps the most interesting because proper calibration of the acceptance probabilities $\alpha$ are the most critical in these cases.
 
 % Generally interesting notes on calibration and side disc
 %   And that D is always so good
+Along these lines, we have shown the raw discriminator in GANs are poorly calibrated.
+This is not a large surprise, but to our knowledge is the first time research has evaluated the discriminator in this way.
 
 % Might need to consider stopping rule
+A direction for possible future extension to this work include finding appropriate stopping rules for the MCMC chain that introduce minimal bias.
+In our setup, we must run the chain until at least receiving a single accept.
+However, ending the chain at the first accept can potentially introduce a bias into the resulting distribution.
 
 conclusions
+
 % usual wrap up BS paragraph
-
-
-
+We have presented an way to incorporate the knoweldge embedded in the discrimnator $D$ into an improved generator $G'$ in a principled manner using MCMC methods.
+Our method is based on the premise that the discriminator $D$ is essentially ``ahead'' of the generator $G$.
+The principled MCMC setup essentially stochastically selects among samples from $G$ to correct biases in the generator $G$.
+This requires some modification to the MCMC equations as the neither the densities $P_G$ nor $P_R$ are available.
+This method can perform the final coordinate descent move to optimize $G$ assuming $D$ is near perfect.
+Further improvements to fancier proposal can potential make this possible with shorter chains $K$.
 
