@@ -123,22 +123,60 @@ A similar approach to~\citet{} was taken in~\citet{}, but with respect to findin
 
 Methods
 
-
-
-
 % Derive basic trick for MCMC using D
+In this section we show how to sample from the distribution $P_D$ implied by the discriminator $D$.
+If we assume that $D$ is an optimal discriminator for \emph{some} between the generator and some alternative distribution $P_D$, then:
+\begin{align}
+  D = \frac{P_D}{P_D + P_G} \implies \frac{P_D}{P_G} = \frac{1}{D^{-1}-1}\,, \label{eq:PD def}
+\end{align}
+and if $D$ is perfect then $P_D = P_R$.
+We can use an MCMC independence sampler with a target distribution of $P_D$ and a proposal distribution of $P_G$.
+This gives an acceptance probability of:
+\begin{align}
+  \alpha = \min(1, \frac{P_D(x')P_G(\vec x_{k-1})}{P_D(\vec x_{k-1})P_G(\vec x')})
+    = \min(1, \frac{P_D(x')}{P_G(\vec x')} \frac{P_G(\vec x_{k-1})}{P_D(\vec x_{k-1})})
+    = \min(1, \frac{D(\vec x_{k-1})^{-1} - 1}{D(\vec x')^{-1} - 1})\,, \label{eq:alpha from D}
+\end{align}
+which is computable using only the discrimator $D$ and no densities.
 
-% Discuss calibration methods
-%   cite dawid test
+A key element to this is \emph{calibration}: The probalities for merely $D$ must not merely provide a good AUC score, but be onthe right scale.
+Put in other terms, if one where to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
+To test the calibration of the discriminator, we use a calibration test statistic defined in~\citet{} on a \emph{held out} data set:  % TODO cite Dawid
+\begin{align}
+  % TODO decide on notation N for size of calib set
+  % np.sum(y_true - y_prob) / np.sqrt(np.sum(y_prob * (1.0 - y_prob)))
+  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}}\,.
+\end{align}
+If $D$ is well calibrated, i.e., $y$ is indistinguishable from a $y \sample D(\vec x)$, then $Z \sample \norm(0,1)$.
+This means that large magnitute values for $Z$, i.e. ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
+% TODO cite each of these.
+To correct any miscalibration we then use the held out calibration set to calibrate $D$ using either logistic regression, isotonic regression, or beta calibration.
 
-% Discuss init methods
-%   bar raiser distribution
+The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
+In this process we can initialize $\vec x_0$ with a random draw of real data (ideally held out)\@.
+Now, marginally $\vec x_0 ~ P_R$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k ~ P_R$ exactly as well, even if $P_G \neq P_R$.
+However, if the generator $G$ is too poor we will never receive a proposal sample $\vec x'$ good enough to accept and replace the real data sample $\vec x_0$ with a generated one.
+Another interesting note is that we do not actually need to store real data samples to for this initialization procedure.
+Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample P_R$.
+This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necesarily exceed, to be accepted.
 
 % Maybe discuss using side discriminator, but only is adds anything
 
 % Cherry picking approximation
+It is also possible to replace the Markov chain with a deterministic approximation that is more parallelizable.
+% TODO also consider putting in the plot in logit scale
+In Figure~\ref{} we show the acceptance probabilities for different levels of the current state $D(\vec x_k)$ and the proposal $D(\vec x')$.
+The qualitative behavior of the curves are easily summarized.
+In all curves, if $D(\vec x') \geq D(\vec x_k)$ then $\vec x'$ is always accepted.
+As $D(\vec x_k) \rightarrow 0$ the region where $D(\vec x') < D(\vec x_k)$ becomes a linear ramp; and as $D(\vec x_k) \rightarrow 1$ approaches a step function.
+% TODO cite arjovsky stuff
+If $P_G$ and $P_R$ are well seperated (which believed to often be the case in GANs), and $D$ is near perfect, then $D(\vec x_0) \approx 1$ when the acceptance probability becomes a step function if $x_0 \sample P_R$.
+Therefore, $D(\vec x_k)$ will stay near one and the acceptance function will be step function like.
+In this scenario, we can approximate, $\alpha \approx \I{D(\vec x') > D(\vec x_k)}$, and therefore $G'$ takes the sample in the chain with the maximum score $D$.
+But with the provision, that have the target to beat the score of a randomly chosen sample of real data $D(\vec x)$.
+This maximum procedure is a reduction and is therefore easily parallelizable.
 
-% Importance sampling also an option to include
+% Maybe Importance sampling also an option to include
 
 Results
 
