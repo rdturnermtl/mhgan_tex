@@ -106,6 +106,7 @@
 
 % TODO use smash where needed
 % TODO \! arrow where needed
+% TODO can search, it is
 
 \begin{document}
 % \nipsfinalcopy is no longer used
@@ -129,7 +130,7 @@
 % traditionally done with explicit likelihood, ancestral sampling in most models to get new synthetic data points from fit model
 Generative adversarial networks (GANs) presented a radically new way to do density estimation:
 They only implicitly represent the density of the data via a classifier that distinguishes real from generated data.
-Traditionally, density estimation of data has been done with a model that can easily compute the likelihood of the observed data.
+Traditionally, density estimation has been done with a model that can easily compute the likelihood of the observed data.
 % TODO or if not, like RBM, could do MCMC method based on likelihood, GAN easy to sample but not likelihood
 
 % GAN uses D and G, but then D usually thrown away
@@ -165,9 +166,9 @@ However, MCMC can be performed using only the ratio $\PD / \PG$, which is implie
 % TODO do VAEs make similar kinds of arguments?
 We can also avoid the burn-in issues that usually plague MCMC methods.
 Recall that via the detailed balance property, if the marginal distribution on a Markov chain at time step $k$ matches the target $\PD$ then the marginal at time step $k+1$ will also follow $\PD$.
-Typically, it is not possible to get this initial sample from the target distribution because MCMC is usually applied to generate samples of parameters from a Bayesian posterior distribution.
-These posteriors are strange objects that we have no idea how to sample from.
-However, for MGANs, we are sampling from the data distribution.
+Typically, it is not possible to get an initial sample from the target distribution because MCMC is typically applied to generate samples of \emph{parameters} from a Bayesian posterior distribution.
+We have no example samples of parameters from these distributions to start from.
+However, in MGANs, we are sampling from the \emph{data} distribution.
 Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution.
 
 % TODO usual outline of following sections, and bullet point contributions, do at end
@@ -176,7 +177,7 @@ Therefore, by initializing the chain at a sample of real data, we are already in
 We also derive a simple deterministic approximation to MCMC that is very accurate in the regimes that GANs operate in.
 An important aspect of using the discriminator in MCMC is to have well calibrated probabilities in $D$.
 Typical GAN usage does not directly use $D$ and can survive poorly calibrated discriminators, however these probabilities become crucial for accept/reject probabilities.
-We use a held out set recalibration routine for the MCMC GAN setup; and show that indeed the raw probabilities from $D$ in typical GAN training are poorly calibrated.
+We use a held out set recalibration routine for the MGAN setup; and show that indeed the raw probabilities from $D$ in typical GAN training are poorly calibrated.
 
 \section{Background}
 
@@ -206,6 +207,8 @@ Additionally, even if $\vec x_k$ is not exactly distributed according to $\targe
 
 % also include not on bias from stopping rules
 In our setup, in order to obtain independent samples, we sample $\vec x \sample \pinit$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
+That is, $\vec x_K$ is the ouput of $G'$.
+Indepdenant chains are used for multiple samples from $G'$.
 Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$, using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
 
 \subsection{GANs}
@@ -215,7 +218,7 @@ The generator works by taking a sample from a Gaussian $\vec z \sample \norm(\ve
 This implies a distribution on the data $\vec x \sample \PG$.
 However, because $G$ is often a complex and non-invertible function, $\PG$ is generally intractable to compute.
 
-The discriminator function $D \in \setx \rightarrow [0,1]$ is merely a standard binary classifier, that gives the probability a data point is real (as opposed to being sampled from $\PG$)\@.
+The discriminator function $D \in \setx \rightarrow [0,1]$ is merely a standard binary classifier, that outputs the probability a data point is real (as opposed to being sampled from $\PG$)\@.
 The training of a GAN interleaves updates where $D$ is trained as a standard classifier to maximize its performance classifying real samples from generated samples; and $G$ is trained to minimize the performance of $D$.
 Therefore, GAN training forms a game between $D$ and $G$.
 The original work of~\citet{Goodfellow2014} showed that if this training game converges to its global equilibrium, then
@@ -244,7 +247,7 @@ The MGAN, in effect, combines elements of both approaches to construct the wrapp
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-If we assume that $D$ is an optimal discriminator for \emph{some} between the generator and some alternative distribution $\PD$, then:
+If we assume that $D$ is an optimal discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$, then:
 \begin{align}
   D = \frac{\PD}{\PD + \PG} \implies \frac{\PD}{\PG} = \frac{1}{D^{-1}-1}\,, \label{eq:PD def}
 \end{align}
@@ -260,7 +263,7 @@ This gives an acceptance probability of:
 which is computable using only the discriminator $D$ and no densities.
 
 \paragraph{Calibration}
-A key element to this is \emph{calibration}: The probabilities for merely $D$ must not merely provide a good AUC score, but be on the right scale.
+A key element to this is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but be on the right scale.
 Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
 To test the calibration of the discriminator, we use a calibration test statistic defined in~\citet{Dawid1997} on a \emph{held out} data set of samples $\vec x_{1:N}$ with real/fake labels $y_{1:N} \in \{0,1\}^N$:
 \begin{align}
@@ -288,8 +291,8 @@ This is almost as equivalent to saying that the discriminator must rank samples 
 % discuss what to do if we can't get a synth sample
 Some strategy must be employed if we do not accept a single synthetic sample after we have exhausted the computational budget for a single chain $K$.
 A simple approach is to simply replay the same chain using the same samples, but instead initializing at a generated sample.
-This, of course, invalidates the guarantee that guarantee that $\vec x_K \sample \PR$.
-However, the potential discrepancy is observable by monitoring the portion of chains that reach time step $K$ without accepting a single sample.
+This, of course, invalidates the guarantee that $\vec x_K \sample \PR$.
+However, the potential discrepancy is observable by monitoring the portion of chains that reach time step $K$ without accepting a single generated sample.
 
 % Maybe discuss using side discriminator, but only is adds anything
 
@@ -314,15 +317,15 @@ This maximum procedure is a reduction and is therefore easily parallelizable.
 We use an illustrative toy examples and real GANs on real data to illustrate the improvements made by the wrapped classifier $G'$.
 
 \subsection{Toy Data}
-We first demonstrate the MCMC GAN on the toy two Gaussians example presented in~\citet{Arjovsky2017}.
+We first demonstrate the MGAN on the toy two Gaussians example presented in~\citet{Arjovsky2017}.
 Figure~\ref{} shows how the convergence of samples to the true distribution over MCMC iterations.
-Note that if we don't strictly require all chains to end with a synthetic sample then the MCMC GAN samples match the true distribution exactly at any number of MCMC iterations.
+Note that if we don't strictly require all chains to end with a synthetic sample then the MGAN samples match the true distribution exactly at any number of MCMC iterations $K$.
 % TODO insert distribution with Gaussians at different iters, and non-reject real
 % TODO plot end with synthetic prob as function of chain length
 
 \subsection{Real Data}
 For real data experiments we considered three different data sets: CelebA~\citep{Liu2015}, CIFAR-10~\citep{Torralba2008}, and LSUN~\citep{Yu2015}.
-We consider the traditional DC-GAN~\citep{Radford2015} and as well as the popular WGAN~\citep{Arjovsky2017}\@.
+We consider the traditional DC-GAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
 We first examine the performance of the discriminator on held out data with and without calibration for DC-GAN\@.
 For WGAN we can only use the calibrated discriminator as it does not output a probability.
 % Look at losses for discriminator
@@ -345,7 +348,7 @@ We see that most of gains are made in the first XXX iterations, but smaller gain
 %   both on synth and real
 We also consider the distribution on discriminator scores.
 In Figure~\ref{}, the distributions on scores from real and fake images are well separated, but still contain \emph{some overlap}.
-We can see that MCMC shifts the distribution of the fakes to match well the distribution on true images.
+We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
 In this case, our deterministic approximation focuses too much on the mode as a result of the overlap, but still makes an improvement over the base generator $G$.
 
 % Qualitative examples
@@ -355,13 +358,13 @@ Finally, in Figure~\ref{} we show some qualitative examples of samples comparing
 
 % How many MH iters usually needed, what about computation burden
 The wrapped GAN $G'$ will indeed have $K$ times the computational burden of $G$ when drawing samples.
-However, the large computational burden of GANs is during training not during drawing samples.
+However, the large computational burden of GANs is during training not during drawing samples (test)\@.
 Therefore, in applications where the test speed is not the bottleneck, the wrapped GAN $G'$ is a good option.
 
 % What does cherry picking perf say about distns in question
 %    examples for resampling when overlap and no overlap
 %    how it effects cherry pick approx
-The deterministic approximation often has very similar behavior and performance to the full MCMC GAN\@.
+The deterministic approximation often has very similar behavior and performance to the full MGAN\@.
 This validates the common view that base of support between $\PG$ and $\PR$ have little overlap.
 % Implications on how it can be applied more generally
 %   Will be most interesting cases where might be some overlap
