@@ -140,7 +140,7 @@ This is based on the notion that the discriminator classifies between the genera
   D(x) = \frac{P_D(x)}{P_D(x) + P_G(x)}\,,
 \end{align}
 where $P_G$ is the (intractable) density of samples from the generator $G$, and $P_D$ is the real data density implied by the discriminator $D$.
-If GAN training reaches its Nash equilibrium then this discriminator distribution is equal to the true distribution on the data ($P_D = P_R$)\@.  % TODO cite
+If GAN training reaches its global equilibrium then this discriminator distribution is equal to the true distribution on the data ($P_D = P_R$)~\citep{Goodfellow2014}.
 
 % We use MCMC independence sampler to get samples from P_R using multiple samples from G
 % MCMC not directly applicable since the likelihood of P_R and G are not available
@@ -194,7 +194,7 @@ This acceptance probability is known as the Metropolis-Hastings rule from which 
 Note that when estimating the distribution on $\target$ one must include the duplicates that are a result of rejections in $x'$.
 
 The detailed balance condition implies that if $x_k \sample \target$ exactly then $x_{k+1} \sample \target$ exactly as well.
-Additionally, even if $x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases.  % TODO cite
+Additionally, even if $x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
 
 % also include not on bias from stopping rules
 In our setup, in order to obtain independent samples, we sample $\vec x \sample \pinit$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
@@ -203,15 +203,14 @@ Note that the number of samples $K$ is meant to be ancillary to the state of the
 \subsection{GANs}
 
 GANs implicitly model the distribution on data $\vec x \sample P_R$ by sampling synthetic data points from a generator; we use $P_R$ to refer to the unknown true distribution on the data $\vec x$.
-The generator works by taking a sample from a Gaussian $\vec z \sample \norm(0,\mat I)$ and then transforming it with a generator network $G$: $\vec x = G(\vec z)$.
+The generator works by taking a sample from a Gaussian $\vec z \sample \norm(\vec 0,\mat I)$ and then transforming it with a generator network $G$: $\vec x = G(\vec z)$.
 This implies a distribution on the data $\vec x \sample P_G$.  % TODO make lower
 However, because $G$ is often a complex and non-invertible function, $P_G$ is generally intractable to compute.
-% TODO mention realNVP
 
 The discriminator function $D$ is merely a standard binary classifier, that gives the probability a data point is real (as opposed to being sampled from $P_G$)\@.
 The training of a GAN interleaves updates where $D$ is trained as a standard classifier to maximize its performance classifying real samples from generated samples; and $G$ is trained to minimize the performance of $D$.
 Therefore, GAN training forms a game between $D$ and $G$.
-The original work of~\citet{} showed that if this training game converges to its Nash equilibrium, then
+The original work of~\citet{Goodfellow2014} showed that if this training game converges to its global equilibrium, then
 \begin{align}
   P_G = P_R,\, \quad D = \frac{P_R}{P_R + P_G} = \frac{1}{2}\,.
 \end{align}
@@ -223,12 +222,10 @@ This motivates our approach of wrapping an imperfect $G$ to obtain an improved $
 
 % Need to be clear on diff with NICE-MCMC
 There have been a few other works that in some way combine GAN training and MCMC methods.
-The work of~\citet{} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
+The work of~\citet{Song2017} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
 They use a RealNVP network as the proposal as invertibility is important for computation of the acceptance probability $\alpha$.
-The difference with this work is best summarized as:~\citet{} uses GANs to accelerate MCMC whereas we use MCMC to enhance the solution from a GAN\@.
-% Other workshop paper too
-% http://bayesiandeeplearning.org/2017/papers/6.pdf
-A similar approach to~\citet{} was taken in~\citet{}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
+The difference with this work is best summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the solution from a GAN\@.
+A similar approach to~\citet{Song2017} was taken in~\citet{Kempinska2017}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
 
 \section{Methods}
 
@@ -251,7 +248,7 @@ which is computable using only the discriminator $D$ and no densities.
 \paragraph{Calibration}
 A key element to this is \emph{calibration}: The probabilities for merely $D$ must not merely provide a good AUC score, but be on the right scale.
 Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
-To test the calibration of the discriminator, we use a calibration test statistic defined in~\citet{} on a \emph{held out} data set:  % TODO cite Dawid
+To test the calibration of the discriminator, we use a calibration test statistic defined in~\citet{Dawid1997} on a \emph{held out} data set:
 % TODO define y
 \begin{align}
   % TODO decide on notation N for size of calib set
@@ -260,8 +257,7 @@ To test the calibration of the discriminator, we use a calibration test statisti
 \end{align}
 If $D$ is well calibrated, i.e., $y \in \{0,1\}$ is indistinguishable from a $y \sample D(\vec x)$, then $Z \sample \norm(0,1)$.
 This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
-% TODO cite each of these.
-To correct any miscalibration we then use the held out calibration set to calibrate $D$ using either logistic regression, isotonic regression, or beta calibration.
+To correct any miscalibration we then use the held out calibration set to calibrate $D$ using either logistic regression, isotonic regression, or beta calibration~\citep{Kull2017}.
 
 % note how requirement not that strong with calib and manifold
 % TODO didnt define init sample yt
@@ -293,8 +289,7 @@ In Figure~\ref{} we show the acceptance probabilities for different levels of th
 The qualitative behavior of the curves are easily summarized.
 In all curves, if $D(\vec x') \geq D(\vec x_k)$ then $\vec x'$ is always accepted.
 As $D(\vec x_k) \rightarrow 0$ the region where $D(\vec x') < D(\vec x_k)$ becomes a linear ramp; and as $D(\vec x_k) \rightarrow 1$ it becomes a step function.
-% TODO cite arjovsky stuff
-If $P_G$ and $P_R$ are well separated (which is believed to often be the case in GANs), and $D$ is near perfect, then $D(\vec x_0) \approx 1$: The acceptance probability becomes a step function if $x_0 \sample P_R$.
+If $P_G$ and $P_R$ are well separated (which is believed to often be the case in GANs~\citep{Arjovsky2017}), and $D$ is near perfect, then $D(\vec x_0) \approx 1$: The acceptance probability becomes a step function if $x_0 \sample P_R$.
 Therefore, $D(\vec x_k)$ will stay near one and the acceptance function will be step function like.
 In this scenario, we can approximate, $\alpha \approx \I\{D(\vec x') > D(\vec x_k)\}$, and therefore $G'$ takes the sample in the chain with the maximum score $D$.
 However, this is with the provision that we beat the score of a randomly chosen sample of real data $D(\vec x)$.
@@ -307,16 +302,16 @@ This maximum procedure is a reduction and is therefore easily parallelizable.
 % TODO insert transition sentence here
 
 \subsection{Toy Data}
-We first demonstrate the MCMC GAN on the toy two Gaussians example presented in~\citet{}.
+We first demonstrate the MCMC GAN on the toy two Gaussians example presented in~\citet{Arjovsky2017}.
 Figure~\ref{} shows how the convergence of samples to the true distribution over MCMC iterations.
 Note that if we don't strictly require all chains to end with a synthetic sample then the MCMC GAN samples match the true distribution exactly at any number of MCMC iterations.
 % TODO insert distribution with Gaussians at different iters, and non-reject real
 % TODO plot end with synthetic prob as function of chain length
 
 \subsection{Real Data}
-% TODO check caps and add refs
+% TODO check caps and cite
 For real data experiments we considered three different data sets: celeb-A, CIFAR 10, and LSUN\@.
-We consider the traditional DC-GAN and as well as the popular WGAN\@.  % TODO refs
+We consider the traditional DC-GAN~\citep{Radford2015} and as well as the popular WGAN~\citep{Arjovsky2017}\@.
 We first examine the performance of the discriminator on held out data with and without calibration for DC-GAN\@.
 For WGAN we can only use the calibrated discriminator as it does not output a probability.
 % Look at losses for discriminator
@@ -380,6 +375,9 @@ The principled MCMC setup stochastically selects among samples from $G$ to corre
 This requires some modification to the MCMC equations as the neither the densities $P_G$ nor $P_R$ are available.
 This method can perform the final coordinate descent move to optimize $G$ assuming $D$ is near perfect.
 Further improvements for fancier proposals can potentially make these results possible with even shorter chains $K$.
+
+\bibliographystyle{abbrvnat}
+\bibliography{mgan_refs} % References file
 
 \end{document}
 
