@@ -100,6 +100,9 @@
 \newcommand{\PG}{{p_G}}
 \newcommand{\PD}{{p_D}}
 \newcommand{\PR}{{p_R}}
+\newcommand{\accept}{\alpha}
+
+\newcommand{\setx}{\set{X}}
 
 \begin{document}
 % \nipsfinalcopy is no longer used
@@ -181,17 +184,17 @@ In this section we quickly review the notation and equations with MCMC and GANs.
 
 \subsection{MCMC Methods}
 
-MCMC methods attempt to draw samples from a target distribution $\vec x \sample \target$.
+MCMC methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ marginally from a target distribution $\vec x \sample \target$.
 The Markov chain in MCMC works by drawing a first sample from an initial distribution $\vec x_0 \sample \pinit$.
-In general, the proposed successive points are drawn from a conditional distribution $\vec x' \sample \prop(\vec x' \given \vec x_k)$ (the proposal distribution)\@.
+In general, the proposed points $\vec x' \in \setx$ are drawn from a conditional distribution $\vec x' \sample \prop(\vec x' \given \vec x_k)$ (the proposal distribution)\@.
 However, in this work we are using an independence sampler, which means $\vec x' \sample \prop(\vec x')$.
 The proposal $\vec x'$ is accepted with probability:
 \begin{align}
-  \alpha = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k \given \vec x')}{\target(\vec x_k)\prop(\vec x' \given \vec x_k)}\right)\,,
+  \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k \given \vec x')}{\target(\vec x_k)\prop(\vec x' \given \vec x_k)}\right) \in [0,1]\,,
 \end{align}
 which for an independence sampler is:
 \begin{align}
-  \alpha = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right)\,.
+  \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right)\,.
 \end{align}
 If the point $\vec x'$ is accepted then $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
 This acceptance probability is known as the Metropolis-Hastings rule from which we derive the name Metropolitan GAN\@.
@@ -207,11 +210,11 @@ Note that the number of samples $K$ is meant to be ancillary to the state of the
 \subsection{GANs}
 
 GANs implicitly model the distribution on data $\vec x \sample \PR$ by sampling synthetic data points from a generator; we use $\PR$ to refer to the unknown true distribution on the data $\vec x$.
-The generator works by taking a sample from a Gaussian $\vec z \sample \norm(\vec 0,\mat I)$ and then transforming it with a generator network $G$: $\vec x = G(\vec z)$.
+The generator works by taking a sample from a Gaussian $\vec z \sample \norm(\vec 0,\mat I)$ and then transforming it with a generator network $G \in \R^L \rightarrow \setx$: $\vec x = G(\vec z)$, $\vec z \in \R^L$.
 This implies a distribution on the data $\vec x \sample \PG$.  % TODO make lower
 However, because $G$ is often a complex and non-invertible function, $\PG$ is generally intractable to compute.
 
-The discriminator function $D$ is merely a standard binary classifier, that gives the probability a data point is real (as opposed to being sampled from $\PG$)\@.
+The discriminator function $D \in \setx \rightarrow [0,1]$ is merely a standard binary classifier, that gives the probability a data point is real (as opposed to being sampled from $\PG$)\@.
 The training of a GAN interleaves updates where $D$ is trained as a standard classifier to maximize its performance classifying real samples from generated samples; and $G$ is trained to minimize the performance of $D$.
 Therefore, GAN training forms a game between $D$ and $G$.
 The original work of~\citet{Goodfellow2014} showed that if this training game converges to its global equilibrium, then
@@ -228,7 +231,7 @@ This motivates our approach of wrapping an imperfect $G$ to obtain an improved $
 % Need to be clear on diff with NICE-MCMC
 There have been a few other works that in some way combine GAN training and MCMC methods.
 The work of~\citet{Song2017} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
-They use a RealNVP network as the proposal as invertibility is important for computation of the acceptance probability $\alpha$.
+They use a RealNVP network as the proposal as invertibility is important for computation of the acceptance probability $\accept$.
 The difference with this work is best summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the solution from a GAN\@.
 A similar approach to~\citet{Song2017} was taken in~\citet{Kempinska2017}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
 
@@ -244,7 +247,7 @@ and if $D$ is perfect then $\PD = \PR$.
 We can use an MCMC independence sampler with a target distribution of $\PD$ and a proposal distribution of $\PG$.
 This gives an acceptance probability of:
 \begin{align}
-  \alpha = \min\left(1, \frac{\PD(x')\PG(\vec x_k)}{\PD(\vec x_k)\PG(\vec x')}\right)
+  \accept(\vec x', \vec x_k) = \min\left(1, \frac{\PD(x')\PG(\vec x_k)}{\PD(\vec x_k)\PG(\vec x')}\right)
     = \min\left(1, \frac{\PD(x')}{\PG(\vec x')} \frac{\PG(\vec x_k)}{\PD(\vec x_k)}\right)
     = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,, \label{eq:alpha from D}
 \end{align}
@@ -271,6 +274,7 @@ Note that in this context the assumption that $D$ is perfect can be weakened for
 2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from $G$ and the real data.
 This is almost as equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
 
+\paragraph{Initialization}
 The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
 In this process we can initialize $\vec x_0$ with a random draw of real data (ideally held out)\@.
 Now, marginally $\vec x_0 \sample \PR$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k \sample \PR$ exactly as well, even if $\PG \neq \PR$.
@@ -288,6 +292,7 @@ However, the potential discrepancy is observable by monitoring the portion of ch
 % Maybe discuss using side discriminator, but only is adds anything
 
 % Cherry picking approximation
+\paragraph{Deterministic approximation}
 It is also possible to replace the Markov chain with a deterministic approximation that is more parallelizable.
 % TODO also consider putting in the plot in logit scale
 In Figure~\ref{} we show the acceptance probabilities for different levels of the current state $D(\vec x_k)$ and the proposal $D(\vec x')$.
@@ -296,7 +301,7 @@ In all curves, if $D(\vec x') \geq D(\vec x_k)$ then $\vec x'$ is always accepte
 As $D(\vec x_k) \rightarrow 0$ the region where $D(\vec x') < D(\vec x_k)$ becomes a linear ramp; and as $D(\vec x_k) \rightarrow 1$ it becomes a step function.
 If $\PG$ and $\PR$ are well separated (which is believed to often be the case in GANs~\citep{Arjovsky2017}), and $D$ is near perfect, then $D(\vec x_0) \approx 1$: The acceptance probability becomes a step function if $\vec x_0 \sample \PR$.
 Therefore, $D(\vec x_k)$ will stay near one and the acceptance function will be step function like.
-In this scenario, we can approximate, $\alpha \approx \I\{D(\vec x') > D(\vec x_k)\}$, and therefore $G'$ takes the sample in the chain with the maximum score $D$.
+In this scenario, we can approximate, $\accept(\vec x', \vec x_k) \approx \I\{D(\vec x') > D(\vec x_k)\}$, and therefore $G'$ takes the sample in the chain with the maximum score $D$.
 However, this is with the provision that we beat the score of a randomly chosen sample of real data $D(\vec x)$.
 This maximum procedure is a reduction and is therefore easily parallelizable.
 
@@ -358,7 +363,7 @@ The deterministic approximation often has very similar behavior and performance 
 This validates the common view that base of support between $\PG$ and $\PR$ have little overlap.
 % Implications on how it can be applied more generally
 %   Will be most interesting cases where might be some overlap
-However, applications where there is non-negligible overlap between $\PG$ and $\PR$ are perhaps the most interesting because proper calibration of the acceptance probabilities $\alpha$ are the most critical in these cases.
+However, applications where there is non-negligible overlap between $\PG$ and $\PR$ are perhaps the most interesting because proper calibration of the acceptance probabilities $\accept$ are the most critical in these cases.
 
 % Generally interesting notes on calibration and side disc
 %   And that D is always so good
