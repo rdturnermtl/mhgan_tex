@@ -97,6 +97,10 @@
 \newcommand{\prop}{q}
 \newcommand{\pinit}{{p_0}}
 
+\newcommand{\PG}{{p_G}}
+\newcommand{\PD}{{p_D}}
+\newcommand{\PR}{{p_R}}
+
 \begin{document}
 % \nipsfinalcopy is no longer used
 
@@ -132,24 +136,24 @@ In this work we propose the Metropolitan GAN (MGAN) that constructs a new genera
 % TODO look into stats literature where G kept fixed and then D used to define density
 % We combine both approaches by using D, but also learning a powerful G like in GANs
 
-% Approach is based on notion that we can sample from real distn P_R implied by D that discriminates between P_R
+% Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
 % Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
 The MGAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$.
 This is based on the notion that the discriminator classifies between the generator $G$ and a real data distribution:
 \begin{align}
-  D(x) = \frac{P_D(x)}{P_D(x) + P_G(x)}\,,
+  D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,,
 \end{align}
-where $P_G$ is the (intractable) density of samples from the generator $G$, and $P_D$ is the real data density implied by the discriminator $D$.
-If GAN training reaches its global equilibrium then this discriminator distribution is equal to the true distribution on the data ($P_D = P_R$)~\citep{Goodfellow2014}.
+where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the real data density implied by the discriminator $D$.
+If GAN training reaches its global equilibrium then this discriminator distribution is equal to the true distribution on the data ($\PD = \PR$)~\citep{Goodfellow2014}.
 
-% We use MCMC independence sampler to get samples from P_R using multiple samples from G
-% MCMC not directly applicable since the likelihood of P_R and G are not available
-% However, MCMC only needs the ratio of P_R/G and this can be found from D
-We use an MCMC \emph{independence sampler} to get samples from $P_D$ using multiple samples from $G$ (as the proposal)\@.
-As a corollary: Given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $P_R$.
-Standard MCMC implementations cannot achieve this because MCMC requires (unnormalized) densities for the target $P_D$ and the proposal $P_G$.
+% We use MCMC independence sampler to get samples from \PR using multiple samples from G
+% MCMC not directly applicable since the likelihood of \PR and G are not available
+% However, MCMC only needs the ratio of \PR/G and this can be found from D
+We use an MCMC \emph{independence sampler} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
+As a corollary: Given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
+Standard MCMC implementations cannot achieve this because MCMC requires (unnormalized) densities for the target $\PD$ and the proposal $\PG$.
 Neither of these quantities are available in GANs.
-However, MCMC can be performed using only the ratio $P_D / P_G$, which is implied by the discriminator $D$.
+However, MCMC can be performed using only the ratio $\PD / \PG$, which is implied by the discriminator $D$.
 
 % We also avoid the burn in issues usually associated with MCMC
 % Typically, we cannot get a good initial sample because sampling over parameter space from posterior
@@ -157,7 +161,7 @@ However, MCMC can be performed using only the ratio $P_D / P_G$, which is implie
 % So, if init from true data point, then already at true distn for init, and will stay at true distn as result of detailed balance
 % TODO do VAEs make similar kinds of arguments?
 We can also avoid the burn-in issues that usually plague MCMC methods.
-Recall that via the detailed balance property, if the marginal distribution on a Markov chain at time step $k$ matches the target $P_D$ then the marginal at time step $k+1$ will also follow $P_D$.
+Recall that via the detailed balance property, if the marginal distribution on a Markov chain at time step $k$ matches the target $\PD$ then the marginal at time step $k+1$ will also follow $\PD$.
 Typically, it is not possible to get this initial sample from the target distribution because MCMC is usually applied to generate samples of parameters from a Bayesian posterior distribution.
 These posteriors are strange objects that we have no idea how to sample from.
 However, for MGANs, we are sampling from the data distribution.
@@ -183,39 +187,40 @@ In general, the proposed successive points are drawn from a conditional distribu
 However, in this work we are using an independence sampler, which means $\vec x' \sample \prop(\vec x')$.
 The proposal $\vec x'$ is accepted with probability:
 \begin{align}
-  \alpha = \min\left(1, \frac{\target(x')\prop(\vec x_k \given \vec x')}{\target(\vec x_k)\prop(\vec x' \given \vec x_k)}\right)\,,
+  \alpha = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k \given \vec x')}{\target(\vec x_k)\prop(\vec x' \given \vec x_k)}\right)\,,
 \end{align}
 which for an independence sampler is:
 \begin{align}
-  \alpha = \min\left(1, \frac{\target(x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right)\,.
+  \alpha = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right)\,.
 \end{align}
-If the point $x'$ is accepted then $x_{k+1} = x'$, otherwise $x_{k+1} = x_k$.
+If the point $\vec x'$ is accepted then $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
 This acceptance probability is known as the Metropolis-Hastings rule from which we derive the name Metropolitan GAN\@.
-Note that when estimating the distribution on $\target$ one must include the duplicates that are a result of rejections in $x'$.
+Note that when estimating the distribution on $\target$ one must include the duplicates that are a result of rejections in $\vec x'$.
 
-The detailed balance condition implies that if $x_k \sample \target$ exactly then $x_{k+1} \sample \target$ exactly as well.
-Additionally, even if $x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
+The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
+Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
 
 % also include not on bias from stopping rules
 In our setup, in order to obtain independent samples, we sample $\vec x \sample \pinit$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
-Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$, using the state of the Markov chain to determine when to stop has the potential to introduce bias.  % TODO cite
+Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$, using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
 
 \subsection{GANs}
 
-GANs implicitly model the distribution on data $\vec x \sample P_R$ by sampling synthetic data points from a generator; we use $P_R$ to refer to the unknown true distribution on the data $\vec x$.
+GANs implicitly model the distribution on data $\vec x \sample \PR$ by sampling synthetic data points from a generator; we use $\PR$ to refer to the unknown true distribution on the data $\vec x$.
 The generator works by taking a sample from a Gaussian $\vec z \sample \norm(\vec 0,\mat I)$ and then transforming it with a generator network $G$: $\vec x = G(\vec z)$.
-This implies a distribution on the data $\vec x \sample P_G$.  % TODO make lower
-However, because $G$ is often a complex and non-invertible function, $P_G$ is generally intractable to compute.
+This implies a distribution on the data $\vec x \sample \PG$.  % TODO make lower
+However, because $G$ is often a complex and non-invertible function, $\PG$ is generally intractable to compute.
 
-The discriminator function $D$ is merely a standard binary classifier, that gives the probability a data point is real (as opposed to being sampled from $P_G$)\@.
+The discriminator function $D$ is merely a standard binary classifier, that gives the probability a data point is real (as opposed to being sampled from $\PG$)\@.
 The training of a GAN interleaves updates where $D$ is trained as a standard classifier to maximize its performance classifying real samples from generated samples; and $G$ is trained to minimize the performance of $D$.
 Therefore, GAN training forms a game between $D$ and $G$.
 The original work of~\citet{Goodfellow2014} showed that if this training game converges to its global equilibrium, then
 \begin{align}
-  P_G = P_R,\, \quad D = \frac{P_R}{P_R + P_G} = \frac{1}{2}\,.
+  \PG = \PR,\, \quad D = \frac{\PR}{\PR + \PG} = \frac{1}{2}\,.
 \end{align}
 % TODO Cite
-In practice, it is often found that it is much easier to get $D$ close to its Bayes optimal solution (\smash{$P_R/(P_R + P_G)$}) than $G$ close to the true distribution $P_R$.
+% maybe: https://towardsdatascience.com/understanding-generative-adversarial-networks-4dafc963f2ef
+In practice, it is often found that it is much easier to get $D$ close to its Bayes optimal solution (\smash{$\PR/(\PR + \PG)$}) than $G$ close to the true distribution $\PR$.
 This motivates our approach of wrapping an imperfect $G$ to obtain an improved $G'$ using a near perfect $D$.
 
 \subsection{Related Work}
@@ -230,17 +235,17 @@ A similar approach to~\citet{Song2017} was taken in~\citet{Kempinska2017}, but w
 \section{Methods}
 
 % Derive basic trick for MCMC using D
-In this section we show how to sample from the distribution $P_D$ implied by the discriminator $D$.
-If we assume that $D$ is an optimal discriminator for \emph{some} between the generator and some alternative distribution $P_D$, then:
+In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
+If we assume that $D$ is an optimal discriminator for \emph{some} between the generator and some alternative distribution $\PD$, then:
 \begin{align}
-  D = \frac{P_D}{P_D + P_G} \implies \frac{P_D}{P_G} = \frac{1}{D^{-1}-1}\,, \label{eq:PD def}
+  D = \frac{\PD}{\PD + \PG} \implies \frac{\PD}{\PG} = \frac{1}{D^{-1}-1}\,, \label{eq:PD def}
 \end{align}
-and if $D$ is perfect then $P_D = P_R$.
-We can use an MCMC independence sampler with a target distribution of $P_D$ and a proposal distribution of $P_G$.
+and if $D$ is perfect then $\PD = \PR$.
+We can use an MCMC independence sampler with a target distribution of $\PD$ and a proposal distribution of $\PG$.
 This gives an acceptance probability of:
 \begin{align}
-  \alpha = \min\left(1, \frac{P_D(x')P_G(\vec x_k)}{P_D(\vec x_k)P_G(\vec x')}\right)
-    = \min\left(1, \frac{P_D(x')}{P_G(\vec x')} \frac{P_G(\vec x_k)}{P_D(\vec x_k)}\right)
+  \alpha = \min\left(1, \frac{\PD(x')\PG(\vec x_k)}{\PD(\vec x_k)\PG(\vec x')}\right)
+    = \min\left(1, \frac{\PD(x')}{\PG(\vec x')} \frac{\PG(\vec x_k)}{\PD(\vec x_k)}\right)
     = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,, \label{eq:alpha from D}
 \end{align}
 which is computable using only the discriminator $D$ and no densities.
@@ -253,7 +258,7 @@ To test the calibration of the discriminator, we use a calibration test statisti
 \begin{align}
   % TODO decide on notation N for size of calib set
   % np.sum(y_true - y_prob) / np.sqrt(np.sum(y_prob * (1.0 - y_prob)))
-  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}}\,.
+  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}}\,. \label{eq:calib score}
 \end{align}
 If $D$ is well calibrated, i.e., $y \in \{0,1\}$ is indistinguishable from a $y \sample D(\vec x)$, then $Z \sample \norm(0,1)$.
 This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
@@ -263,21 +268,21 @@ To correct any miscalibration we then use the held out calibration set to calibr
 % TODO didnt define init sample yt
 Note that in this context the assumption that $D$ is perfect can be weakened for two reasons:
 1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
-2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $x_0$, $D$ only needs to be accurate on the manifold of samples from $G$ and the real data.
+2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from $G$ and the real data.
 This is almost as equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
 
 The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
 In this process we can initialize $\vec x_0$ with a random draw of real data (ideally held out)\@.
-Now, marginally $\vec x_0 \sample P_R$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k \sample P_R$ exactly as well, even if $P_G \neq P_R$.
+Now, marginally $\vec x_0 \sample \PR$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k \sample \PR$ exactly as well, even if $\PG \neq \PR$.
 However, if the generator $G$ is too poor we will never receive a proposal sample $\vec x'$ good enough to accept and replace the real data sample $\vec x_0$ with a generated one.
 Another interesting note is that we do not actually need to store real data samples for this initialization procedure.
-Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample P_R$.
+Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample \PR$.
 This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necessarily exceed, to be accepted.
 
 % discuss what to do if we can't get a synth sample
 Some strategy must be employed if we do not accept a single synthetic sample after we have exhausted the computational budget for a single chain $K$.
 A simple approach is to simply replay the same chain using the same samples, but instead initializing at a generated sample.
-This, of course, invalidates the guarantee that guarantee that $\vec x_K \sample P_R$.
+This, of course, invalidates the guarantee that guarantee that $\vec x_K \sample \PR$.
 However, the potential discrepancy is observable by monitoring the portion of chains that reach time step $K$ without accepting a single sample.
 
 % Maybe discuss using side discriminator, but only is adds anything
@@ -289,7 +294,7 @@ In Figure~\ref{} we show the acceptance probabilities for different levels of th
 The qualitative behavior of the curves are easily summarized.
 In all curves, if $D(\vec x') \geq D(\vec x_k)$ then $\vec x'$ is always accepted.
 As $D(\vec x_k) \rightarrow 0$ the region where $D(\vec x') < D(\vec x_k)$ becomes a linear ramp; and as $D(\vec x_k) \rightarrow 1$ it becomes a step function.
-If $P_G$ and $P_R$ are well separated (which is believed to often be the case in GANs~\citep{Arjovsky2017}), and $D$ is near perfect, then $D(\vec x_0) \approx 1$: The acceptance probability becomes a step function if $x_0 \sample P_R$.
+If $\PG$ and $\PR$ are well separated (which is believed to often be the case in GANs~\citep{Arjovsky2017}), and $D$ is near perfect, then $D(\vec x_0) \approx 1$: The acceptance probability becomes a step function if $\vec x_0 \sample \PR$.
 Therefore, $D(\vec x_k)$ will stay near one and the acceptance function will be step function like.
 In this scenario, we can approximate, $\alpha \approx \I\{D(\vec x') > D(\vec x_k)\}$, and therefore $G'$ takes the sample in the chain with the maximum score $D$.
 However, this is with the provision that we beat the score of a randomly chosen sample of real data $D(\vec x)$.
@@ -309,14 +314,13 @@ Note that if we don't strictly require all chains to end with a synthetic sample
 % TODO plot end with synthetic prob as function of chain length
 
 \subsection{Real Data}
-% TODO check caps and cite
-For real data experiments we considered three different data sets: celeb-A, CIFAR 10, and LSUN\@.
+For real data experiments we considered three different data sets: CelebA~\citep{Liu2015}, CIFAR-10~\citep{Torralba2008}, and LSUN~\citep{Yu2015}.
 We consider the traditional DC-GAN~\citep{Radford2015} and as well as the popular WGAN~\citep{Arjovsky2017}\@.
 We first examine the performance of the discriminator on held out data with and without calibration for DC-GAN\@.
 For WGAN we can only use the calibrated discriminator as it does not output a probability.
 % Look at losses for discriminator
 %    maybe rescale all loses to 0-1 scale for plotting
-We also show the results of the calibration statistic $Z$ from~\eqref{}.
+We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
 These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
 
 % Look at incep score over 3 method on 3 data sets per epoch
@@ -351,10 +355,10 @@ Therefore, in applications where the test speed is not the bottleneck, the wrapp
 %    examples for resampling when overlap and no overlap
 %    how it effects cherry pick approx
 The deterministic approximation often has very similar behavior and performance to the full MCMC GAN\@.
-This validates the common view that base of support between $P_G$ and $P_R$ have little overlap.
+This validates the common view that base of support between $\PG$ and $\PR$ have little overlap.
 % Implications on how it can be applied more generally
 %   Will be most interesting cases where might be some overlap
-However, applications where there is non-negligible overlap between $P_G$ and $P_R$ are perhaps the most interesting because proper calibration of the acceptance probabilities $\alpha$ are the most critical in these cases.
+However, applications where there is non-negligible overlap between $\PG$ and $\PR$ are perhaps the most interesting because proper calibration of the acceptance probabilities $\alpha$ are the most critical in these cases.
 
 % Generally interesting notes on calibration and side disc
 %   And that D is always so good
@@ -372,7 +376,7 @@ However, ending the chain at the first accept can potentially introduce a bias i
 We have presented a way to incorporate the knowledge embedded in the discriminator $D$ into an improved generator $G'$ in a principled manner using MCMC methods.
 Our method is based on the premise that the discriminator $D$ is essentially ``ahead'' of the generator $G$.
 The principled MCMC setup stochastically selects among samples from $G$ to correct biases in the generator $G$.
-This requires some modification to the MCMC equations as the neither the densities $P_G$ nor $P_R$ are available.
+This requires some modification to the MCMC equations as the neither the densities $\PG$ nor $\PR$ are available.
 This method can perform the final coordinate descent move to optimize $G$ assuming $D$ is near perfect.
 Further improvements for fancier proposals can potentially make these results possible with even shorter chains $K$.
 
