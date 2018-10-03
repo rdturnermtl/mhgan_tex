@@ -179,22 +179,21 @@ In this section we quickly review the notation and equations with MCMC and GANs.
 
 MCMC methods attempt to draw samples from a target distribution $\vec x \sample \target$.
 The Markov chain in MCMC works by drawing a first sample from an initial distribution $\vec x_0 \sample \pinit$.
-In general, the proposed successive points are drawn from a conditional distribution $\vec x' \sample \prop(\vec x' \given \vec x_{k-1})$ (the proposal distribution)\@.
-However, in this work we are using an independence sampler, which means $\vec x_k \sample \prop(\vec x_k)$.
-The proposal $x'$ is accepted with probability:
-% TODO consistently make all x_k -> x_k+1
+In general, the proposed successive points are drawn from a conditional distribution $\vec x' \sample \prop(\vec x' \given \vec x_k)$ (the proposal distribution)\@.
+However, in this work we are using an independence sampler, which means $\vec x' \sample \prop(\vec x')$.
+The proposal $\vec x'$ is accepted with probability:
 \begin{align}
-  \alpha = \min\left(1, \frac{\target(x')\prop(\vec x_{k-1} \given \vec x')}{\target(\vec x_{k-1})\prop(\vec x' \given \vec x_{k-1})}\right)\,,
+  \alpha = \min\left(1, \frac{\target(x')\prop(\vec x_k \given \vec x')}{\target(\vec x_k)\prop(\vec x' \given \vec x_k)}\right)\,,
 \end{align}
 which for an independence sampler is:
 \begin{align}
-  \alpha = \min\left(1, \frac{\target(x')\prop(\vec x_{k-1})}{\target(\vec x_{k-1})\prop(\vec x')}\right)\,.
+  \alpha = \min\left(1, \frac{\target(x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right)\,.
 \end{align}
-If the point $x'$ is accepted then $x_k = x'$, otherwise $x_k = x_{k-1}$.
+If the point $x'$ is accepted then $x_{k+1} = x'$, otherwise $x_{k+1} = x_k$.
 This acceptance probability is known as the Metropolis-Hastings rule from which we derive the name Metropolitan GAN\@.
 Note that when estimating the distribution on $\target$ one must include the duplicates that are a result of rejections in $x'$.
 
-The detailed balance condition implies that if $x_{k-1} \sample \target$ exactly then $x_k \sample \target$ exactly as well.
+The detailed balance condition implies that if $x_k \sample \target$ exactly then $x_{k+1} \sample \target$ exactly as well.
 Additionally, even if $x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases.  % TODO cite
 
 % also include not on bias from stopping rules
@@ -217,7 +216,7 @@ The original work of~\citet{} showed that if this training game converges to its
   P_G = P_R,\, \quad D = \frac{P_R}{P_R + P_G} = \frac{1}{2}\,.
 \end{align}
 % TODO Cite
-In practice, it is often found that it is much easier to get $D$ close to its Bayes optimal solution ($\tfrac{P_R}{P_R + P_G}$) than $G$ close to the true distribution $P_R$.
+In practice, it is often found that it is much easier to get $D$ close to its Bayes optimal solution (\smash{$P_R/(P_R + P_G)$}) than $G$ close to the true distribution $P_R$.
 This motivates our approach of wrapping an imperfect $G$ to obtain an improved $G'$ using a near perfect $D$.
 
 \subsection{Related Work}
@@ -243,9 +242,9 @@ and if $D$ is perfect then $P_D = P_R$.
 We can use an MCMC independence sampler with a target distribution of $P_D$ and a proposal distribution of $P_G$.
 This gives an acceptance probability of:
 \begin{align}
-  \alpha = \min\left(1, \frac{P_D(x')P_G(\vec x_{k-1})}{P_D(\vec x_{k-1})P_G(\vec x')}\right)
-    = \min\left(1, \frac{P_D(x')}{P_G(\vec x')} \frac{P_G(\vec x_{k-1})}{P_D(\vec x_{k-1})}\right)
-    = \min\left(1, \frac{D(\vec x_{k-1})^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,, \label{eq:alpha from D}
+  \alpha = \min\left(1, \frac{P_D(x')P_G(\vec x_k)}{P_D(\vec x_k)P_G(\vec x')}\right)
+    = \min\left(1, \frac{P_D(x')}{P_G(\vec x')} \frac{P_G(\vec x_k)}{P_D(\vec x_k)}\right)
+    = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,, \label{eq:alpha from D}
 \end{align}
 which is computable using only the discriminator $D$ and no densities.
 
@@ -253,13 +252,14 @@ which is computable using only the discriminator $D$ and no densities.
 A key element to this is \emph{calibration}: The probabilities for merely $D$ must not merely provide a good AUC score, but be on the right scale.
 Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
 To test the calibration of the discriminator, we use a calibration test statistic defined in~\citet{} on a \emph{held out} data set:  % TODO cite Dawid
+% TODO define y
 \begin{align}
   % TODO decide on notation N for size of calib set
   % np.sum(y_true - y_prob) / np.sqrt(np.sum(y_prob * (1.0 - y_prob)))
   Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}}\,.
 \end{align}
-If $D$ is well calibrated, i.e., $y$ is indistinguishable from a $y \sample D(\vec x)$, then $Z \sample \norm(0,1)$.
-This means that large magnitude values for $Z$, i.e. ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
+If $D$ is well calibrated, i.e., $y \in \{0,1\}$ is indistinguishable from a $y \sample D(\vec x)$, then $Z \sample \norm(0,1)$.
+This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
 % TODO cite each of these.
 To correct any miscalibration we then use the held out calibration set to calibrate $D$ using either logistic regression, isotonic regression, or beta calibration.
 
