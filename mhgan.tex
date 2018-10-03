@@ -207,8 +207,8 @@ Additionally, even if $\vec x_k$ is not exactly distributed according to $\targe
 
 % also include not on bias from stopping rules
 In our setup, in order to obtain independent samples, we sample $\vec x \sample \pinit$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
-That is, $\vec x_K$ is the ouput of $G'$.
-Indepdenant chains are used for multiple samples from $G'$.
+That is, $\vec x_K$ is the output of $G'$.
+Independent chains are used for multiple samples from $G'$.
 Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$, using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
 
 \subsection{GANs}
@@ -239,8 +239,8 @@ They use a RealNVP network~\citep{Dinh2016} as the proposal as invertibility is 
 The difference with this work is best summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the solution from a GAN\@.
 A similar approach to~\citet{Song2017} was taken in~\citet{Kempinska2017}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
 
-The GAN approach to density estimation is complentary to the lesser known technique of \emph{density ratio estimation}~\citep{Sugiyama2012}.
-Here, the generator $G$ is typically fixed, or simple, and the density of the data is determined entirely by combing Bayes' rule and the learned classifier $D$.
+The GAN approach to density estimation is complementary to the lesser known technique of \emph{density ratio estimation}~\citep{Sugiyama2012}.
+Here, the generator $G$ is typically fixed, or simple, and the density of the data is determined entirely by combining Bayes' rule and the learned classifier $D$.
 The MGAN, in effect, combines elements of both approaches to construct the wrapped GAN $G'$.
 
 \section{Methods}
