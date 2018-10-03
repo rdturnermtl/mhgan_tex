@@ -22,6 +22,7 @@
 \usepackage{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
+\usepackage{amsmath}
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
@@ -221,7 +222,7 @@ This motivates our approach of wrapping an imperfect $G$ to obtain an improved $
 
 % Need to be clear on diff with NICE-MCMC
 There have been a few other works that in some way combine GAN training and MCMC methods.
-The work of~\citept{} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
+The work of~\citet{} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
 The use a RealNVP network as the proposal as intvertability is important for computation of the acceptance probability $\alpha$.
 The different with this work is best summarized as:~\citet{} uses GANs to accelerate MCMC whereas we use MCMC to enhance the solution from a GAN.
 % Other workshop paper too
