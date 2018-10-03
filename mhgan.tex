@@ -136,9 +136,6 @@ Typically, in this setup, $D$ is thrown away at the end of training, and only $G
 In this work we propose the Metropolitan GAN (MGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
 % TODO include figure here
 
-% TODO look into stats literature where G kept fixed and then D used to define density
-% We combine both approaches by using D, but also learning a powerful G like in GANs
-
 % Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
 % Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
 The MGAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$.
@@ -170,7 +167,8 @@ These posteriors are strange objects that we have no idea how to sample from.
 However, for MGANs, we are sampling from the data distribution.
 Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution.
 
-% TODO usual outline of following sections, and bullet point contributions
+% TODO usual outline of following sections, and bullet point contributions, do at end
+
 % Could also hint at calibration, and cherry pick approx
 We also derive a simple deterministic approximation to MCMC that is very accurate in the regimes that GANs operate in.
 An important aspect of using the discriminator in MCMC is to have well calibrated probabilities in $D$.
@@ -211,7 +209,7 @@ Note that the number of samples $K$ is meant to be ancillary to the state of the
 
 GANs implicitly model the distribution on data $\vec x \sample \PR$ by sampling synthetic data points from a generator; we use $\PR$ to refer to the unknown true distribution on the data $\vec x$.
 The generator works by taking a sample from a Gaussian $\vec z \sample \norm(\vec 0,\mat I)$ and then transforming it with a generator network $G \in \R^L \rightarrow \setx$: $\vec x = G(\vec z)$, $\vec z \in \R^L$.
-This implies a distribution on the data $\vec x \sample \PG$.  % TODO make lower
+This implies a distribution on the data $\vec x \sample \PG$.
 However, because $G$ is often a complex and non-invertible function, $\PG$ is generally intractable to compute.
 
 The discriminator function $D \in \setx \rightarrow [0,1]$ is merely a standard binary classifier, that gives the probability a data point is real (as opposed to being sampled from $\PG$)\@.
@@ -235,6 +233,10 @@ They use a RealNVP network as the proposal as invertibility is important for com
 The difference with this work is best summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the solution from a GAN\@.
 A similar approach to~\citet{Song2017} was taken in~\citet{Kempinska2017}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
 
+The GAN approach to density estimation is complentary to the lesser known technique of \emph{density ratio estimation}~\citep{Sugiyama2012}.
+Here, the generator $G$ is typically fixed, or simple, and the density of the data is determined entirely by combing Bayes' rule and the learned classifier $D$.
+The MGAN, in effect, combines elements of both approaches to construct the wrapped GAN $G'$.
+
 \section{Methods}
 
 % Derive basic trick for MCMC using D
@@ -256,23 +258,13 @@ which is computable using only the discriminator $D$ and no densities.
 \paragraph{Calibration}
 A key element to this is \emph{calibration}: The probabilities for merely $D$ must not merely provide a good AUC score, but be on the right scale.
 Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
-To test the calibration of the discriminator, we use a calibration test statistic defined in~\citet{Dawid1997} on a \emph{held out} data set:
-% TODO define y
+To test the calibration of the discriminator, we use a calibration test statistic defined in~\citet{Dawid1997} on a \emph{held out} data set of samples $\vec x_{1:N}$ with real/fake labels $y_{1:N}$:
 \begin{align}
-  % TODO decide on notation N for size of calib set
-  % np.sum(y_true - y_prob) / np.sqrt(np.sum(y_prob * (1.0 - y_prob)))
-  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}}\,. \label{eq:calib score}
+  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R\,. \label{eq:calib score}
 \end{align}
 If $D$ is well calibrated, i.e., $y \in \{0,1\}$ is indistinguishable from a $y \sample D(\vec x)$, then $Z \sample \norm(0,1)$.
 This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
 To correct any miscalibration we then use the held out calibration set to calibrate $D$ using either logistic regression, isotonic regression, or beta calibration~\citep{Kull2017}.
-
-% note how requirement not that strong with calib and manifold
-% TODO didnt define init sample yt
-Note that in this context the assumption that $D$ is perfect can be weakened for two reasons:
-1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
-2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from $G$ and the real data.
-This is almost as equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
 
 \paragraph{Initialization}
 The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
@@ -282,6 +274,12 @@ However, if the generator $G$ is too poor we will never receive a proposal sampl
 Another interesting note is that we do not actually need to store real data samples for this initialization procedure.
 Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample \PR$.
 This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necessarily exceed, to be accepted.
+
+% note how requirement not that strong with calib and manifold
+Note that in this context the assumption that $D$ is perfect can be weakened for two reasons:
+1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
+2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from $G$ and the real data.
+This is almost as equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
 
 % discuss what to do if we can't get a synth sample
 Some strategy must be employed if we do not accept a single synthetic sample after we have exhausted the computational budget for a single chain $K$.
@@ -309,7 +307,7 @@ This maximum procedure is a reduction and is therefore easily parallelizable.
 
 \section{Results}
 
-% TODO insert transition sentence here
+We use an illustrative toy examples and real GANs on real data to illustrate the improvements made by the wrapped classifier $G'$.
 
 \subsection{Toy Data}
 We first demonstrate the MCMC GAN on the toy two Gaussians example presented in~\citet{Arjovsky2017}.
