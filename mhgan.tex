@@ -119,14 +119,14 @@
 % traditionally done with explicit likelihood, ancestral sampling in most models to get new synthetic data points from fit model
 Generative adverserial networks (GANs) presented a radically new way to do density estimation:
 They only implictly represent the density of the data via a classifier that distinguishes real from generated data.
-Traditionally, density estimation of data has been done with model that can easily compute the likelihood of the observed data.
+Traditionally, density estimation of data has been done with a model that can easily compute the likelihood of the observed data.
 % TODO or if not, like RBM, could do MCMC method based on likelihood, GAN easy to sample but not likelihood
 
 % GAN uses D and G, but then D usually thrown away
 % Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
-GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
-Typically, in this setup, $D$ is thrown away at the end of training, and $G$ is kept from generating new synthetic data points.
-However, in this work we are able to construct a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
+GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
+Typically, in this setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
+In this work we propose the Metropolitan GAN (MGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
 % TODO include figure here
 
 % TODO look into stats literature where G kept fixed and then D used to define density
@@ -134,7 +134,7 @@ However, in this work we are able to construct a new generator $G'$ that ``wraps
 
 % Approach is based on notion that we can sample from real distn P_R implied by D that discriminates between P_R
 % Corrolary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
-In this work we use Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$.
+The MGAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$.
 This is based on the notion that the discriminator classifies between the generator $G$ and a real data distribution:
 \begin{align}
   D(x) = \frac{P_D(x)}{P_D(x) + P_G(x)}\,,
@@ -145,11 +145,11 @@ If GAN training reaches its Nash equilibrium then this discriminator distributio
 % We use MCMC independence sampler to get samples from P_R using multiple samples from G
 % MCMC not directly applicable since the likelihood of P_R and G are not available
 % However, MCMC only needs the ratio of P_R/G and this can be found from D
-We use an MCMC independence sampler to get samples from $P_D$ using multiple samples from $G$ (as the proposal)\@.
+We use an MCMC \emph{independence sampler} to get samples from $P_D$ using multiple samples from $G$ (as the proposal)\@.
 A corrolary of this is if given a perfect discrimantor $D$ and decent (but imperfect) generator $G$ we can obtain exact samples from the true data distribution $P_R$.
 Standard MCMC implementations cannot acheive this because MCMC requires (unnormalized) densities for the target $P_D$ and the proposal $P_G$.
 Neither of these quantities are available in GANs.
-However, only strictly requires the ratio $P_D / P_G$, which is implied by the discriminator $D$.
+However, MCMC can be performed using only the ratio $P_D / P_G$, which is implied by the discriminator $D$.
 
 % We also avoid the burn in issues usually associated with MCMC
 % Typically, we cannot get a good initial sample because sampling over parameter space from posterior
@@ -158,9 +158,9 @@ However, only strictly requires the ratio $P_D / P_G$, which is implied by the d
 % TODO do VAEs make similar kinds of arguments?
 We can also avoid the burn-in issues that usually plague MCMC methods.
 Recall that via the detailed balance property, if the marginal distribution on a Markov chain is at time step $k$ matches the target $P_D$ then the marginal at time step $k+1$ will also follow $P_D$.
-Typically, it is not possible to get this initial sample from the target distribution becuase MCMC is usually applied to generator samples of parameters from a Bayesian posterior distribution.
+Typically, it is not possible to get this initial sample from the target distribution becuase MCMC is usually applied to generate samples of parameters from a Bayesian posterior distribution.
 These posteriors are strange objects that we have no idea how to sample from.
-However, in this case, we are sampling from the data distribution.
+However, for MGANs, we are sampling from the data distribution.
 Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution.
 
 % TODO usual outline of following sections, and bullet point contributions
@@ -182,27 +182,29 @@ The Markov chain in MCMC works by first drawing a first sample from an initial d
 In general, the proposed succesive points are drawn from a conditional distribution $\vec x' \sample \prop(\vec x' \given \vec x_{k-1})$ (the proposal distribution)\@.
 However, in this work we are using an independence sampler, which means $\vec x_k \sample \prop(\vec x_k)$.
 The proposal $x'$ is accepted with probability:
+% TODO consistently make all x_k -> x_k+1
 \begin{align}
-  \alpha = \min(1, \frac{\target(x')\prop(\vec x_{k-1} \given \vec x')}{\target(\vec x_{k-1})\prop(\vec x' \given \vec x_{k-1})})\,,
+  \alpha = \min\left(1, \frac{\target(x')\prop(\vec x_{k-1} \given \vec x')}{\target(\vec x_{k-1})\prop(\vec x' \given \vec x_{k-1})}\right)\,,
 \end{align}
 which for an independence sampler is:
 \begin{align}
-  \alpha = \min(1, \frac{\target(x')\prop(\vec x_{k-1})}{\target(\vec x_{k-1})\prop(\vec x')})\,.
+  \alpha = \min\left(1, \frac{\target(x')\prop(\vec x_{k-1})}{\target(\vec x_{k-1})\prop(\vec x')}\right)\,.
 \end{align}
 If the point $x'$ is accepted then $x_k = x'$, otherwise $x_k = x_{k-1}$.
+This acceptance probability is known as the Metropolis-Hastings rule from which we derive the name Metropitan GAN\@.
 Note that when estimating the distribution on $\target$ one must include the duplicates that are a result of rejections in $x'$.
 
 The detailed balance condition implies that if $x_{k-1} \sample \target$ exactly then $x_k \sample \target$ exactly as well.
 Additionally, even if $x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases.  % TODO cite
 
 % also include not on bias from stopping rules
-In our setup, in order to obtain independent samples, we sample $\vec x \sample \target$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
+In our setup, in order to obtain independent samples, we sample $\vec x \sample \pinit$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
 Note that the number of samples $K$ is meant to be ancilliary to the state of the Markov chain $\vec x_k$, using the state of the Markov chain to determine when to stop has the potential to introduce bias.  % TODO cite
 
 \subsection{GANs}
 
-GANs work by modeling the distribution on data $\vec x \sample P_R$ by sampling synthetic data points from a generator; we use $P_R$ to refer to the unknown true distribution on the data $\vec x$.
-The generator works by taking a sample from a Gaussian $\vec z \sample \norm(0,\mat I)$ then transforming it with a generator network $G$: $\vec x = G(\vec z)$.
+GANs implictly model the distribution on data $\vec x \sample P_R$ by sampling synthetic data points from a generator; we use $P_R$ to refer to the unknown true distribution on the data $\vec x$.
+The generator works by taking a sample from a Gaussian $\vec z \sample \norm(0,\mat I)$ and then transforming it with a generator network $G$: $\vec x = G(\vec z)$.
 This implies a distrubtion on the data $\vec x \sample P_G$.  % TODO make lower
 However, because $G$ is often a complex and non-invertible function $P_G$ is generally intractable to compute.
 % TODO mention realNVP
@@ -215,7 +217,7 @@ The original work of~\citet{} showed that if this training game converges to its
   P_G = P_R,\, \quad D = \frac{P_R}{P_R + P_G} = \frac{1}{2}\,.
 \end{align}
 % TODO Cite
-In practice, it is often found that it is much easier to get $D$ close to its Bayes optimal solution ($\frac{P_R}{P_R + P_G}$) than $G$ close to the true distribution $P_R$.
+In practice, it is often found that it is much easier to get $D$ close to its Bayes optimal solution ($\tfrac{P_R}{P_R + P_G}$) than $G$ close to the true distribution $P_R$.
 This motivates our approach of wrapping an imperfect $G$ to obtain an improved $G'$ using a near perfect $D$.
 
 \subsection{Related Work}
@@ -223,8 +225,8 @@ This motivates our approach of wrapping an imperfect $G$ to obtain an improved $
 % Need to be clear on diff with NICE-MCMC
 There have been a few other works that in some way combine GAN training and MCMC methods.
 The work of~\citet{} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
-The use a RealNVP network as the proposal as intvertability is important for computation of the acceptance probability $\alpha$.
-The different with this work is best summarized as:~\citet{} uses GANs to accelerate MCMC whereas we use MCMC to enhance the solution from a GAN.
+They use a RealNVP network as the proposal as intvertability is important for computation of the acceptance probability $\alpha$.
+The difference with this work is best summarized as:~\citet{} uses GANs to accelerate MCMC whereas we use MCMC to enhance the solution from a GAN\@.
 % Other workshop paper too
 % http://bayesiandeeplearning.org/2017/papers/6.pdf
 A similar approach to~\citet{} was taken in~\citet{}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
@@ -241,9 +243,9 @@ and if $D$ is perfect then $P_D = P_R$.
 We can use an MCMC independence sampler with a target distribution of $P_D$ and a proposal distribution of $P_G$.
 This gives an acceptance probability of:
 \begin{align}
-  \alpha = \min(1, \frac{P_D(x')P_G(\vec x_{k-1})}{P_D(\vec x_{k-1})P_G(\vec x')})
-    = \min(1, \frac{P_D(x')}{P_G(\vec x')} \frac{P_G(\vec x_{k-1})}{P_D(\vec x_{k-1})})
-    = \min(1, \frac{D(\vec x_{k-1})^{-1} - 1}{D(\vec x')^{-1} - 1})\,, \label{eq:alpha from D}
+  \alpha = \min\left(1, \frac{P_D(x')P_G(\vec x_{k-1})}{P_D(\vec x_{k-1})P_G(\vec x')}\right)
+    = \min\left(1, \frac{P_D(x')}{P_G(\vec x')} \frac{P_G(\vec x_{k-1})}{P_D(\vec x_{k-1})}\right)
+    = \min\left(1, \frac{D(\vec x_{k-1})^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,, \label{eq:alpha from D}
 \end{align}
 which is computable using only the discrimator $D$ and no densities.
 
@@ -370,7 +372,7 @@ However, ending the chain at the first accept can potentially introduce a bias i
 \section{Conclusions}
 
 % usual wrap up BS paragraph
-We have presented an way to incorporate the knoweldge embedded in the discrimnator $D$ into an improved generator $G'$ in a principled manner using MCMC methods.
+We have presented a way to incorporate the knoweldge embedded in the discrimnator $D$ into an improved generator $G'$ in a principled manner using MCMC methods.
 Our method is based on the premise that the discriminator $D$ is essentially ``ahead'' of the generator $G$.
 The principled MCMC setup essentially stochastically selects among samples from $G$ to correct biases in the generator $G$.
 This requires some modification to the MCMC equations as the neither the densities $P_G$ nor $P_R$ are available.
