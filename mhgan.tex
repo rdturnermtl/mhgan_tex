@@ -26,6 +26,8 @@
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
 \usepackage{microtype}      % microtypography
+\usepackage{graphicx}
+\usepackage{subcaption}
 
 \title{Metropolitan Generative Adversarial Networks}
 
@@ -296,11 +298,19 @@ However, the potential discrepancy is observable by monitoring the portion of ch
 
 % Maybe discuss using side discriminator, but only is adds anything
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{figures/alpha2.pdf}
+    \caption{{\small
+    Acceptance probabilities.
+    }}
+    \label{fig:alpha}
+\end{figure}
+
 % Cherry picking approximation
 \paragraph{Deterministic approximation}
 It is also possible to replace the Markov chain with a deterministic approximation that is more parallelizable.
-% TODO also consider putting in the plot in logit scale
-In Figure~\ref{} we show the acceptance probabilities for different levels of the current state $D(\vec x_k)$ and the proposal $D(\vec x')$.
+In Figure~\ref{fig:alpha} we show the acceptance probabilities for different levels of the current state $D(\vec x_k)$ and the proposal $D(\vec x')$.
 The qualitative behavior of the curves are easily summarized.
 In all curves, if $D(\vec x') \geq D(\vec x_k)$ then $\vec x'$ is always accepted.
 As $D(\vec x_k) \rightarrow 0$ the region where $D(\vec x') < D(\vec x_k)$ becomes a linear ramp; and as $D(\vec x_k) \rightarrow 1$ it becomes a step function.
@@ -323,6 +333,20 @@ Note that if we don't strictly require all chains to end with a synthetic sample
 % TODO insert distribution with Gaussians at different iters, and non-reject real
 % TODO plot end with synthetic prob as function of chain length
 
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+       \includegraphics[scale=1.45]{figures/base_iso.pdf}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+       \includegraphics[scale=1.45]{figures/base_iso.pdf}
+    \end{subfigure}
+    \caption{{\small
+    Acceptance probabilities.
+    }}
+    \label{fig:incep_by_epoch}
+\end{figure}
+
 \subsection{Real Data}
 For real data experiments we considered three different data sets: CelebA~\citep{Liu2015}, CIFAR-10~\citep{Torralba2008}, and LSUN~\citep{Yu2015}.
 We consider the traditional DC-GAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
@@ -341,7 +365,7 @@ To evaluate the performance of the resulting wrapper generator $G'$, we plot inc
 The error bars are computed using a t-test on the variation per batch across different splits of the inception score.
 We see a consistent and statistically significant boost in inception score from $G'$ above $G$.
 
-In Figure~\ref{} we also plot the inception score, per MCMC iteration, at epoch XXX.  % TODO
+In Figure~\ref{fig:incep_by_epoch} we also plot the inception score per epoch at MH iteration $K=500$.
 We see that most of gains are made in the first XXX iterations, but smaller gains continue up to iteration XXX.  % TODO
 
 % Look at distn on D to make look more like real
