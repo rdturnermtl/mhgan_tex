@@ -106,6 +106,7 @@
 
 \newcommand{\setx}{\set{X}}
 
+% Finish clean up checks:
 % TODO use smash where needed
 % TODO \! arrow where needed
 % TODO can search, it is
@@ -302,7 +303,9 @@ However, the potential discrepancy is observable by monitoring the portion of ch
     \centering
     \includegraphics[width=\textwidth]{figures/alpha2.pdf}
     \caption{{\small
-    Acceptance probabilities.
+    We show the acceptance probabilities $\accept$ from~\eqref{eq:alpha from D} across different values for the discriminator score of the current state $D(\vec x_k)$ and the discriminator score of the proposed state $D(\vec x')$.
+    On the right, we plot the curves in logit scale to allow closer examination of the limiting cases with $D$ close to zero and one.
+    Small values of $D(\vec x_k)$ result in a linear ramp while large values of $D(\vec x_k)$ can be approximated as a step function.
     }}
     \label{fig:alpha}
 \end{figure}
@@ -342,7 +345,10 @@ Note that if we don't strictly require all chains to end with a synthetic sample
        \includegraphics[width=2.75in]{figures/plot_per_mh.pdf}
     \end{subfigure}
     \caption{{\small
-    Acceptance probabilities.
+    Results of the MGAN experiments on CIFAR-10 using the DCGAN\@.
+    On the left, we show the inception score by training epoch of the DCGAN\@.
+    The error bars on MGAN performance (in grey) are computed using a t-test on the variation per batch across different splits of the inception score.
+    On the left we show the inception score as a function of the number of MCMC iterations $K$ for the GAN at epoch 15.
     }}
     \label{fig:incep_by_epoch}
 \end{figure}
@@ -366,7 +372,13 @@ These results confirm our expectation that the raw discriminators do not output 
        \includegraphics[scale=0.9]{figures/score_dist_no_overlap.pdf}
     \end{subfigure}
     \caption{{\small
-    Acceptance probabilities.
+    The distribution on discriminator scores at different training epochs.
+    On the right we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
+    At epoch 14, on the left, the distributions are far apart even in logit scale.
+    When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
+    The deterministic approximation also fixes the distribution, but results in too much mass near the mode.
+    However, when the distributions are too seperated the generator $\PG$ is essentially unfixable.
+    In this case, the deterministic approximation can be used in place of the proper MGAN\@.
     }}
     \label{fig:score_dist}
 \end{figure}
@@ -376,11 +388,10 @@ These results confirm our expectation that the raw discriminators do not output 
 % DC GAN, WGAN, PGAN
 % Use JY scatter plot
 To evaluate the performance of the resulting wrapper generator $G'$, we plot inception scores per epoch.
-The error bars are computed using a t-test on the variation per batch across different splits of the inception score.
 We see a consistent and statistically significant boost in inception score from $G'$ above $G$.
 
-In Figure~\ref{fig:incep_by_epoch} we also plot the inception score per epoch at MH iteration $K=500$.
-We see that most of gains are made in the first XXX iterations, but smaller gains continue up to iteration XXX.  % TODO
+In Figure~\ref{fig:incep_by_epoch} we also plot the inception score per epoch after $K=640$ MCMC iterations.
+We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue up to iteration $k=400$.
 
 % Look at distn on D to make look more like real
 %   both on synth and real
@@ -390,7 +401,7 @@ We can see that MCMC shifts the distribution of the fakes to match the distribut
 In this case, our deterministic approximation focuses too much on the mode as a result of the overlap, but still makes an improvement over the base generator $G$.
 
 % Qualitative examples
-% Finally, in Figure~\ref{} we show some qualitative examples of samples comparing the base generator $G$ and the improved MCMC version $G'$.
+% Finally, in Figure~\ref we show some qualitative examples of samples comparing the base generator $G$ and the improved MCMC version $G'$.
 
 \section{Discussion}
 
