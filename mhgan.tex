@@ -203,8 +203,7 @@ If GAN training reaches its global equilibrium then this discriminator distribut
 % We use MCMC independence sampler to get samples from \PR using multiple samples from G
 % MCMC not directly applicable since the likelihood of \PR and G are not available
 % However, MCMC only needs the ratio of \PR/G and this can be found from D
-% TODO cite indep sampler
-We use an MCMC \emph{independence sampler} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
+We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
 As a corollary: Given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
 Standard MCMC implementations cannot achieve this because MCMC requires (unnormalized) densities for the target $\PD$ and the proposal $\PG$.
 Neither of these quantities are available in GANs.
@@ -216,9 +215,8 @@ However, MCMC can be performed using only the ratio $\PD / \PG$, which is implie
 % So, if init from true data point, then already at true distn for init, and will stay at true distn as result of detailed balance
 % TODO do VAEs make similar kinds of arguments?
 We can also avoid the burn-in issues that usually plague MCMC methods.
-% TODO might want to give state name x here
-Recall that via the detailed balance property, if the marginal distribution on a Markov chain at time step $k$ matches the target $\PD$ then the marginal at time step $k+1$ will also follow $\PD$.
-Typically, it is not possible to get an initial sample from the target distribution because MCMC is typically applied to generate samples of \emph{parameters} from a Bayesian posterior distribution.
+Recall that via the detailed balance property, if the marginal distribution on a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
+Typically, it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$) because MCMC is typically applied to generate samples of \emph{parameters} from a Bayesian posterior distribution.
 We have no example samples of parameters from these distributions to start from.
 However, in MGANs, we are sampling from the \emph{data} distribution.
 Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution.
@@ -258,9 +256,8 @@ The detailed balance condition implies that if $\vec x_k \sample \target$ exactl
 Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
 
 % also include not on bias from stopping rules
-% TODO emphasize that each chain gives one sample from G', might want to move this para to methods
 In our setup, in order to obtain independent samples, we sample $\vec x \sample \pinit$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
-That is, $\vec x_K$ is the output of $G'$.
+That is, $\vec x_K$ is the output of $G'$: Each MCMC chain results in a single sample for $G'$.
 Independent chains are used for multiple samples from $G'$.
 Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$, using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
 
@@ -373,7 +370,7 @@ Therefore, $D(\vec x_k)$ will stay near one and the acceptance function will be 
 In this scenario, we can approximate, $\accept(\vec x', \vec x_k) \approx \I\{D(\vec x') > D(\vec x_k)\}$, and therefore $G'$ takes the sample in the chain with the maximum score $D$.
 However, this is with the provision that we beat the score of a randomly chosen sample of real data $D(\vec x_0)$.
 This maximum procedure is a reduction and is therefore easily parallelizable.
-% TODO note benefit is invariance to xform => no need to calibrate
+The other advantage of this approximation is that it is invariant to monotonic transformation in the discriminator scores $D$ and therefore negates the need for calibration.
 
 % Maybe Importance sampling also an option to include
 
@@ -391,10 +388,16 @@ Note that if we don't strictly require all chains to end with a synthetic sample
 \begin{figure}
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
+       \centering
        \includegraphics[width=2.75in]{figures/base_iso.pdf}
+       \caption{Performance by epoch}
+       \label{fig:incep_by_epoch}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\textwidth}
+       \centering
        \includegraphics[width=2.75in]{figures/plot_per_mh.pdf}
+       \caption{Performance by MCMC iteration}
+       \label{fig:incep_by_iter}
     \end{subfigure}
     \caption{{\small
         \todo{replot with standard colors for GAN vs. MGAN vs. D-MGAN (and/or remove D-MGAN).}
@@ -403,7 +406,6 @@ Note that if we don't strictly require all chains to end with a synthetic sample
     The error bars on MGAN performance (in grey) are computed using a t-test on the variation per batch across different splits of the inception score.
     On the left we show the inception score as a function of the number of MCMC iterations $K$ for the GAN at epoch 15.
     }}
-    \label{fig:incep_by_epoch}
 \end{figure}
 
 \subsection{Real Data}
@@ -416,14 +418,19 @@ For WGAN we can only use the calibrated discriminator as it does not output a pr
 We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
 These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
 
-% TODO caption subfigures
 \begin{figure}
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
+       \centering
        \includegraphics[scale=0.9]{figures/score_dist_overlap.pdf}
+       \caption{epoch 13 scores}
+       \label{fig:score_dist_overlap}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\textwidth}
+       \centering
        \includegraphics[scale=0.9]{figures/score_dist_no_overlap.pdf}
+       \caption{epoch 14 scores}
+       \label{fig:score_dist_no_overlap}
     \end{subfigure}
     \caption{{\small
         \todo{replot with standard colors for GAN vs. MGAN vs. D-MGAN (and/or remove D-MGAN).}
@@ -435,7 +442,6 @@ These results confirm our expectation that the raw discriminators do not output 
     However, when the distributions are too seperated the generator $\PG$ is essentially unfixable.
     In this case, the deterministic approximation can be used in place of the proper MGAN\@.
     }}
-    \label{fig:score_dist}
 \end{figure}
 
 % Look at incep score over 3 method on 3 data sets per epoch
@@ -450,20 +456,20 @@ The actual gap of improvement made by MGAN oscillates from one epoch to the next
 This makes sense as we rely on $D$ being ``ahead'' in some sense.
 Because GAN training is a game or sorts, how far ahead $D$ is will vary by epoch.
 
-In Figure~\ref{fig:incep_by_epoch} we also plot the inception score per epoch after $K=640$ MCMC iterations.
+In Figure~\ref{fig:incep_by_iter} we also plot the inception score per epoch after $K=640$ MCMC iterations.
 We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue up to iteration $k=400$.
 
 % TODO fill in XXX
 We summarize the performance across all base GANs and data sets in Table~\ref{}.
 The DCGAN is run to XXX epochs while the WGAN is run until XXX epochs.
-In all cases we ran the MCMC procedure $K=640$ iterations as in Figure~\ref{}.
-We see the same qualitative behavior as in Figure~\ref{} with the MGAN correction providing a siginificant boost in inception score.
+In all cases we ran the MCMC procedure $K=640$ iterations as in Figure~\ref{fig:incep_by_iter}.
+We see the same qualitative behavior as in Figure~\ref{fig:incep_by_epoch} with the MGAN correction providing a siginificant boost in inception score.
 
 % Look at distn on D to make look more like real
 %   both on synth and real
 We also consider the distribution on discriminator scores.
 % TODO ref subfigure
-In Figure~\ref{fig:score_dist}, the distributions on scores from real and fake images are well separated, but still contain \emph{some overlap}.
+In Figure~\ref{fig:score_dist_overlap}, the distributions on scores from real and fake images are well separated, but still contain \emph{some overlap}.
 We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
 In this case, our deterministic approximation focuses too much on the mode as a result of the overlap, but still makes an improvement over the base generator $G$.
 
@@ -473,7 +479,6 @@ In this case, our deterministic approximation focuses too much on the mode as a 
 \section{Discussion}
 
 % How many MH iters usually needed, what about computation burden
-% TODO ref subfigure
 The wrapped GAN $G'$ will indeed have $K$ times the computational burden of $G$ when drawing samples; and Figure~\ref{fig:incep_by_epoch} shows improvements can be made even for smaller values of $K$.
 However, the large computational burden of GANs is during training not when drawing samples (test)\@.
 Therefore, in applications where the test speed is not the bottleneck, the wrapped GAN $G'$ is a good option.
