@@ -1,0 +1,9 @@
+.DS_Store
+*.synctex.gz
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+.ipynb_checkpoints
+mhgan.pdf
