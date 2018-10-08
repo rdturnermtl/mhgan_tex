@@ -30,6 +30,23 @@
 \usepackage{microtype}      % microtypography
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{ownstyles}
+
+
+% % Commenting highlights
+\newif\ifcomments
+
+%Uncomment one of the two lines below to turn todos on/off
+%\commentsfalse
+\commentstrue
+
+\ifcomments
+\newcommand{\comments}[1]{#1}
+\else
+\newcommand{\comments}[1]{}
+\fi
+% % Commenting highlights
+
 
 \title{Metropolitan Generative Adversarial Networks}
 
@@ -140,6 +157,10 @@ Generative adversarial networks (GANs) presented a radically new way to do densi
 They only implicitly represent the density of the data via a classifier that distinguishes real from generated data.
 Traditionally, density estimation has been done with a model that can easily compute the likelihood of the observed data.
 % TODO or if not, like RBM, could do MCMC method based on likelihood, GAN easy to sample but not likelihood
+
+\todo{test item maybe delete me}
+\todo{test item maybe delete me}
+\jby{hi}
 
 % GAN uses D and G, but then D usually thrown away
 % Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
@@ -355,6 +376,7 @@ Note that if we don't strictly require all chains to end with a synthetic sample
        \includegraphics[width=2.75in]{figures/plot_per_mh.pdf}
     \end{subfigure}
     \caption{{\small
+        \todo{replot with standard colors for GAN vs. MGAN vs. D-MGAN (and/or remove D-MGAN).}
     Results of the MGAN experiments on CIFAR-10 using the DCGAN\@.
     On the left, we show the inception score by training epoch of the DCGAN\@.
     The error bars on MGAN performance (in grey) are computed using a t-test on the variation per batch across different splits of the inception score.
@@ -383,6 +405,7 @@ These results confirm our expectation that the raw discriminators do not output 
        \includegraphics[scale=0.9]{figures/score_dist_no_overlap.pdf}
     \end{subfigure}
     \caption{{\small
+        \todo{replot with standard colors for GAN vs. MGAN vs. D-MGAN (and/or remove D-MGAN).}
     The distribution on discriminator scores at different training epochs.
     On the right we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
     At epoch 14, on the left, the distributions are far apart even in logit scale.
