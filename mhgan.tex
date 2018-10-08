@@ -167,7 +167,28 @@ Traditionally, density estimation has been done with a model that can easily com
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
 Typically, in this setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
 In this work we propose the Metropolitan GAN (MGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
-% TODO include figure here
+This principle is illustrated in Figure~\ref{fig:block_diag}.
+
+\begin{figure}[bhtp]
+    \centering
+    \begin{subfigure}[t]{2.25in}
+       \centering
+       \includegraphics[width=2.25in]{figures/coord_descent.png}
+       \caption{GAN objective}
+    \end{subfigure}
+    \begin{subfigure}[t]{3in}
+       \centering
+       \includegraphics[width=3in]{figures/block_diag.png}
+       \caption{$G'$ wraps $G$}
+    \end{subfigure}
+    \caption{{\small
+    On the left we illustate how training of $D$ and $G$ in GANs performs coordinate decsent on the joint minimax objective, shown in the solid black arrow.
+    Assuming traditional GAN training can get us close to the optimal $D$, wrapping $G$ with the MGAN gives us the optimal generator $G'$, as shown in the final dashed arrow.
+    On the right we illustrate how the MGAN is essentially a selector among multiple draws from $G$.
+    In the MGAN, the selector is built using a Metropolis-Hastings acceptance rule (i.e., MCMC) from the discriminator scores $D$.
+    }}
+    \label{fig:block_diag}
+\end{figure}
 
 % Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
 % Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
