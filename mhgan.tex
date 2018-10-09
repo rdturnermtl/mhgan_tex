@@ -376,27 +376,24 @@ The other advantage of this approximation is that it is invariant to monotonic t
 
 \section{Results}
 
-We use an illustrative toy examples and real GANs on real data to illustrate the improvements made by the wrapped classifier $G'$.
-
-\subsection{Toy Data}
-We first demonstrate the MGAN on the toy two Gaussians example presented in~\citet{Arjovsky2017}.
-Figure~\ref{} shows how the convergence of samples to the true distribution over MCMC iterations.
-Note that if we don't strictly require all chains to end with a synthetic sample then the MGAN samples match the true distribution exactly at any number of MCMC iterations $K$.
-% TODO insert distribution with Gaussians at different iters, and non-reject real
-% TODO plot end with synthetic prob as function of chain length
+%We use an illustrative toy examples and real GANs on real data to illustrate the improvements made by the wrapped classifier $G'$.
+%\subsection{Toy Data}
+%We first demonstrate the MGAN on the toy two Gaussians example presented in~\citet{Arjovsky2017}.
+%Figure~\ref{} shows how the convergence of samples to the true distribution over MCMC iterations.
+%Note that if we don't strictly require all chains to end with a synthetic sample then the MGAN samples match the true distribution exactly at any number of MCMC iterations $K$.
 
 \begin{figure}
     \centering
     \begin{subfigure}[b]{0.49\textwidth}
        \centering
        \includegraphics[width=2.75in]{figures/base_iso.pdf}
-       \caption{Performance by epoch}
+       \caption{performance by epoch}
        \label{fig:incep_by_epoch}
     \end{subfigure}
     \begin{subfigure}[b]{0.49\textwidth}
        \centering
        \includegraphics[width=2.75in]{figures/plot_per_mh.pdf}
-       \caption{Performance by MCMC iteration}
+       \caption{performance by MCMC iteration}
        \label{fig:incep_by_iter}
     \end{subfigure}
     \caption{{\small
@@ -408,7 +405,8 @@ Note that if we don't strictly require all chains to end with a synthetic sample
     }}
 \end{figure}
 
-\subsection{Real Data}
+%\subsection{Real Data}
+
 For real data experiments we considered three different data sets: CelebA~\citep{Liu2015}, CIFAR-10~\citep{Torralba2008}, and LSUN~\citep{Yu2015}.
 We consider the traditional DC-GAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
 We first examine the performance of the discriminator on held out data with and without calibration for DC-GAN\@.
@@ -438,7 +436,7 @@ These results confirm our expectation that the raw discriminators do not output 
     At epoch 14, on the left, the distributions are far apart even in logit scale.
     When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
     The deterministic approximation also fixes the distribution, but results in too much mass near the mode.
-    However, when the distributions are too seperated the generator $\PG$ is essentially unfixable.
+    However, when the distributions are too seperated the generator $G$ is essentially unfixable.
     In this case, the deterministic approximation can be used in place of the proper MGAN\@.
     }}
 \end{figure}
@@ -468,6 +466,35 @@ We also consider the distribution on discriminator scores.
 In Figure~\ref{fig:score_dist_overlap}, the distributions on scores from real and fake images are well separated, but still contain \emph{some overlap}.
 We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
 In this case, our deterministic approximation focuses too much on the mode as a result of the overlap, but still makes an improvement over the base generator $G$.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.49\textwidth}
+       \centering
+       \includegraphics[scale=0.9]{figures/disc_calib.pdf}
+       \caption{calibration $Z$}
+       \label{fig:calibration stat}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.49\textwidth}
+       \centering
+       \includegraphics[scale=0.9]{figures/disc_perf.pdf}
+       \caption{discriminator performance}
+       \label{fig:discriminator_perf}
+    \end{subfigure}
+    \caption{{\small
+    On the left we show the calibration statistic $Z$ for the discriminator for the DCGAN on CIFAR-10.
+    The raw discriminator is clearly miscalibrated.
+    All the calibration methods give roughly equivalent results.
+    The left shows the predictive performance of the discriminator.
+    The various performance metrics have been rescaled so a perfect classifier has score 1 and random classifier has score 0.5.
+    The calibrated discriminator has higher predictive performance, but the oscillations are highly correlated with the ranking based performance metrics (AUC and AP)\@.
+    Most of the variation from epoch to epoch is not merely differences in calibratedness.
+    }}
+    \label{fig:calibration}
+\end{figure}
+
+In Figure~\ref{fig:calibration} we show how calibration of the discriminator is necessary based on its raw performance.
+Therefore, it is not surprising that it improves performance when used for the MGAN\@.
 
 % Qualitative examples
 % Finally, in Figure~\ref we show some qualitative examples of samples comparing the base generator $G$ and the improved MCMC version $G'$.
