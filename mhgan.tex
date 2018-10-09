@@ -399,7 +399,7 @@ The other advantage of this approximation is that it is invariant to monotonic t
     \caption{{\small
         \todo{replot with standard colors for GAN vs. MGAN vs. D-MGAN (and/or remove D-MGAN).}
     Results of the MGAN experiments on CIFAR-10 using the DCGAN\@.
-    On the left, we show the inception score by training epoch of the DCGAN\@.
+    On the left, we show the inception score by training epoch of the DCGAN at $K=640$.
     The error bars on MGAN performance (in grey) are computed using a t-test on the variation per batch across different splits of the inception score.
     On the left we show the inception score as a function of the number of MCMC iterations $K$ for the GAN at epoch 15.
     }}
@@ -431,7 +431,7 @@ These results confirm our expectation that the raw discriminators do not output 
        \label{fig:score_dist_no_overlap}
     \end{subfigure}
     \caption{{\small
-    The distribution on discriminator scores at different training epochs for DCGAN on CIFAR-10 data set.
+    The distribution on discriminator scores at different training epochs for DCGAN on CIFAR-10 data set with $K=640$.
     On the right we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
     At epoch 14, on the left, the distributions are far apart even in logit scale.
     When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
