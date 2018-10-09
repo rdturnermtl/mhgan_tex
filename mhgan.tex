@@ -30,6 +30,9 @@
 \usepackage{microtype}      % microtypography
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{siunitx}
+
 \usepackage{ownstyles}
 
 
@@ -450,11 +453,38 @@ Because GAN training is a game or sorts, how far ahead $D$ is will vary by epoch
 In Figure~\ref{fig:incep_by_iter} we also plot the inception score per epoch after $K=640$ MCMC iterations.
 We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue up to iteration $k=400$.
 
-% TODO fill in XXX
-We summarize the performance across all base GANs and data sets in Table~\ref{}.
-The DCGAN is run to XXX epochs while the WGAN is run until XXX epochs.
+% TODO fill in WGAN with real values
+% TODO cite inception score
+\begin{table}[htbp]
+\centering
+    \caption{{\small
+    Results showing inception score improvements from MGAN on DCGAN and WGAN\@.
+    Like Figure~\ref{fig:incep_by_epoch}, the error bars and p-values are computed using a paired t-test from the variation per batch across 80 different splits of the inception score.
+    The results are all significant at \smash{$p < 10^{-4}$}.
+    We show the MGAN using the raw discriminator scores and the MGAN using the calibrated discriminator scores in ``MGAN (cal.)''.
+    }}
+    \label{tbl:inception}
+{\scriptsize
+\begin{tabular}{|l|l|r|l|r||l|r|l|r|}
+\toprule
+~                 & \multicolumn{4}{c}{DCGAN}                               & \multicolumn{4}{c}{WGAN} \\
+\toprule
+~                 & CIFAR-10         &      p   & CelebA         &      p   & CIFAR-10        &      p   & CelebA        &      p \\
+\midrule
+MGAN              &        3.637(97) &  <0.0001 &      3.637(97) &  <0.0001 &       3.637(97) &  <0.0001 &     3.637(97) &  <0.0001 \\
+MGAN (cal.)       &        3.753(99) &  <0.0001 &      3.753(99) &  <0.0001 &       3.753(99) &  <0.0001 &     3.753(99) &  <0.0001 \\
+GAN               &        3.3699    &       -- &      3.3699    &       -- &       3.3699    &       -- &     3.3699    &       -- \\
+D-MGAN            &        3.706(86) &  <0.0001 &      3.706(86) &  <0.0001 &       3.706(86) &  <0.0001 &     3.706(86) &  <0.0001 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+We summarize the performance across all base GANs and data sets in Table~\ref{tbl:inception}.
+The DCGAN and WGAN are shown at epoch 40.  % TODO might need to adjust
 In all cases we ran the MCMC procedure $K=640$ iterations as in Figure~\ref{fig:incep_by_iter}.
 We see the same qualitative behavior as in Figure~\ref{fig:incep_by_epoch} with the MGAN correction providing a siginificant boost in inception score.
+Boosts are seen using MGAN from the raw scores, but further improvmens are made using the calibrated scores.
 
 % Look at distn on D to make look more like real
 %   both on synth and real
