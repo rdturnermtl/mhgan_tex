@@ -158,10 +158,6 @@ They only implicitly represent the density of the data via a classifier that dis
 Traditionally, density estimation has been done with a model that can easily compute the likelihood of the observed data.
 % TODO or if not, like RBM, could do MCMC method based on likelihood, GAN easy to sample but not likelihood
 
-\todo{test item maybe delete me}
-\todo{test item maybe delete me}
-\jby{hi}
-
 % GAN uses D and G, but then D usually thrown away
 % Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
@@ -398,7 +394,6 @@ The other advantage of this approximation is that it is invariant to monotonic t
        \label{fig:incep_by_iter}
     \end{subfigure}
     \caption{{\small
-        \todo{replot with standard colors for GAN vs. MGAN vs. D-MGAN (and/or remove D-MGAN).}
     Results of the MGAN experiments on CIFAR-10 using the DCGAN\@.
     On the left, we show the inception score by training epoch of the DCGAN at $K=640$.
     The error bars on MGAN performance (in grey) are computed using a t-test on the variation per batch across different splits of the inception score.
