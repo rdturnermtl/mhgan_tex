@@ -157,7 +157,7 @@
 % GANs provide implicit way to do density estimation
 % traditionally done with explicit likelihood, ancestral sampling in most models to get new synthetic data points from fit model
 Generative adversarial networks (GANs) presented a radically new way to do density estimation:
-They only implicitly represent the density of the data via a classifier that distinguishes real from generated data.
+they implicitly represent the density of the data via a classifier that distinguishes real from generated data.
 Traditionally, density estimation has been done with a model that can easily compute the likelihood of the observed data.
 % TODO or if not, like RBM, could do MCMC method based on likelihood, GAN easy to sample but not likelihood
 
@@ -182,8 +182,8 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
        \caption{$G'$ wraps $G$}
     \end{subfigure}
     \caption{{\small
-    On the left we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
-    Assuming traditional GAN training can get us close to the optimal $D$, wrapping $G$ with the MGAN gives us the optimal generator $G'$, as shown in the final dashed arrow.
+    On the left we illustrate \todo{G-star being a dot and G' being a star is confusing. Make less confusing.} how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
+    If traditional GAN training produces a perfect $D$ for an imperfect $G$, the MGAN wraps $G$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
     On the right we illustrate how the MGAN is essentially a selector among multiple draws from $G$.
     In the MGAN, the selector is built using a Metropolis-Hastings acceptance rule (i.e., MCMC) from the discriminator scores $D$.
     }}
@@ -192,7 +192,7 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
 
 % Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
 % Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
-The MGAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$.
+The MGAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
 This is based on the notion that the discriminator classifies between the generator $G$ and a real data distribution:
 \begin{align}
   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,,
