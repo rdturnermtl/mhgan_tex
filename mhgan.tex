@@ -204,10 +204,10 @@ If GAN training reaches its global equilibrium then this discriminator distribut
 % MCMC not directly applicable since the likelihood of \PR and G are not available
 % However, MCMC only needs the ratio of \PR/G and this can be found from D
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
-As a corollary: Given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
+A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
 Standard MCMC implementations cannot achieve this because MCMC requires (unnormalized) densities for the target $\PD$ and the proposal $\PG$.
 Neither of these quantities are available in GANs.
-However, MCMC can be performed using only the ratio $\PD / \PG$, which is implied by the discriminator $D$.
+However, MCMC can be performed using only the ratio $\PD / \PG$, a quantity available directly from the discriminator $D$.
 
 % We also avoid the burn in issues usually associated with MCMC
 % Typically, we cannot get a good initial sample because sampling over parameter space from posterior
@@ -215,11 +215,11 @@ However, MCMC can be performed using only the ratio $\PD / \PG$, which is implie
 % So, if init from true data point, then already at true distn for init, and will stay at true distn as result of detailed balance
 % TODO do VAEs make similar kinds of arguments?
 We can also avoid the burn-in issues that usually plague MCMC methods.
-Recall that via the detailed balance property, if the marginal distribution on a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
-Typically, it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$) because MCMC is typically applied to generate samples of \emph{parameters} from a Bayesian posterior distribution.
-We have no example samples of parameters from these distributions to start from.
+Recall that via the detailed balance property \todo{add citation}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
+Often it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$) because
+the target distribution cannot be directly sampled from.\footnote{E.g. where MCMC is applied to generate samples of \emph{parameters} from a Bayesian posterior distribution, we have no example samples of parameters from these distributions to start from. \todo{Remove this footnote if it's not adding something important.}}
 However, in MGANs, we are sampling from the \emph{data} distribution.
-Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution.
+Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution and avoid burn-in issues.
 
 % TODO usual outline of following sections, and bullet point contributions, do at end
 
