@@ -182,7 +182,7 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
        \caption{$G'$ wraps $G$}
     \end{subfigure}
     \caption{{\small
-    On the left we illustate how training of $D$ and $G$ in GANs performs coordinate decsent on the joint minimax objective, shown in the solid black arrow.
+    On the left we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
     Assuming traditional GAN training can get us close to the optimal $D$, wrapping $G$ with the MGAN gives us the optimal generator $G'$, as shown in the final dashed arrow.
     On the right we illustrate how the MGAN is essentially a selector among multiple draws from $G$.
     In the MGAN, the selector is built using a Metropolis-Hastings acceptance rule (i.e., MCMC) from the discriminator scores $D$.
@@ -399,7 +399,7 @@ The other advantage of this approximation is that it is invariant to monotonic t
     \caption{{\small
     Results of the MGAN experiments on CIFAR-10 using the DCGAN\@.
     On the left, we show the inception score by training epoch of the DCGAN at $K=640$.
-    The error bars on MGAN performance (in grey) are computed using a t-test on the variation per batch across different splits of the inception score.
+    The error bars on MGAN performance (in gray) are computed using a t-test on the variation per batch across different splits of the inception score.
     On the left we show the inception score as a function of the number of MCMC iterations $K$ for the GAN at epoch 15.
     }}
 \end{figure}
@@ -435,7 +435,7 @@ These results confirm our expectation that the raw discriminators do not output 
     At epoch 14, on the left, the distributions are far apart even in logit scale.
     When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
     The deterministic approximation also fixes the distribution, but results in too much mass near the mode.
-    However, when the distributions are too seperated the generator $G$ is essentially unfixable.
+    However, when the distributions are too separated the generator $G$ is essentially unfixable.
     In this case, the deterministic approximation can be used in place of the proper MGAN\@.
     }}
 \end{figure}
@@ -483,8 +483,8 @@ D-MGAN            &        3.706(86) &  <0.0001 &      3.706(86) &  <0.0001 &   
 We summarize the performance across all base GANs and data sets in Table~\ref{tbl:inception}.
 The DCGAN and WGAN are shown at epoch 40.  % TODO might need to adjust
 In all cases we ran the MCMC procedure $K=640$ iterations as in Figure~\ref{fig:incep_by_iter}.
-We see the same qualitative behavior as in Figure~\ref{fig:incep_by_epoch} with the MGAN correction providing a siginificant boost in inception score.
-Boosts are seen using MGAN from the raw scores, but further improvmens are made using the calibrated scores.
+We see the same qualitative behavior as in Figure~\ref{fig:incep_by_epoch} with the MGAN correction providing a significant boost in inception score.
+Boosts are seen using MGAN from the raw scores, but further improvements are made using the calibrated scores.
 
 % Look at distn on D to make look more like real
 %   both on synth and real
