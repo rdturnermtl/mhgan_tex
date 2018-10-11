@@ -229,6 +229,8 @@ An important aspect of using the discriminator in MCMC is to have well calibrate
 Typical GAN usage does not directly use $D$ and can survive poorly calibrated discriminators, however these probabilities become crucial for accept/reject probabilities.
 We use a held out set recalibration routine for the MGAN setup; and show that indeed the raw probabilities from $D$ in typical GAN training are poorly calibrated.
 
+\jby{Recommend removing from here vvvvvvv}
+
 \section{Background}
 
 % Short page limit so let's just get on same page with notation here.
@@ -279,6 +281,8 @@ The original work of~\citet{Goodfellow2014} showed that if this training game co
 % maybe: https://towardsdatascience.com/understanding-generative-adversarial-networks-4dafc963f2ef
 In practice, it is often found that it is much easier to get $D$ close to its Bayes optimal solution (\smash{$\PR/(\PR + \PG)$}) than $G$ close to the true distribution $\PR$.
 This motivates our approach of wrapping an imperfect $G$ to obtain an improved $G'$ using a near perfect $D$.
+
+\jby{to here \^{}\^{}\^{}\^{}\^{}\^{}}
 
 \subsection{Related Work}
 
