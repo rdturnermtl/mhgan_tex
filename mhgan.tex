@@ -214,12 +214,6 @@ However, MCMC can be performed using only the ratio $\PD / \PG$, a quantity avai
 % But in this application we are sampling from data space
 % So, if init from true data point, then already at true distn for init, and will stay at true distn as result of detailed balance
 % TODO do VAEs make similar kinds of arguments?
-We can also avoid the burn-in issues that usually plague MCMC methods.
-Recall that via the detailed balance property \todo{add citation}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
-Often it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$) because
-the target distribution cannot be directly sampled from.\footnote{E.g. where MCMC is applied to generate samples of \emph{parameters} from a Bayesian posterior distribution, we have no example samples of parameters from these distributions to start from. \todo{Remove this footnote if it's not adding something important.}}
-However, in MGANs, we are sampling from the \emph{data} distribution.
-Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution and avoid burn-in issues.
 
 % TODO usual outline of following sections, and bullet point contributions, do at end
 
@@ -337,6 +331,17 @@ Another interesting note is that we do not actually need to store real data samp
 Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample \PR$.
 This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necessarily exceed as per~\eqref{eq:alpha from D}, to be accepted.
 
+\jby{Note, the next paragraph was moved from Intro but has not yet been deduplicated. Delete or deduplicate}
+
+We can also avoid the burn-in issues that usually plague MCMC methods.
+Recall that via the detailed balance property \todo{add citation}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
+Often it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$) because
+the target distribution cannot be directly sampled from.\footnote{E.g. where MCMC is applied to generate samples of \emph{parameters} from a Bayesian posterior distribution, we have no example samples of parameters from these distributions to start from. \todo{Remove this footnote if it's not adding something important.}}
+However, in MGANs, we are sampling from the \emph{data} distribution.
+Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution and avoid burn-in issues.
+
+
+
 % note how requirement not that strong with calib and manifold
 The assumption that $D$ is perfect can be weakened for two reasons:
 1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
@@ -355,6 +360,7 @@ However, the potential discrepancy is observable by monitoring the portion of ch
     \centering
     \includegraphics[width=\textwidth]{figures/alpha2.pdf}
     \caption{{\small
+        \jby{probably cut for workshop version}
     We show the acceptance probabilities $\accept$ from~\eqref{eq:alpha from D} across different values for the discriminator score of the current state $D(\vec x_k)$ and the discriminator score of the proposed state $D(\vec x')$.
     On the right, we plot the curves in logit scale to allow closer examination of the limiting cases with $D$ close to zero and one.
     Small values of $D(\vec x_k)$ result in a linear ramp while large values of $D(\vec x_k)$ can be approximated as a step function.
@@ -364,6 +370,7 @@ However, the potential discrepancy is observable by monitoring the portion of ch
 
 % Cherry picking approximation
 \paragraph{Deterministic approximation}
+\jby{Possibly remove this section for space}
 It is also possible to replace the Markov chain with a deterministic approximation that is more parallelizable.
 In Figure~\ref{fig:alpha} we show the acceptance probabilities for different discriminator scores of the current state $D(\vec x_k)$ and the proposal $D(\vec x')$.
 The qualitative behavior of the curves are easily summarized.
@@ -434,6 +441,7 @@ These results confirm our expectation that the raw discriminators do not output 
        \label{fig:score_dist_no_overlap}
     \end{subfigure}
     \caption{{\small
+        \jby{Remove for space or combine with previous figure if desired}
     The distribution on discriminator scores at different training epochs for DCGAN on CIFAR-10 data set with $K=640$.
     On the right we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
     At epoch 14, on the left, the distributions are far apart even in logit scale.
@@ -512,6 +520,7 @@ In this case, our deterministic approximation focuses too much on the mode as a 
        \label{fig:discriminator_perf}
     \end{subfigure}
     \caption{{\small
+        \jby{Remove for space or combine with previous figure if desired}
     On the left we show the calibration statistic $Z$ for the discriminator for the DCGAN on CIFAR-10.
     The raw discriminator is clearly miscalibrated.
     All the calibration methods give roughly equivalent results.
