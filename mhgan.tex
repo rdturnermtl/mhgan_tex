@@ -6,7 +6,7 @@
 % before loading nips_2018
 
 % ready for submission
-\usepackage{nips_2018}
+\usepackage[final]{nips_2018}
 
 % to compile a preprint version, e.g., for submission to arXiv, add
 % add the [preprint] option:
@@ -63,34 +63,14 @@
 % author name.
 
 \author{
-  David S.~Hippocampus\thanks{Use footnote for providing further
-    information about author (webpage, alternative
-    address)---\emph{not} for acknowledging funding agencies.} \\
-  Department of Computer Science\\
-  Cranberry-Lemon University\\
-  Pittsburgh, PA 15213 \\
-  \texttt{hippo@cs.cranberry-lemon.edu} \\
-  %% examples of more authors
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \AND
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
-  %% \And
-  %% Coauthor \\
-  %% Affiliation \\
-  %% Address \\
-  %% \texttt{email} \\
+  Ryan Turner \\
+  Uber AI Labs
+  \And
+  Jane Hung \\
+  Uber AI Labs
+  \And
+  Jason Yosinski \\
+  Uber AI Labs
 }
 
 \renewcommand{\vec}[1]{{\boldsymbol{\mathbf{#1}}}} % vector
@@ -196,7 +176,7 @@ This is based on the notion that the discriminator classifies between the genera
 \begin{align}
   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,,
 \end{align}
-where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the real data density implied by the discriminator $D$.
+where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the real data density \emph{implied} by the discriminator $D$.
 If GAN training reaches its global equilibrium then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
 
 % We use MCMC independence sampler to get samples from \PR using multiple samples from G
@@ -215,9 +195,9 @@ However, MCMC can be performed using only the ratio $\PD / \PG$, a quantity avai
 
 The outline of this paper is as follows:
 In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
-We explain out methodology of combing these two very different areas in Section~\ref{sec:MCMC Methods}; here we derive the wrapped generator $G'$.
+We explain our methodology of combing these two very different areas in Section~\ref{sec:MCMC Methods}; here we derive the wrapped generator $G'$.
 Section~\ref{sec:MCMC Methods} also discusses a simplified deterministic approximation to the MGAN\@.
-Results on real data data (CIFAR-10 and CelebA) abd building on real GAN models (DCGAN and WGAN) are shown in~\ref{sec:Results}.
+Results on real data (CIFAR-10 and CelebA) and extending widespread GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
 Sections~\ref{sec:Discussion} and~\ref{sec:Conclusions} discuss implications and conclusions.
 % TODO consider bullet points for contributions??
 
@@ -253,7 +233,8 @@ Additionally, even if $\vec x_k$ is not exactly distributed according to $\targe
 In our setup, in order to obtain independent samples, we sample $\vec x \sample \pinit$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
 That is, $\vec x_K$ is the output of $G'$: Each MCMC chain results in a single sample for $G'$.
 Independent chains are used for multiple samples from $G'$.
-Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$, using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
+Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$.
+Using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
 
 \subsection{GANs}
 \label{sec:GANs}
@@ -274,17 +255,18 @@ In practice, it is often found that it is much easier to get $D$ close to its Ba
 This motivates our approach of wrapping an imperfect $G$ to obtain an improved $G'$ using a near perfect $D$.
 
 % Could also hint at calibration, and cherry pick approx
-We also derive a simple deterministic approximation to MCMC that is very accurate in the regimes that GANs operate in.
 An important aspect of using the discriminator in MCMC is to have well calibrated probabilities in $D$.
 Typical GAN usage does not directly use $D$ and can survive poorly calibrated discriminators, however these probabilities become crucial for accept/reject probabilities.
 We use a held out set recalibration routine for the MGAN setup; and show that indeed the raw probabilities from $D$ in typical GAN training are poorly calibrated.
+
+We also derive a simple deterministic approximation to MCMC that is very accurate in the regimes that GANs operate in.
 
 \subsection{Related Work}
 
 % Need to be clear on diff with NICE-MCMC
 There have been a few other works that in some way combine GAN training and MCMC methods.
 The work of~\citet{Song2017} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
-They use a RealNVP network~\citep{Dinh2016} as the proposal as invertibility is important for computation of the acceptance probability $\accept$.
+They use a RealNVP network~\citep{Dinh2016} as t he proposal since invertibility is important for computation of the acceptance probability $\accept$.
 The difference with this work is best summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the samples from a GAN\@.
 A similar approach to~\citet{Song2017} was taken in~\citet{Kempinska2017}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
 
@@ -325,20 +307,21 @@ This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hy
 To correct any miscalibration we then use the held out calibration set to calibrate $D$ using either logistic regression, isotonic regression, or beta calibration~\citep{Kull2017}.
 
 \paragraph{Initialization}
-The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
-In this process we can initialize $\vec x_0$ with a random draw of real data (ideally held out)\@.
-Now, marginally $\vec x_0 \sample \PR$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k \sample \PR$ exactly as well, even if $\PG \neq \PR$.
-However, if the generator $G$ is too poor we will never receive a proposal sample $\vec x'$ good enough to accept and replace the real data sample $\vec x_0$ with a generated one.
-Another interesting note is that we do not actually need to store real data samples for this initialization procedure.
-Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample \PR$.
-This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necessarily exceed as per~\eqref{eq:alpha from D}, to be accepted.
-
 We can also avoid the burn-in issues that usually plague MCMC methods.
 Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
 Often it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$) because
 the target distribution cannot be directly sampled from.\footnote{E.g., where MCMC is applied to generate samples of \emph{parameters} from a Bayesian posterior distribution, we have no example samples of parameters from these distributions to start from.}
 However, in MGANs, we are sampling from the \emph{data} distribution.
 Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution and avoid burn-in issues.
+
+% This paragraph is kind of redundant, but we can lift some elements
+%The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
+%In this process we can initialize $\vec x_0$ with a random draw of real data (ideally held out)\@.
+%Now, marginally $\vec x_0 \sample \PR$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k \sample \PR$ exactly as well, even if $\PG \neq \PR$.
+%However, if the generator $G$ is too poor we will never receive a proposal sample $\vec x'$ good enough to accept and replace the real data sample $\vec x_0$ with a generated one.
+%Another interesting note is that we do not actually need to store real data samples for this initialization procedure.
+%Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample \PR$.
+%This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necessarily exceed as per~\eqref{eq:alpha from D}, to be accepted.
 
 % note how requirement not that strong with calib and manifold
 The assumption that $D$ is perfect can be weakened for two reasons:
@@ -414,9 +397,9 @@ The other advantage of this approximation is that it is invariant to monotonic t
 
 %\subsection{Real Data}
 
-For real data experiments we considered three different data sets: CelebA~\citep{Liu2015}, CIFAR-10~\citep{Torralba2008}, and LSUN~\citep{Yu2015}.
-We consider the traditional DC-GAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
-We first examine the performance of the discriminator on held out data with and without calibration for DC-GAN\@.
+For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
+We consider the traditional DCGAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
+We first examine the performance of the discriminator on held out data with and without calibration for DCGAN\@.
 For WGAN we can only use the calibrated discriminator as it does not output a probability.
 % Look at losses for discriminator
 %    maybe rescale all loses to 0-1 scale for plotting
@@ -456,11 +439,12 @@ To evaluate the performance of the resulting wrapper generator $G'$, we plot inc
 We see a consistent and statistically significant boost in inception score from $G'$ above $G$.
 The actual gap of improvement made by MGAN oscillates from one epoch to the next.
 This makes sense as we rely on $D$ being ``ahead'' in some sense.
-Because GAN training is a game or sorts, how far ahead $D$ is will vary by epoch.
+Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
 
 In Figure~\ref{fig:incep_by_iter} we also plot the inception score per epoch after $K=640$ MCMC iterations.
 We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue up to iteration $k=400$.
 
+% TODO shouldn't we remove non-calib for WGAN since it makes no sense?
 \begin{table}[htbp]
 \centering
     \caption{{\small
@@ -488,6 +472,7 @@ D-MGAN            &        3.706(86) &  <0.0001 &      2.59(18)  &  0.0218  &   
 
 We summarize the performance across all base GANs and data sets in Table~\ref{tbl:inception}.
 The DCGAN and WGAN are shown at epoch 60.
+There was not a substantial difference between different calibration methods, but we found a slight advantage for isotonic regression with the DCGAN and logistic regression for the WGAN\@.
 In all cases we ran the MCMC procedure $K=640$ iterations as in Figure~\ref{fig:incep_by_iter}.
 We see the same qualitative behavior as in Figure~\ref{fig:incep_by_epoch} with the MGAN correction providing a significant boost in inception score.
 Boosts are seen using MGAN from the raw scores, but further improvements are made using the calibrated scores.
