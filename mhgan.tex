@@ -34,24 +34,6 @@
 
 \usepackage[numbers]{natbib}
 
-\usepackage{ownstyles}
-
-
-% % Commenting highlights
-\newif\ifcomments
-
-%Uncomment one of the two lines below to turn todos on/off
-%\commentsfalse
-\commentstrue
-
-\ifcomments
-\newcommand{\comments}[1]{#1}
-\else
-\newcommand{\comments}[1]{}
-\fi
-% % Commenting highlights
-
-
 \title{Metropolitan Generative Adversarial Networks}
 
 % The \author macro works with any number of authors. There are two
@@ -117,8 +99,6 @@
 
 % TODO add lemma
 
-% TODO CROP anything that has deterministic approx
-
 \begin{document}
 % \nipsfinalcopy is no longer used
 
@@ -142,8 +122,6 @@
 Generative adversarial networks (GANs) presented a radically new way to do density estimation:
 they implicitly represent the density of the data via a classifier that distinguishes real from generated data.
 Traditionally, density estimation has been done with a model that can compute the data likelihood.
-%Computing the likelihood has been at least as easy as sampling new data from the trained model.  % TODO consider citing RBMs as example??
-%GANs turn this paradigm on its head.
 
 % GAN uses D and G, but then D usually thrown away
 % Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
@@ -201,7 +179,7 @@ A few other works combine GANs and MCMC in some way.
 The difference is summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the samples from a GAN\@.
 \citet{Kempinska2017} is similar to~\citet{Song2017} but improves proposals in particle filters rather than MCMC\@.
 
-% TODO is this important
+% TODO is this important??
 %The GAN approach to density estimation is complementary to the lesser known technique of \emph{density ratio estimation}~\citep{Sugiyama2012}.
 %Here, the generator $G$ is typically fixed, or simple, and the density of the data is determined entirely by combining Bayes' rule and the learned classifier $D$.
 %In GANs, the key to success is learning $G$ well; while in density ratio estimation the key to success is learning $D$ well.
@@ -237,6 +215,7 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ using a near
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
+% TODO say proposal
 If we assume that $D$ is an optimal discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:define PD}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$:
 \begin{align}
   \PD/\PG = (D^{-1}-1)^{-1} \implies
@@ -265,24 +244,11 @@ In most MCMC applications it is not possible to get an initial sample from the t
 However, in MGANs, we are sampling from the \emph{data} distribution.
 Therefore, by initializing the chain at a sample of real data, we initialize it from the correct distribution and avoid burn-in.
 
-% This paragraph is kind of redundant, but we can lift some elements
-%The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
-%In this process we can initialize $\vec x_0$ with a random draw of real data (ideally held out)\@.
-%Now, marginally $\vec x_0 \sample \PR$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k \sample \PR$ exactly as well, even if $\PG \neq \PR$.
-%However, if the generator $G$ is too poor we will never receive a proposal sample $\vec x'$ good enough to accept and replace the real data sample $\vec x_0$ with a generated one.
-%Another interesting note is that we do not actually need to store real data samples for this initialization procedure.
-%Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample \PR$.
-%This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necessarily exceed as per~\eqref{eq:alpha from D}, to be accepted.
-
 % note how requirement not that strong with calib and manifold
 The assumption that $D$ is perfect can be weakened for two reasons:
 1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
 2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from the generator $\PG$ and the real data $\PR$.
 This is almost equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
-
-% Maybe discuss using side discriminator, but only is adds anything
-
-% Maybe Importance sampling also an option to include
 
 \section{Results}
 \label{sec:Results}
