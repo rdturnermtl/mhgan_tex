@@ -280,7 +280,6 @@ This is almost equivalent to saying that the discriminator must rank samples fro
     }}
 \end{figure}
 
-% TODO shouldn't we remove non-calib for WGAN since it makes no sense?
 \begin{table}[htbp]
 \centering
     \caption{{\small
@@ -295,14 +294,16 @@ This is almost equivalent to saying that the discriminator must rank samples fro
 \toprule
 ~                 & \multicolumn{4}{c}{DCGAN}                               & \multicolumn{4}{c}{WGAN} \\
 \toprule
-~                 & CIFAR-10         &      p   & CelebA         &      p   & CIFAR-10        &      p   & CelebA        &      p \\
+~                 & CIFAR-10         &      p   & CelebA         &      p   & CIFAR-10        &      p   & CelebA        &       p  \\
 \midrule
-MGAN              &        3.637(97) &  <0.0001 &      2.374(79) &  0.8584  &       2.674(61) &  <0.0001 &     2.674(61) &  <0.0001 \\
+MGAN              &        3.637(97) &  <0.0001 &      2.374(79) &  0.8584  &              -- &       -- &            -- &      --  \\
 MGAN (cal.)       &        3.753(99) &  <0.0001 &      2.58(22)  &  0.0587  &       2.774(64) &  <0.0001 &     2.774(64) &  <0.0001 \\
 GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &       2.5165(0) &       -- &     2.5165(0) &       -- \\
 \bottomrule
 \end{tabular}
 }
+% Removed uncalibrated for WGAN since it makes no sense:
+% 2.674(61) &  <0.0001 &     2.674(61) &  <0.0001
 \end{table}
 
 For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
@@ -333,15 +334,14 @@ We can see that MCMC shifts the distribution of the fakes to match the distribut
 The $Z$ statistic for the raw discriminiator varies from $-77.57$ to $48.98$ over the first 60 epochs; even after Bonferroni correction at $K=60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
 The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is must closer to calibrated, and therefore unsurprising it boosts performance in the MGAN\@.
 
-\section{Discussion and Conclusions}
-\label{sec:Conclusions}
-
+\paragraph{Conclusions}
 % usual wrap up BS paragraph
 We have shown how to incorporate the knowledge in the discriminator $D$ into an improved generator $G'$.
-Our method is based on the premise that $D$ is essentially ``ahead'' of the $G$.
-The principled MCMC setup stochastically selects among samples from $G$ to correct biases in the $G$.
-We have shown the raw discriminators in GANs are poorly calibrated.
-To our knowledge, this is the first time research has evaluated the discriminator in this way.
+Our method is based on the premise that $D$ is ``ahead'' of $G$.
+The principled MCMC setup selects among samples from $G$ to correct biases in $G$.
+%We have shown the raw discriminators in GANs are poorly calibrated.
+%To our knowledge, this is the first time research has evaluated the discriminator in this way.
+This is the first work to rigorously show the poor calibration of the discriminator.
 The MGAN has great potential for extension.  % as it performs the final coordinate descent move to optimize $G$ assuming $D$ is near perfect.
 
 \bibliographystyle{abbrvnat}
