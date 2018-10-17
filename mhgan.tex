@@ -134,13 +134,13 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
     \centering
     \begin{subfigure}[t]{2.25in}
        \centering
-       \includegraphics[scale=0.85]{figures/coord_descent.pdf}
+       \includegraphics[scale=0.925]{figures/coord_descent.pdf}
        \caption{GAN objective}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{3in}
        \centering
-       \includegraphics[scale=0.85]{figures/block_diag.pdf}
+       \includegraphics[scale=0.925]{figures/block_diag.pdf}
        \caption{$G'$ wraps $G$}
     \end{subfigure}
     \caption{{\small
@@ -179,11 +179,11 @@ A few other works combine GANs and MCMC in some way.
 The difference is summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the samples from a GAN\@.
 \citet{Kempinska2017} is similar to~\citet{Song2017} but improves proposals in particle filters rather than MCMC\@.
 
-% TODO is this important??
-%The GAN approach to density estimation is complementary to the lesser known technique of \emph{density ratio estimation}~\citep{Sugiyama2012}.
-%Here, the generator $G$ is typically fixed, or simple, and the density of the data is determined entirely by combining Bayes' rule and the learned classifier $D$.
-%In GANs, the key to success is learning $G$ well; while in density ratio estimation the key to success is learning $D$ well.
-%The MGAN, in effect, combines elements of both approaches to construct the wrapped GAN $G'$.
+% TODO is this important enough to take space??
+%The GAN approach to density estimation is complementary to the lesser known \@.
+In \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE) the generator $G$ is fixed and the density is found by combining Bayes' rule and the learned classifier $D$.
+In GANs, the key is learning $G$ well; while in DRE the key is learning $D$ well.
+The MGAN has flavors of both in that it used both $G$ and $D$ in $G'$.
 
 \section{Background and Notation}
 \label{sec:Background}
@@ -227,7 +227,7 @@ This is computable using only the discriminator $D$ and no densities.
 A key element is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but be on the right scale.
 %Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
 We can test the calibration of $D$ using the statistic of~\citet{Dawid1997} on \emph{held out} samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
-If $D$ is well calibrated: % $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$
+If $D$ is well calibrated, % $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$
 \begin{align}
   Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,. \label{eq:calib score}
 \end{align}
@@ -246,9 +246,6 @@ The assumption that $D$ is perfect can be weakened for two reasons:
 1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
 2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from the generator $\PG$ and the real data $\PR$.
 This is almost equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
-
-\section{Results}
-\label{sec:Results}
 
 \begin{figure}
     \centering
@@ -279,7 +276,6 @@ This is almost equivalent to saying that the discriminator must rank samples fro
     When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
     }}
 \end{figure}
-
 \begin{table}[htbp]
 \centering
     \caption{{\small
@@ -302,9 +298,13 @@ GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &   
 \bottomrule
 \end{tabular}
 }
+\end{table}
+
 % Removed uncalibrated for WGAN since it makes no sense:
 % 2.674(61) &  <0.0001 &     2.674(61) &  <0.0001
-\end{table}
+
+\section{Results}
+\label{sec:Results}
 
 For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
 We consider the traditional DCGAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
