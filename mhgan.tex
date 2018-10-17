@@ -134,21 +134,20 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
     \centering
     \begin{subfigure}[t]{2.25in}
        \centering
-       \includegraphics[scale=0.925]{figures/coord_descent.pdf}
+       \includegraphics[scale=1.0]{figures/coord_descent.pdf}
        \caption{GAN objective}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{3in}
        \centering
-       \includegraphics[scale=0.925]{figures/block_diag.pdf}
+       \includegraphics[scale=1.0]{figures/block_diag.pdf}
        \caption{$G'$ wraps $G$}
     \end{subfigure}
     \caption{{\small
     On the left we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
-    The final value for the generator and discriminator are denoted $G^\star$ and $D^\star$, respectively.
-    If traditional GAN training produces a perfect $D^\star$ for an imperfect $G^\star$, the MGAN wraps $G^\star$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
-    On the right we illustrate how the MGAN is essentially a selector among multiple draws from $G^\star$.
-    In the MGAN, the selector is built using a Metropolis-Hastings acceptance rule (i.e., MCMC) from the discriminator scores $D^\star$.
+    If traditional GAN training produces a perfect $D$ for an imperfect $G$, the MGAN wraps $G$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
+    On the right we illustrate how the MGAN is essentially a selector among multiple draws from $G$.
+    In the MGAN, the selector is built using a Metropolis-Hastings acceptance rule (i.e., MCMC) from the discriminator scores $D$.
     }}
     \label{fig:block_diag}
 \end{figure}
