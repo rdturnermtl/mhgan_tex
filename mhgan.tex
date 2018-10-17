@@ -215,16 +215,13 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ using a near
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-% TODO say proposal
-If we assume that $D$ is an optimal discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:define PD}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$:
+If we assume that $D$ is an optimal discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:define PD}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
   \PD/\PG = (D^{-1}-1)^{-1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, (D(\vec x_k)^{-1} - 1)/(D(\vec x')^{-1} - 1)\right)\,. \label{eq:alpha from D}
 \end{align}
 If $D$ is perfect then $\PD = \PR$.
 This is computable using only the discriminator $D$ and no densities.
-
-% TODO report some Z numbers
 
 \paragraph{Calibration}
 A key element is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but be on the right scale.
@@ -319,7 +316,6 @@ We see a consistent and statistically significant boost in inception score from 
 The actual gap of improvement made by MGAN oscillates from one epoch to the next.
 This makes sense as we rely on $D$ being ``ahead'' in some sense.
 Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
-
 In Figure~\ref{fig:incep_by_iter} we also plot the inception score per epoch after $K=640$ MCMC iterations.
 We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue to $k=400$.
 
@@ -334,6 +330,8 @@ Boosts are seen using MGAN from the raw scores, but further improvements are mad
 %   both on synth and real
 In Figure~\ref{fig:score_dist_overlap} we visualize what $G'$ does to the distriubtion on disciminator scores $D$.
 We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
+The $Z$ statistic for the raw discriminiator varies from $-77.57$ to $48.98$ over the first 60 epochs; even after Bonferroni correction at $K=60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
+The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is must closer to calibrated, and therefore unsurprising it boosts performance in the MGAN\@.
 
 \section{Discussion and Conclusions}
 \label{sec:Conclusions}
