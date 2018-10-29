@@ -144,9 +144,9 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
        \caption{$G'$ wraps $G$}
     \end{subfigure}
     \caption{{\small
-    On the left we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
+    On the left, we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
     If traditional GAN training produces a perfect $D$ for an imperfect $G$, the MGAN wraps $G$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
-    On the right we illustrate how the MGAN is essentially a selector from multiple draws of $G$.
+    On the right, we illustrate how the MGAN is essentially a selector from multiple draws of $G$.
     In the MGAN, the selector is built using a Metropolis-Hastings (MH) acceptance rule (i.e., MCMC) from the discriminator scores $D$.
     }}
     \label{fig:block_diag}
@@ -272,7 +272,7 @@ This is almost equivalent to saying that the discriminator must rank samples fro
     MGAN denotes using the raw discriminator scores and ``MGAN (cal)'' for the calibrated scores.
     The error bars on MGAN performance (in gray) are computed using a t-test on the variation per batch across 80 splits of the inception score.
     In the center we show the inception score as a function of the number of MCMC iterations $K$ for the GAN at epoch 15.
-    On the right we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
+    On the right, we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
     When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
     }}
 \end{figure}
@@ -290,11 +290,11 @@ This is almost equivalent to saying that the discriminator must rank samples fro
 \toprule
 ~                 & \multicolumn{4}{c}{DCGAN}                               & \multicolumn{4}{c}{WGAN} \\
 \toprule
-~                 & CIFAR-10         &      p   & CelebA         &      p   & CIFAR-10        &      p   & CelebA        &       p  \\
+~                 & CIFAR-10         &      p   & CelebA         &      p   & CIFAR-10        &       p   & CelebA        &       p  \\
 \midrule
-MGAN              &        3.637(97) &  <0.0001 &      2.374(79) &  0.8584  &              ~  &       ~  &            ~  &      ~   \\
-MGAN (cal)       &        3.753(99) &  <0.0001 &      2.58(22)  &  0.0587  &       2.774(64)  &  <0.0001 &     2.774(64) &  <0.0001 \\
-GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &       2.5165(0) &       -- &     2.5165(0) &       -- \\
+MGAN              &        3.637(97) &  <0.0001 &      2.374(79) &  0.8584  &              ~  &        ~  &            ~  &      ~   \\
+MGAN (cal)        &        3.753(99) &  <0.0001 &      2.58(22)  &  0.0587  &       2.774(64)  &  <0.0001 &     2.774(64) &  <0.0001 \\
+GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &       2.5165(0) &        -- &     2.5165(0) &       -- \\
 \bottomrule
 \end{tabular}
 }
@@ -317,7 +317,7 @@ We see a consistent and statistically significant boost in inception score from 
 The actual gap of improvement made by MGAN oscillates from one epoch to the next.
 This makes sense as we rely on $D$ being ``ahead'' in some sense.
 Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
-In Figure~\ref{fig:incep_by_iter} we also plot the inception score per epoch after $K=640$ MCMC iterations.
+In Figure~\ref{fig:incep_by_iter}, we also plot the inception score per epoch after $K=640$ MCMC iterations.
 We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue to $k=400$.
 
 We summarize the performance across all base GANs and data sets in Table~\ref{tbl:inception}.
@@ -329,7 +329,7 @@ Boosts are seen using MGAN from the raw scores, but further improvements are mad
 
 % Look at distn on D to make look more like real
 %   both on synth and real
-In Figure~\ref{fig:score_dist_overlap} we visualize what $G'$ does to the distribution on discriminator scores $D$.
+In Figure~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores $D$.
 We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
 The $Z$ statistic for the raw discriminator varies from $-77.57$ to $48.98$ over the first 60 epochs; even after Bonferroni correction at $K=60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
 The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is must closer to calibrated, and therefore unsurprising it boosts performance in the MGAN\@.
