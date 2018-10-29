@@ -121,7 +121,7 @@
 % Do at end
 % Might not be needed for workshop since 3 page limit anyway
 \begin{abstract}
-We introduce the Metropolitan Generative Adversarial Network (MGAN), which combines aspect of Markov chain Monte Carlo and GANs.
+We introduce the Metropolitan generative adversarial network (MGAN), which combines aspect of Markov chain Monte Carlo and GANs.
 The MGAN samples from the distribution implicitly defined by the generator in a GAN\@.
 As such it uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
 With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly.
@@ -160,11 +160,9 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
        \caption{$G'$ wraps $G$}
     \end{subfigure}
     \caption{{\small
-    On the left, we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
-    The final value for the generator and discriminator are denoted $G^\star$ and $D^\star$, respectively.
-    If traditional GAN training produces a perfect $D^\star$ for an imperfect $G^\star$, the MGAN wraps $G^\star$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
-    On the right, we illustrate how the MGAN is essentially a selector among multiple draws from $G^\star$.
-    In the MGAN, the selector is built using a Metropolis-Hastings acceptance rule (i.e., MCMC) from the discriminator scores $D^\star$.
+    If traditional GAN training produces a perfect $D$ for an imperfect $G$, the MGAN wraps $G$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
+    On the right, we illustrate how the MGAN is essentially a selector from multiple draws of $G$.
+    In the MGAN, the selector is built using a Metropolis-Hastings (MH) acceptance rule (i.e., MCMC) from the discriminator scores $D$.
     }}
     \label{fig:block_diag}
 \end{figure}
