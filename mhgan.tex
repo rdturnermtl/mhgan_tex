@@ -142,7 +142,8 @@ GANs turn this paradigm on its head.
 % Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
 Typically, in this setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
-In this work we propose the Metropolitan GAN (MGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
+% editor prefers "(MGAN), a GAN that" but that will cost us a line
+In this work, we propose the Metropolitan GAN (MGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
 This principle is illustrated in Figure~\ref{fig:block_diag}.
 
 \begin{figure}[bhtp]
@@ -159,10 +160,10 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
        \caption{$G'$ wraps $G$}
     \end{subfigure}
     \caption{{\small
-    On the left we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
+    On the left, we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
     The final value for the generator and discriminator are denoted $G^\star$ and $D^\star$, respectively.
     If traditional GAN training produces a perfect $D^\star$ for an imperfect $G^\star$, the MGAN wraps $G^\star$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
-    On the right we illustrate how the MGAN is essentially a selector among multiple draws from $G^\star$.
+    On the right, we illustrate how the MGAN is essentially a selector among multiple draws from $G^\star$.
     In the MGAN, the selector is built using a Metropolis-Hastings acceptance rule (i.e., MCMC) from the discriminator scores $D^\star$.
     }}
     \label{fig:block_diag}
@@ -204,7 +205,7 @@ Sections~\ref{sec:Discussion} and~\ref{sec:Conclusions} discuss implications and
 \label{sec:Background}
 
 % Short page limit so let's just get on same page with notation here.
-In this section we quickly review the notation and equations with MCMC and GANs.
+In this section, we quickly review the notation and equations with MCMC and GANs.
 
 \subsection{MCMC Methods}
 \label{sec:MCMC Methods}
@@ -265,20 +266,20 @@ We also derive a simple deterministic approximation to MCMC that is very accurat
 % Need to be clear on diff with NICE-MCMC
 There have been a few other works that in some way combine GAN training and MCMC methods.
 The work of~\citet{Song2017} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
-They use a RealNVP network~\citep{Dinh2016} as t he proposal since invertibility is important for computation of the acceptance probability $\accept$.
+They use a RealNVP network~\citep{Dinh2016} as the proposal since invertibility is important for computation of the acceptance probability $\accept$.
 The difference with this work is best summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the samples from a GAN\@.
 A similar approach to~\citet{Song2017} was taken in~\citet{Kempinska2017}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
 
 The GAN approach to density estimation is complementary to the lesser known technique of \emph{density ratio estimation}~\citep{Sugiyama2012}.
-Here, the generator $G$ is typically fixed, or simple, and the density of the data is determined entirely by combining Bayes' rule and the learned classifier $D$.
-In GANs, the key to success is learning $G$ well; while in density ratio estimation the key to success is learning $D$ well.
+Here, the generator $G$ is typically fixed or simple; and the density of the data is determined entirely by combining Bayes' rule and the learned classifier $D$.
+In GANs, the key to success is learning $G$ well; while in density ratio estimation, the key to success is learning $D$ well.
 The MGAN, in effect, combines elements of both approaches to construct the wrapped GAN $G'$.
 
 \section{Methods}
 \label{sec:Methods}
 
 % Derive basic trick for MCMC using D
-In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
+In this section, we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
 If we assume that $D$ is an optimal discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$, then:
 \begin{align}
   D = \frac{\PD}{\PD + \PG} \implies \frac{\PD}{\PG} = \frac{1}{D^{-1}-1}\,, \label{eq:PD def}
@@ -350,10 +351,10 @@ However, the potential discrepancy is observable by monitoring the portion of ch
 % Cherry picking approximation
 \paragraph{Deterministic approximation}
 It is also possible to replace the Markov chain with a deterministic approximation that is more parallelizable.
-In Figure~\ref{fig:alpha} we show the acceptance probabilities for different discriminator scores of the current state $D(\vec x_k)$ and the proposal $D(\vec x')$.
+In Figure~\ref{fig:alpha}, we show the acceptance probabilities for different discriminator scores of the current state $D(\vec x_k)$ and the proposal $D(\vec x')$.
 The qualitative behavior of the curves are easily summarized.
 In all curves, if $D(\vec x') \geq D(\vec x_k)$ then $\vec x'$ is always accepted.
-As $D(\vec x_k) \rightarrow 0$ the region where $D(\vec x') < D(\vec x_k)$ becomes a linear ramp; and as $D(\vec x_k) \rightarrow 1$ it becomes a step function.
+As $D(\vec x_k) \rightarrow 0$ the region where $D(\vec x') < D(\vec x_k)$ becomes a linear ramp; and as $D(\vec x_k) \rightarrow 1$, it becomes a step function.
 If $\PG$ and $\PR$ are well separated (which is believed to often be the case in GANs~\citep{Arjovsky2017}), and $D$ is near perfect, then $D(\vec x_0) \approx 1$: The acceptance probability becomes a step function if $\vec x_0 \sample \PR$.
 Therefore, $D(\vec x_k)$ will stay near one and the acceptance function will be step function like.
 In this scenario, we can approximate, $\accept(\vec x', \vec x_k) \approx \I\{D(\vec x') > D(\vec x_k)\}$, and therefore $G'$ takes the sample in the chain with the maximum score $D$.
@@ -396,10 +397,10 @@ The other advantage of this approximation is that it is invariant to monotonic t
 
 %\subsection{Real Data}
 
-For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
+For real data experiments, we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
 We consider the traditional DCGAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
 We first examine the performance of the discriminator on held out data with and without calibration for DCGAN\@.
-For WGAN we can only use the calibrated discriminator as it does not output a probability.
+For WGAN, we can only use the calibrated discriminator as it does not output a probability.
 % Look at losses for discriminator
 %    maybe rescale all loses to 0-1 scale for plotting
 We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
@@ -421,7 +422,7 @@ These results confirm our expectation that the raw discriminators do not output 
     \end{subfigure}
     \caption{{\small
     The distribution on discriminator scores at different training epochs for DCGAN on CIFAR-10 data set with $K=640$.
-    On the right we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
+    On the right, we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
     At epoch 14, on the left, the distributions are far apart even in logit scale.
     When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
     The deterministic approximation also fixes the distribution, but results in too much mass near the mode.
@@ -440,7 +441,7 @@ The actual gap of improvement made by MGAN oscillates from one epoch to the next
 This makes sense as we rely on $D$ being ``ahead'' in some sense.
 Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
 
-In Figure~\ref{fig:incep_by_iter} we also plot the inception score per epoch after $K=640$ MCMC iterations.
+In Figure~\ref{fig:incep_by_iter}, we also plot the inception score per epoch after $K=640$ MCMC iterations.
 We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue up to iteration $k=400$.
 
 % TODO shouldn't we remove non-calib for WGAN since it makes no sense?
@@ -472,7 +473,7 @@ D-MGAN            &        3.706(86) &  <0.0001 &      2.59(18)  &  0.0218  &   
 We summarize the performance across all base GANs and data sets in Table~\ref{tbl:inception}.
 The DCGAN and WGAN are shown at epoch 60.
 There was not a substantial difference between different calibration methods, but we found a slight advantage for isotonic regression with the DCGAN and logistic regression for the WGAN\@.
-In all cases we ran the MCMC procedure $K=640$ iterations as in Figure~\ref{fig:incep_by_iter}.
+In all cases, we ran the MCMC procedure $K=640$ iterations as in Figure~\ref{fig:incep_by_iter}.
 We see the same qualitative behavior as in Figure~\ref{fig:incep_by_epoch} with the MGAN correction providing a significant boost in inception score.
 Boosts are seen using MGAN from the raw scores, but further improvements are made using the calibrated scores.
 
@@ -498,7 +499,7 @@ In this case, our deterministic approximation focuses too much on the mode as a 
        \label{fig:discriminator_perf}
     \end{subfigure}
     \caption{{\small
-    On the left we show the calibration statistic $Z$ for the discriminator for the DCGAN on CIFAR-10.
+    On the left, we show the calibration statistic $Z$ for the discriminator for the DCGAN on CIFAR-10.
     The raw discriminator is clearly miscalibrated.
     All the calibration methods give roughly equivalent results.
     The left shows the predictive performance of the discriminator.
@@ -509,7 +510,7 @@ In this case, our deterministic approximation focuses too much on the mode as a 
     \label{fig:calibration}
 \end{figure}
 
-In Figure~\ref{fig:calibration} we show how calibration of the discriminator is necessary based on its raw performance.
+In Figure~\ref{fig:calibration}, we show how calibration of the discriminator is necessary based on its raw performance.
 Therefore, it is not surprising that it improves performance when used for the MGAN\@.
 
 % Qualitative examples
@@ -535,7 +536,7 @@ However, applications where there is non-negligible overlap between $\PG$ and $\
 % Generally interesting notes on calibration and side disc
 %   And that D is always so good
 Along these lines, we have shown the raw discriminators in GANs are poorly calibrated.
-This is not a large surprise, but to our knowledge is the first time research has evaluated the discriminator in this way.
+This is not a big surprise, but to our knowledge is the first time research has evaluated the discriminator in this way.
 
 % Might need to consider stopping rule
 A direction for possible future extensions to this work include finding appropriate stopping rules for the MCMC chain that introduce minimal bias.
