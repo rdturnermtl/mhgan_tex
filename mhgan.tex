@@ -34,7 +34,7 @@
 
 \usepackage[numbers]{natbib}
 
-\title{Metropolitan Generative Adversarial Networks}
+\title{Metropolis Generative Adversarial Networks}
 
 % The \author macro works with any number of authors. There are two
 % commands used to separate the names and addresses of multiple
@@ -108,7 +108,7 @@
 % Might not be needed for workshop since 3 page limit anyway
 % CROP
 %\begin{abstract}
-%We introduce the Metropolitan Generative Adversarial Network (MGAN), which combines aspect of Markov chain Monte Carlo and GANs.
+%We introduce the Metropolis Generative Adversarial Network (MGAN), which combines aspect of Markov chain Monte Carlo and GANs.
 %The MGAN samples from the distribution implicitly defined by the generator in a GAN\@.
 %As such it uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
 %With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly.
@@ -127,7 +127,7 @@ Traditionally, density estimation has been done with a model that can compute th
 % Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
 Typically, in this setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
-In this work we propose the Metropolitan GAN (MGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
+In this work we propose the Metropolis GAN (MGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
 This principle is illustrated in Figure~\ref{fig:block_diag}.
 
 \begin{figure}[bhtp]
@@ -177,6 +177,7 @@ A few other works combine GANs and MCMC in some way.
 \citet{Song2017} uses a GAN-like procedure to train a RealNVP~\citep{Dinh2016} MCMC proposal for sampling an externally provided target \smash{$\target$}.
 The difference is summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the samples from a GAN\@.
 \citet{Kempinska2017} is similar to~\citet{Song2017} but improves proposals in particle filters rather than MCMC\@.
+The setup of~\citet{Song2017} was recently generalized by~\citet{Neklyudov2018}.
 
 % TODO is this important enough to take space??
 %The GAN approach to density estimation is complementary to the lesser known \@.
@@ -188,8 +189,8 @@ Recently,~\citet{Azadi2018} considered using discriminator rejection sampling (D
 This approach is problematic in that one must find an upper-bound on $D$ over all possible samples.
 This is not possible, so it must be guessed by drawing many pilot samples.
 MCMC was invented as a replacement for rejection sampling when such normalization factors cannot be computed.
-Such an approach also leads to a very low acceptance probability, which leads~\citet{Azadi2018} to use a hack that shifts the logit scores by an arbitrary $\gamma$ factor, violating the motivating rejection sampling setup.
-Such a hack is not needed in the MCMC approach partially because we use a calibrator on the discriminator to get more accurate probabilities for computing acceptance probabilities.
+Such an approach also leads to a very low acceptance probability, which leads~\citet{Azadi2018} to use a hack that shifts the logit $D$ scores by an arbitrary $\gamma$ factor, violating the motivating rejection sampling setup's validity.
+Such a hack is not needed in the MCMC approach partially because we use a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
 
 \section{Background and Notation}
 \label{sec:Background}
@@ -281,7 +282,7 @@ This is almost equivalent to saying that the discriminator must rank samples fro
     In the center we show the inception score as a function of the number of MCMC iterations $K$ for the GAN at epoch 15.
     On the right, we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
     When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
-    DRS fails to fully shift the distribution because 1)~it does not use calibration and 2)~its $\gamma$ shift violates the validity of rejection sampling.
+    DRS fails to fully shift the distribution because 1)~it does not use calibration and 2)~its ``$\gamma$ shift'' setup violates the validity of rejection sampling.
     }}
 \end{figure}
 
