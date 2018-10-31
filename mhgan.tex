@@ -184,6 +184,13 @@ In \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE) the generator $G$ 
 In GANs, the key is learning $G$ well; while in DRE the key is learning $D$ well.
 The MGAN has flavors of both in that it uses both $G$ and $D$ in $G'$.
 
+Recently,~\citet{Azadi2018} considered using discriminator rejection sampling (DRS) to fine tune GANs similar to how we use MCMC\@.
+This approach is problematic in that one must find an upper-bound on $D$ over all possible samples.
+This is not possible, so it must be guessed by drawing many pilot samples.
+MCMC was invented as a replacement for rejection sampling when such normalization factors cannot be computed.
+Such an approach also leads to a very low acceptance probability, which leads~\citet{Azadi2018} to use a hack that shifts the logit scores by an arbitrary $\gamma$ factor, violating the motivating rejection sampling setup.
+Such a hack is not needed in the MCMC approach partially because we use a calibrator on the discriminator to get more accurate probabilities for computing acceptance probabilities.
+
 \section{Background and Notation}
 \label{sec:Background}
 
@@ -274,6 +281,7 @@ This is almost equivalent to saying that the discriminator must rank samples fro
     In the center we show the inception score as a function of the number of MCMC iterations $K$ for the GAN at epoch 15.
     On the right, we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
     When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
+    DRS fails to fully shift the distribution because 1)~it does not use calibration and 2)~its $\gamma$ shift violates the validity of rejection sampling.
     }}
 \end{figure}
 
