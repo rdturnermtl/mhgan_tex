@@ -192,27 +192,27 @@ Such a heuristic is not needed in the MCMC approach partially because we use a \
 \section{Background and Notation}
 \label{sec:Background}
 
-\paragraph{MCMC}
-MCMC methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ marginally from a target distribution $\vec x \sample \target$.
+\textbf{MCMC} methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ marginally from a target distribution $\vec x \sample \target$.
 We refer to the initial MCMC distribution as $\vec x_0 \sample \pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
 The proposal $\vec x' \in \setx$ is accepted with probability
 \begin{align}
   \accept(\vec x', \vec x_k) = \min\left(1, (\target(\vec x')\prop(\vec x_k))/(\target(\vec x_k)\prop(\vec x'))\right) \in [0,1]\,. \label{eq:alpha def}
 \end{align}
-If $\vec x'$ is accepted then $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
-We use independent chain for each sample from $G'$.
+If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
+We use an independent chain for each sample from $G'$.
 Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of $G'$.
 
-\paragraph{GANs}
-GANs implicitly model the data $\vec x$ via a synthetic data generator $G \in \R^L \rightarrow \setx$: $\vec x = G(\vec z)$, $\vec z \sample \norm(\vec 0, \vec I)$.
+\textbf{GANs} implicitly model the data $\vec x$ via a synthetic data generator $G \in \R^L \rightarrow \setx$: $\vec x = G(\vec z)$, $\vec z \sample \norm(\vec 0, \vec I)$.
 This implies a (intractable) distribution on the data $\vec x \sample \PG$.
 We refer to the unknown true distribution on the data $\vec x$ as $\PR$.
 The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real.
-GAN training forms a game between $D$ and $G$.
-If $D$ converges for a fixed $G$ then $D = \PR/(\PR + \PG)$, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
-
-In practice, $D$ is often ``ahead'', closer to optimal (\smash{$\PR/(\PR + \PG)$}), than $G$ ($\PR$)~\citep{Shibuya2017}.
-This motivates wrapping an imperfect $G$ to obtain an improved $G'$ using a near perfect $D$.
+%GAN training forms a game between $D$ and $G$.
+If $D$ converges optimally for a fixed $G$, then $D = \PR/(\PR + \PG)$, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
+%
+%In practice $D$ is often ``ahead'': closer to optimal (\smash{$\PR/(\PR + \PG)$}), than $G$ ($\PR$)~\citep{Shibuya2017}.
+%This motivates wrapping an imperfect $G$ to obtain an improved $G'$ using a near perfect $D$.
+In practice $D$ is often ``ahead'' of $G$
+\citep{Shibuya2017}, which motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using a more advanced $D$.
 
 \section{Methods}
 \label{sec:Methods}
@@ -225,7 +225,8 @@ If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and 
   \accept(\vec x', \vec x_k) = \min\left(1, (D(\vec x_k)^{-1} - 1)/(D(\vec x')^{-1} - 1)\right)\,. \label{eq:alpha from D}
 \end{align}
 If $D$ is perfect then $\PD = \PR$.
-This is computable using only the discriminator $D$ and no densities.
+%This is computable using only the discriminator $D$ and no densities.
+Note we do not need probabilities from $D$, but only probability ratios.
 
 \paragraph{Calibration}
 A key element is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but be on the right scale.
