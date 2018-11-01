@@ -98,7 +98,6 @@
 % search for: can overuse, It is ...
 
 % TODO add lemma
-% TODO MGAN -> MH-GAN in figures
 
 \begin{document}
 % \nipsfinalcopy is no longer used
@@ -166,10 +165,8 @@ If GAN training reaches its global equilibrium then this discriminator distribut
 % However, MCMC only needs the ratio of \PR/G and this can be found from D
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
 A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
-% TODO: these next three sentences sound strange strung together. "Standard MCMC implementations cannot achieve.... however, MCMC can be performed..." Well, which is it? It sounds contradictory. Clarify.
-Standard MCMC implementations cannot achieve this because MCMC requires (unnormalized) densities for the target $\PD$ and the proposal $\PG$.
-Neither of these quantities are available in GANs.
-However, MCMC can be performed using only the ratio $\PD / \PG$, a quantity available directly from the discriminator $D$.
+Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
+However, our MCMC requires only the ratio $\PD / \PG$, which is available via the discriminator $D$.
 
 \paragraph{Related Work}
 % Need to be clear on diff with NICE-MCMC
@@ -302,8 +299,8 @@ This is almost equivalent to saying that the discriminator must rank samples fro
 \toprule
 ~                 & CIFAR-10         &      p   & CelebA         &      p   & CIFAR-10        &       p   & CelebA        &       p  \\
 \midrule
-MH-GAN              &        3.637(97) &  <0.0001 &      2.374(79) &  0.8584  &              ~  &        ~  &            ~  &      ~   \\
-MH-GAN (cal)        &        3.753(99) &  <0.0001 &      2.58(22)  &  0.0587  &       2.774(64)  &  <0.0001 &     2.774(64) &  <0.0001 \\
+MH-GAN            &        3.637(97) &  <0.0001 &      2.374(79) &  0.8584  &              ~  &        ~  &            ~  &      ~   \\
+MH-GAN (cal)      &        3.753(99) &  <0.0001 &      2.58(22)  &  0.0587  &       2.774(64) &   <0.0001 &     2.774(64) &  <0.0001 \\
 GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &       2.5165(0) &        -- &     2.5165(0) &       -- \\
 \bottomrule
 \end{tabular}
@@ -325,7 +322,7 @@ WGAN does not learn a typical GAN discriminator that outputs a probability, so o
 
 To evaluate the performance of the resulting wrapper generator $G'$, we plot inception scores per epoch in Figure~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
 There is a statistically significant boost in inception score from $G'$ above $G$ with the calibrated discriminator.
-% TODO: clarify this with numbers.
+% TODO: clarify this with numbers. but no space in short version.
 The actual gap of improvement made by MH-GAN oscillates from one epoch to the next.
 This makes sense as we rely on $D$ being ``ahead'' in some sense.
 Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
