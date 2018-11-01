@@ -182,14 +182,12 @@ In \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE) the generator $G$ 
 % In GANs, the key is learning $G$ well; while in DRE the key is learning $D$ well.
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ in $G'$.
 
-A very similar concurrent work is that of \citet{Azadi2018}, who propose discriminator rejection sampling (DRS) for GANs: performing rejection sampling of outputs of $G$ by using the probabilities given by $D$.
-This approach is conceptually simpler at first, but complexities arise as it is necessary to find an upper-bound on $D$ over all possible samples. Because this is not possible, one must instead rely on estimation by drawing many pilot samples.
+A similar concurrent work is that of \citet{Azadi2018}, who propose discriminator rejection sampling (DRS) for GANs: rejection sampling of $G$ using the probabilities from $D$.
+This approach is conceptually simpler at first, but complexities arise as it is necessary to find an upper-bound on $D$ over all possible samples.
+Because this is not possible, one must instead rely on estimation by drawing many pilot samples.
 We use MCMC instead, which was invented as a replacement for rejection sampling when such normalization factors cannot be computed.
 A direct rejection sampling approach also leads to a very low accept rates, which leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores; this makes the model sample from a distribution different from $\PR$ even when $D$ is perfect.
-%$\gamma$ factor, violating the motivating rejection sampling setup's validity.
 Such a heuristic is not needed in the MCMC approach partially because we use a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
-
-
 
 \section{Background and Notation}
 \label{sec:Background}
