@@ -119,14 +119,13 @@
 
 % GANs provide implicit way to do density estimation
 % traditionally done with explicit likelihood, ancestral sampling in most models to get new synthetic data points from fit model
-Generative adversarial networks (GANs) presented a radically new way to do density estimation:
+Traditionally, density estimation is done with a model that can compute the data likelihood.
+Generative adversarial networks (GANs) \citep{Goodfellow2014} present a radically new way to do density estimation:
 they implicitly represent the density of the data via a classifier that distinguishes real from generated data.
-Traditionally, density estimation has been done with a model that can compute the data likelihood.
-
 % GAN uses D and G, but then D usually thrown away
 % Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
-Typically, in this setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
+In the typical setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
 In this work we propose the Metropolis-Hastings GAN (MHGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
 This principle is illustrated in Figure~\ref{fig:block_diag}.
 
