@@ -166,6 +166,7 @@ If GAN training reaches its global equilibrium then this discriminator distribut
 % However, MCMC only needs the ratio of \PR/G and this can be found from D
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
 A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
+% TODO: these next three sentences sound strange strung together. "Standard MCMC implementations cannot achieve.... however, MCMC can be performed..." Well, which is it? It sounds contradictory. Clarify.
 Standard MCMC implementations cannot achieve this because MCMC requires (unnormalized) densities for the target $\PD$ and the proposal $\PG$.
 Neither of these quantities are available in GANs.
 However, MCMC can be performed using only the ratio $\PD / \PG$, a quantity available directly from the discriminator $D$.
