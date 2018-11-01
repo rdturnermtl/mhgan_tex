@@ -174,15 +174,15 @@ However, MCMC can be performed using only the ratio $\PD / \PG$, a quantity avai
 \paragraph{Related Work}
 % Need to be clear on diff with NICE-MCMC
 A few other works combine GANs and MCMC in some way.
-\citet{Song2017} uses a GAN-like procedure to train a RealNVP~\citep{Dinh2016} MCMC proposal for sampling an externally provided target \smash{$\target$}.
-The difference is summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the samples from a GAN\@.
-\citet{Kempinska2017} is similar to~\citet{Song2017} but improves proposals in particle filters rather than MCMC\@.
+\citet{Song2017} use a GAN-like procedure to train a RealNVP~\citep{Dinh2016} MCMC proposal for sampling an externally provided target \smash{$\target$}.
+Briefly, while \citet{Song2017} use GANs to accelerate MCMC, we use MCMC to enhance the samples from a GAN\@.
+In similar work to \cite{Song2017}, \citet{Kempinska2017} improve proposals in particle filters rather than MCMC\@.
 The setup of~\citet{Song2017} was recently generalized by~\citet{Neklyudov2018}.
-
 % TODO is this important enough to take space??
 %The GAN approach to density estimation is complementary to the lesser known \@.
 In \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE) the generator $G$ is fixed and the density is found by combining Bayes' rule and the learned classifier $D$.
-In GANs, the key is learning $G$ well; while in DRE the key is learning $D$ well.
+% JBY: removed below line
+% In GANs, the key is learning $G$ well; while in DRE the key is learning $D$ well.
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ in $G'$.
 
 Recently,~\citet{Azadi2018} considered using discriminator rejection sampling (DRS) to fine tune GANs similar to how we use MCMC\@.
