@@ -247,6 +247,7 @@ Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the m
 In most MCMC applications it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$), which is usually in \emph{parameter space}.
 However, in MGANs, we are sampling from the \emph{data} distribution.
 Therefore, by initializing the chain at a sample of real data, we initialize it from the correct distribution and avoid burn-in.
+% TODO: talk about what happens when nothing is accepted
 
 % note how requirement not that strong with calib and manifold
 The assumption that $D$ is perfect can be weakened for two reasons:
