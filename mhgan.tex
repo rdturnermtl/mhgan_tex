@@ -315,16 +315,13 @@ GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &   
 For experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
 We consider the traditional DCGAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
 WGAN does not learn a typical GAN discriminator that outputs a probability, so calibration is required.
-% TODO: Ryan: prev sentence correct?
 
 %We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
 %These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
 
 To evaluate the performance of the resulting generator $G'$, we plot inception scores per epoch in Fig.~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
 There is a statistically significant boost in inception score from $G'$ above $G$ with the calibrated discriminator.
-% TODO: clarify this with numbers. but no space in short version.
-% TODO: just one number!
-The actual gap of improvement made by MH-GAN oscillates from one epoch to the next.
+The actual gap of improvement made by MH-GAN oscillates from one epoch to the next (varying from no significant change to \smash{$p < 10^{-4}$})\@.
 This makes sense as we rely on $D$ being ``ahead'' in some sense.
 Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
 In Fig.~\ref{fig:incep_by_iter}, we also plot the inception score per MCMC iteration.
