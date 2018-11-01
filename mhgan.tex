@@ -231,7 +231,7 @@ If $D$ is perfect then $\PD = \PR$.
 Note we do not need probabilities from $D$, but only probability ratios.
 
 \paragraph{Calibration}
-A key element is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but be on the right scale.
+A key element is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but must be on the right scale.
 %Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
 We can test the calibration of $D$ using the statistic of~\citet{Dawid1997} on \emph{held out} samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
 If $D$ is well calibrated, % $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$
@@ -244,16 +244,21 @@ To calibrate $D$, we use a held out calibration set and either logistic, isotoni
 \paragraph{Initialization}
 We can also avoid the burn-in issues that usually plague MCMC methods.
 Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
-In most MCMC applications it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$), which is usually in \emph{parameter space}.
-However, in MH-GANs, we are sampling from the \emph{data} distribution.
-Therefore, by initializing the chain at a sample of real data, we initialize it from the correct distribution and avoid burn-in.
-The sampling process is retried initializing from a generated sample if no generated sample is accepted when initializing from a real data point.
+In most MCMC applications it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$).
+%, which is usually in \emph{parameter space}.
+However, in MH-GANs, we are sampling from the \emph{data} distribution, so
+we may use a trick: just initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
+If not a single generated sample is accepted, we restart sampling to ensure the initial real sample is never output.
+
 
 % note how requirement not that strong with calib and manifold
-The assumption that $D$ is perfect can be weakened for two reasons:
-1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
-2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from the generator $\PG$ and the real data $\PR$.
+\paragraph{Perfect Discriminator}
+The assumption that $D$ is perfect may be weakened for two reasons:
+(A)~Because we recalibrate the discriminator, actual probabilities can be incorrect as long as the decision boundary between real and fake is correct.
+% TODO: Ryan, is the previous sentence correct? I'm not sure; I just tried to reword directly what I thought you were trying to say.
+(B)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from the generator $\PG$ and the real data $\PR$.
 This is almost equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
+% TODO: Ryan: reword (B). I don't get it.
 
 \begin{figure}
     \centering
