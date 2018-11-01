@@ -227,7 +227,8 @@ If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and 
   \accept(\vec x', \vec x_k) = \min\left(1, (D(\vec x_k)^{-1} - 1)/(D(\vec x')^{-1} - 1)\right)\,. \label{eq:alpha from D}
 \end{align}
 If $D$ is perfect then $\PD = \PR$.
-This is computable using only the discriminator $D$ and no densities.
+%This is computable using only the discriminator $D$ and no densities.
+Note we do not need probabilities from $D$, but only probability ratios.
 
 \paragraph{Calibration}
 A key element is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but be on the right scale.
