@@ -92,15 +92,13 @@
 
 \newcommand{\setx}{\set{X}}
 
-% Finish clean up checks:
-% TODO use smash where needed
-% TODO \! arrow where needed
-% TODO can search, it is
+% Typical finish clean up checks:
+% use smash where needed
+% \! arrow where needed
+% search for: can overuse, It is ...
 
 % TODO add lemma
 % TODO MGAN -> MHGAN in figures
-
-% if D converges ...
 
 \begin{document}
 % \nipsfinalcopy is no longer used
@@ -109,9 +107,8 @@
 
 % Do at end
 % Might not be needed for workshop since 3 page limit anyway
-% CROP
 %\begin{abstract}
-%We introduce the Metropolis Generative Adversarial Network (MHGAN), which combines aspect of Markov chain Monte Carlo and GANs.
+%We introduce the Metropolis-Hastings Generative Adversarial Network (MHGAN), which combines aspect of Markov chain Monte Carlo and GANs.
 %The MHGAN samples from the distribution implicitly defined by the generator in a GAN\@.
 %As such it uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
 %With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly.
@@ -225,7 +222,7 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ using a near
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-If we assume that $D$ is an optimal discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:define PD}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
+If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:define PD}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
   \PD/\PG = (D^{-1}-1)^{-1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, (D(\vec x_k)^{-1} - 1)/(D(\vec x')^{-1} - 1)\right)\,. \label{eq:alpha from D}
@@ -250,6 +247,7 @@ Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the m
 In most MCMC applications it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$), which is usually in \emph{parameter space}.
 However, in MHGANs, we are sampling from the \emph{data} distribution.
 Therefore, by initializing the chain at a sample of real data, we initialize it from the correct distribution and avoid burn-in.
+The sampling process is retried initializing from a generated sample if no generated sample is accepted when initializing from a real data point.
 
 % note how requirement not that strong with calib and manifold
 The assumption that $D$ is perfect can be weakened for two reasons:
@@ -324,13 +322,13 @@ For WGAN we can only use the calibrated discriminator as it does not output a pr
 %We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
 %These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
 
-To evaluate the performance of the resulting wrapper generator $G'$, we plot inception scores per epoch in Figure~\ref{fig:incep_by_epoch}.
-We see a consistent and statistically significant boost in inception score from $G'$ above $G$ with the calibrated discriminator.
+To evaluate the performance of the resulting wrapper generator $G'$, we plot inception scores per epoch in Figure~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
+There is a statistically significant boost in inception score from $G'$ above $G$ with the calibrated discriminator.
 The actual gap of improvement made by MHGAN oscillates from one epoch to the next.
 This makes sense as we rely on $D$ being ``ahead'' in some sense.
 Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
-In Figure~\ref{fig:incep_by_iter}, we also plot the inception score per epoch after $K=640$ MCMC iterations.
-We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue to $k=400$.
+In Figure~\ref{fig:incep_by_iter}, we also plot the inception score per MCMC iteration.
+Most of the gains are made in the first $k=100$ iterations, but smaller gains continue to $k=400$.
 
 We summarize the performance across all base GANs and data sets in Table~\ref{tbl:inception}.
 %The DCGAN and WGAN are shown at epoch 60.
