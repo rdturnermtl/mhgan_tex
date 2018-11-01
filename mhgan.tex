@@ -87,7 +87,7 @@
 
 \newcommand{\PG}{{p_G}}
 \newcommand{\PD}{{p_D}}
-\newcommand{\PR}{{p_R}}
+\newcommand{\PR}{{p_{\textrm{data}}}}
 \newcommand{\accept}{\alpha}
 
 \newcommand{\setx}{\set{X}}
@@ -100,7 +100,6 @@
 % TODO add lemma
 % TODO MGAN -> MHGAN in figures
 
-% pD -> PDG, PR -> P_data
 % if D converges ...
 
 \begin{document}
@@ -159,11 +158,11 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
 % Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
 % Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
 The MHGAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
-This is based on the notion that the discriminator classifies between the generator $G$ and a real data distribution:
+This is based on the notion that the discriminator classifies between the generator $G$ and a data distribution:
 \begin{align}
   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,, \label{eq:define PD}
 \end{align}
-where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the real data density \emph{implied} by the discriminator $D$.
+where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
 If GAN training reaches its global equilibrium then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
 
 % We use MCMC independence sampler to get samples from \PR using multiple samples from G
@@ -319,7 +318,7 @@ GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &   
 \section{Results}
 \label{sec:Results}
 
-For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
+For experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
 We consider the traditional DCGAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
 For WGAN we can only use the calibrated discriminator as it does not output a probability.
 %We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
