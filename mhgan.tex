@@ -136,7 +136,7 @@ This principle is illustrated in Fig.~\ref{fig:block_diag}.
 The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
 This is based on the notion that the discriminator classifies between the generator $G$ and a data distribution:
 \begin{align}
-  D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,, \label{eq:define PD}
+  D(\vec x) = \PD(\vec x)/(\PD(\vec x) + \PG(\vec x))\,, \label{eq:define PD}
 \end{align}
 where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
 If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
@@ -153,13 +153,13 @@ However, the MH algorithm requires only the ratio \smash{$\PD / \PG = D(\vec x)/
     \centering
     \begin{subfigure}[t]{2.25in}
        \centering
-       \includegraphics[scale=1.0]{figures/coord_descent.pdf}
+       \includegraphics[scale=0.9]{figures/coord_descent.pdf}
        \caption{GAN objective}
     \end{subfigure}
     \hfill
     \begin{subfigure}[t]{3in}
        \centering
-       \includegraphics[scale=1.0]{figures/block_diag.pdf}
+       \includegraphics[scale=0.9]{figures/block_diag.pdf}
        \caption{$G'$ wraps $G$}
     \end{subfigure}
     \caption{{\small
@@ -178,12 +178,12 @@ A few other works combine GANs and MCMC in some way.
 Briefly, while \citet{Song2017} use GANs to accelerate MCMC, we use MCMC to enhance the samples from a GAN\@.
 In similar work to \cite{Song2017}, \citet{Kempinska2017} improve proposals in particle filters rather than MCMC\@.
 The setup of~\citet{Song2017} was recently generalized by~\citet{Neklyudov2018}.
-% TODO is this important enough to take space??
+
+% This is good but there is no space for it:
 %The GAN approach to density estimation is complementary to the lesser known \@.
-In \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE) the generator $G$ is fixed and the density is found by combining Bayes' rule and the learned classifier $D$.
-% JBY: removed below line
-% In GANs, the key is learning $G$ well; while in DRE the key is learning $D$ well.
-The MH-GAN has flavors of both in that it uses both $G$ and $D$ in $G'$.
+%In \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE) the generator $G$ is fixed and the density is found by combining Bayes' rule and the learned classifier $D$.
+%In GANs, the key is learning $G$ well; while in DRE the key is learning $D$ well.
+%The MH-GAN has flavors of both in that it uses both $G$ and $D$ in $G'$.
 
 A very similar concurrent work is that of \citet{Azadi2018}, who propose discriminator rejection sampling (DRS) for GANs: performing rejection sampling of outputs of $G$ by using the probabilities given by $D$.
 This approach is conceptually simpler at first, but suffers from two major shortcomings in practice.
@@ -196,8 +196,8 @@ We further improve the robustness of MCMC via use of a \emph{calibrator} on the 
 \section{Background and Notation}
 \label{sec:Background}
 
-\textbf{MCMC} methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ such that, in the limit, the samples come marginally from a target distribution $\target$.
-We refer to the initial MCMC distribution as $\pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
+\textbf{MCMC} methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ that marginally come from a target distribution $\target$.
+We refer to the initial distribution as $\pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
 The proposal $\vec x' \in \setx$ is accepted with probability
 \begin{align}
   \accept(\vec x', \vec x_k) = \min\left(1, (\target(\vec x')\prop(\vec x_k))/(\target(\vec x_k)\prop(\vec x'))\right) \in [0,1]\,. \label{eq:alpha def}
