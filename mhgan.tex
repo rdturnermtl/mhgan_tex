@@ -295,18 +295,21 @@ The assumption that $D$ is perfect may be weakened for two reasons:
 \toprule
 ~                 & \multicolumn{4}{c||}{DCGAN}                               & \multicolumn{4}{c|}{WGAN} \\
 \toprule
-~                 & CIFAR-10         &      p   & CelebA         &      p   & CIFAR-10        &       p   & CelebA        &       p  \\
+~            & {CIFAR-10}       &      p   & CelebA         &      p   & CIFAR-10        &       p  & CelebA        &       p  \\
 \midrule
-MH-GAN            &        3.637(97) &  <0.0001 &      2.374(79) &  0.8584  &              ~  &        ~  &            ~  &      ~   \\
-MH-GAN (cal)      &        3.753(99) &  <0.0001 &      2.58(22)  &  0.0587  &       2.774(64) &   <0.0001 &     2.774(64) &  <0.0001 \\
-GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &       2.5165(0) &        -- &     2.5165(0) &       -- \\
+MH-GAN       &        3.113(69) &  <0.0001 &      2.682(50) &  <0.0001 &               ~ &        ~ &             ~ &        ~ \\
+MH-GAN (cal) &        3.379(66) &  <0.0001 &      3.106(64) &  <0.0001 &       3.305(83) &  <0.0001 &     2.889(89) &   0.0266 \\
+DRS          &        2.977(77) &   0.0131 &      2.511(50) &  <0.0001 &               ~ &        ~ &             ~ &        ~ \\
+DRS (cal)    &        3.073(80) &  <0.0001 &      2.869(67) &  <0.0001 &       3.137(64) &   0.0497 &     2.861(66) &   0.0277 \\
+GAN          &        2.8789    &       -- &      2.3317    &       -- &       3.0734    &       -- &     2.7876    &       -- \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
 % Removed uncalibrated for WGAN since it makes no sense:
-% 2.674(61) &  <0.0001 &     2.674(61) &  <0.0001
+%2.807(81) &  <0.0001 &     3.036(79) &  <0.0001
+%3.130(70) &   0.1080 &     2.865(88) &   0.0827
 
 \section{Results}
 \label{sec:Results}
