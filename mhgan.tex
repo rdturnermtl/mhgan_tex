@@ -55,6 +55,9 @@
   \And
   Jason Yosinski \\
   Uber AI Labs
+  \And
+  Yunus Saatci \\
+  Uber AI Labs
 }
 
 \renewcommand{\vec}[1]{{\boldsymbol{\mathbf{#1}}}} % vector
@@ -138,7 +141,7 @@ This is based on the notion that the discriminator classifies between the genera
   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,, \label{eq:define PD}
 \end{align}
 where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
-If GAN training reaches its global equilibrium then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
+If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
 
 % We use MCMC independence sampler to get samples from \PR using multiple samples from G
 % MCMC not directly applicable since the likelihood of \PR and G are not available
@@ -146,7 +149,7 @@ If GAN training reaches its global equilibrium then this discriminator distribut
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
 A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
 Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
-However, our MCMC requires only the ratio $\PD / \PG$, which is available via the discriminator $D$.
+However, the MH algorithm requires only the ratio $\PD / \PG = \frac{D(\vec x)}{(1 - D(\vec x))}$, which only requires us to evaluate $D(\vec x)$.
 
 \begin{figure}[bhtp]
     \centering
@@ -165,7 +168,7 @@ However, our MCMC requires only the ratio $\PD / \PG$, which is available via th
     On the left, we illustrate how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax objective, shown in the solid black arrow.
     If GAN training produces a perfect $D$ for an imperfect $G$, the MH-GAN wraps $G$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
     On the right, we illustrate how the MH-GAN is essentially a selector from multiple draws of $G$.
-    In the MH-GAN, the selector is built using a Metropolis-Hastings (MH) acceptance rule (i.e., MCMC) from the discriminator scores $D$.
+    In the MH-GAN, the selector is built using a Metropolis-Hastings (MH) acceptance rule from the discriminator scores $D$.
     }}
     \label{fig:block_diag}
 \end{figure}
@@ -185,19 +188,15 @@ In \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE) the generator $G$ 
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ in $G'$.
 
 A very similar concurrent work is that of \citet{Azadi2018}, who propose discriminator rejection sampling (DRS) for GANs: performing rejection sampling of outputs of $G$ by using the probabilities given by $D$.
-This approach is conceptually simpler at first, but complexities arise as it is necessary to find an upper-bound on $D$ over all possible samples. Because this is not possible, one must instead rely on estimation by drawing many pilot samples.
-We use MCMC instead, which was invented as a replacement for rejection sampling when such normalization factors cannot be computed.
-A direct rejection sampling approach also leads to a very low accept rates, which leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores; this makes the model sample from a distribution different from $\PR$ even when $D$ is perfect.
-%$\gamma$ factor, violating the motivating rejection sampling setup's validity.
-Such a heuristic is not needed in the MCMC approach partially because we use a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
-
-
+This approach is conceptually simpler at first, but suffers from two major shortcomings in practice. First, it is necessary to find an upper-bound on $D$ over all possible samples (i.e., a valid proposal distribution for rejection sampling). Because this is not possible, one must instead rely on trying to crudely estimate this proposal by drawing many pilot samples. Secondly, even if one were to find a good proposal, due to the high-dimensionality of the sampling space, the acceptance rate becomes very low, which leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores; this makes the model sample from a distribution different from $\PR$ even when $D$ is perfect. % FEEL THE BURN
+We use MCMC instead, which was invented precisely as a replacement for rejection sampling in higher dimensions. % FEEL IT
+We further improve the robustness of MCMC via use of a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
 
 \section{Background and Notation}
 \label{sec:Background}
 
-\textbf{MCMC} methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ marginally from a target distribution $\vec x \sample \target$.
-We refer to the initial MCMC distribution as $\vec x_0 \sample \pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
+\textbf{MCMC} methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ such that, in the limit, the samples come marginally from a target distribution $\target$.
+We refer to the initial MCMC distribution as $\pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
 The proposal $\vec x' \in \setx$ is accepted with probability
 \begin{align}
   \accept(\vec x', \vec x_k) = \min\left(1, (\target(\vec x')\prop(\vec x_k))/(\target(\vec x_k)\prop(\vec x'))\right) \in [0,1]\,. \label{eq:alpha def}
@@ -206,13 +205,13 @@ If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \v
 We use an independent chain for each sample from $G'$.
 Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of $G'$.
 
-\textbf{GANs} implicitly model the data $\vec x$ via a synthetic data generator $G \in \R^L \rightarrow \setx$: $\vec x = G(\vec z)$, $\vec z \sample \norm(\vec 0, \vec I)$.
+\textbf{GANs} implicitly model the data $\vec x$ via a synthetic data generator $G \in \R^{d} \rightarrow \setx$: $\vec x = G(\vec z)$, $\vec z \sample \norm(\vec 0, \vec I_{d})$.
 This implies a (intractable) distribution on the data $\vec x \sample \PG$.
 We refer to the unknown true distribution on the data $\vec x$ as $\PR$.
 The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real.
 %GAN training forms a game between $D$ and $G$.
 If $D$ converges optimally for a fixed $G$, then $D = \PR/(\PR + \PG)$, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
-In practice $D$ is often ``ahead'' of $G$~\citep{Shibuya2017}, which motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using a more advanced $D$.
+In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}. This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using a more advanced $D$.
 
 \section{Methods}
 \label{sec:Methods}
@@ -313,7 +312,7 @@ In the below table, we summarize performance (inception score) across all experi
 %The DCGAN and WGAN are shown at epoch 60.
 %There was not a substantial difference between different calibration methods, but we found a slight advantage for isotonic regression with the DCGAN and logistic regression for the WGAN\@.
 %In all cases we ran the MCMC procedure $K=640$ iterations as in Fig.~\ref{fig:incep_by_iter}.
-Behavior is qualitatively similar to that in Fig.~\ref{fig:incep_by_epoch}. While DRS improves on a direct GAN, MH-GAN improves inception score more in every case. Calibration helps in every case.\footnote{WGAN does not learn a typical GAN discriminator that outputs a probability, so calibration is required.} Results are computed at epoch 60, as in Fig.~\ref{fig:incep_by_epoch} error bars and p-values are computed using a paired t-test across inception score batches, and all results are significantly better than the baseline GAN at \smash{$p < 0.05$}:
+Behavior is qualitatively similar to that in Fig.~\ref{fig:incep_by_epoch}. While DRS improves on a direct GAN, MH-GAN improves inception score more in every case. Calibration helps in every case.\footnote{WGAN does not learn a typical GAN discriminator that outputs a probability, so calibration is actually required in this case.} Results are computed at epoch 60, as in Fig.~\ref{fig:incep_by_epoch} error bars and p-values are computed using a paired t-test across inception score batches, and all results are significantly better than the baseline GAN at \smash{$p < 0.05$}:
     
 %Results showing inception score~\citep{Salimans2016} improvements from MH-GAN on DCGAN and WGAN at epoch 60.
 
@@ -358,7 +357,7 @@ MH-GAN (cal) &        \textbf{3.379}(66) &  <0.0001 &      \textbf{3.106}(64) & 
 In Fig.~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
 We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
 The $Z$ statistic for the raw discriminator varies from $-77.57$ to $48.98$ over the first 60 epochs; even after Bonferroni correction at $K=60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
-The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is must closer to calibrated, and therefore unsurprising it boosts performance in the MH-GAN\@.
+The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated. Unsurprisingly, it significantly boosts performance in the MH-GAN\@.
 
 % TODO: I don't know what that last paragraph means. Either take it our or tell me, hapless reader, what to think.
 
