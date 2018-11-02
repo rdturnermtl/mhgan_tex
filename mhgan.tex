@@ -249,6 +249,7 @@ In most MCMC applications it is not possible to get an initial sample from the t
 However, in MH-GANs, we are sampling from the \emph{data} distribution, so we may use a trick:
 Initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
 If not a single generated sample is accepted, we restart sampling from a synthetic sample to ensure the initial real sample is never output.
+To make these restarts rare, we set $K$ large (often 640)\@.
 
 % note how requirement not that strong with calib and manifold
 \paragraph{Perfect Discriminator}
