@@ -131,8 +131,6 @@ In the typical setup, $D$ is thrown away at the end of training, and only $G$ is
 In this work we propose the Metropolis-Hastings GAN (MH-GAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
 This principle is illustrated in Fig.~\ref{fig:block_diag}.
 
-
-
 % Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
 % Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
 The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
@@ -149,7 +147,7 @@ If GAN training reaches its global optimum then this discriminator distribution 
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
 A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
 Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
-However, the MH algorithm requires only the ratio $\PD / \PG = \frac{D(\vec x)}{(1 - D(\vec x))}$, which only requires us to evaluate $D(\vec x)$.
+However, the MH algorithm requires only the ratio \smash{$\PD / \PG = D(\vec x)/(1 - D(\vec x))$}, which only requires us to evaluate $D(\vec x)$.
 
 \begin{figure}[bhtp]
     \centering
@@ -188,7 +186,10 @@ In \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE) the generator $G$ 
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ in $G'$.
 
 A very similar concurrent work is that of \citet{Azadi2018}, who propose discriminator rejection sampling (DRS) for GANs: performing rejection sampling of outputs of $G$ by using the probabilities given by $D$.
-This approach is conceptually simpler at first, but suffers from two major shortcomings in practice. First, it is necessary to find an upper-bound on $D$ over all possible samples (i.e., a valid proposal distribution for rejection sampling). Because this is not possible, one must instead rely on trying to crudely estimate this proposal by drawing many pilot samples. Secondly, even if one were to find a good proposal, due to the high-dimensionality of the sampling space, the acceptance rate becomes very low, which leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores; this makes the model sample from a distribution different from $\PR$ even when $D$ is perfect. % FEEL THE BURN
+This approach is conceptually simpler at first, but suffers from two major shortcomings in practice.
+First, it is necessary to find an upper-bound on $D$ over all possible samples (i.e., a valid proposal distribution for rejection sampling)\@.
+Because this is not possible, one must instead rely on trying to crudely estimate this proposal by drawing many pilot samples.
+Secondly, even if one were to find a good proposal, due to the high-dimensionality of the sampling space, the acceptance rate becomes very low, which leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores; this makes the model sample from a distribution different from $\PR$ even when $D$ is perfect. % FEEL THE BURN
 We use MCMC instead, which was invented precisely as a replacement for rejection sampling in higher dimensions. % FEEL IT
 We further improve the robustness of MCMC via use of a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
 
@@ -211,7 +212,8 @@ We refer to the unknown true distribution on the data $\vec x$ as $\PR$.
 The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real.
 %GAN training forms a game between $D$ and $G$.
 If $D$ converges optimally for a fixed $G$, then $D = \PR/(\PR + \PG)$, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
-In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}. This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using a more advanced $D$.
+In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}.
+This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using a more advanced $D$.
 
 \section{Methods}
 \label{sec:Methods}
@@ -286,24 +288,17 @@ The assumption of perfect $D$ may be weakened for two reasons:
     }}
 \end{figure}
 
-
-
-
 \section{Results}
 \label{sec:Results}
 
-For experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets modeled
-using the DCGAN~\citep{Radford2015} and WGAN~\citep{Arjovsky2017}.
-% TODO: Ryan: prev sentence correct?
-%
+For experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets modeled using the DCGAN~\citep{Radford2015} and WGAN~\citep{Arjovsky2017}.
 %We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
 %These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
-%
-To evaluate the performance of the resulting generator $G'$, we plot inception scores \citep{Salimans2016} per epoch in Fig.~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
-%
-The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps because the amount $D$ is ahead or behind changes per epoch. Accordingly the statistical significance of the boost from $G$ to $G'$ with calibration varies
-from no significant change to boost with \smash{$p < 10^{-4}$}\@.
-%The gap varies, and the overall statistical significance of the inception score boost from $G$ to $G'$ with a calibrated discriminator varies from 
+To evaluate the performance of the resulting generator $G'$, we plot inception scores~\citep{Salimans2016} per epoch in Fig.~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
+The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps because the amount $D$ is ahead or behind changes per epoch.
+Accordingly the statistical significance of the boost from $G$ to $G'$ with calibration varies
+from no significant change to boost with \smash{$p < 10^{-4}$}.
+%The gap varies, and the overall statistical significance of the inception score boost from $G$ to $G'$ with a calibrated discriminator varies from
 %This makes sense as we rely on $D$ being ``ahead'' in some sense.
 %Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
 Fig.~\ref{fig:incep_by_iter} shows inception score per MCMC iteration: most gains are made in the first $k=100$ iterations, but smaller gains continue to $k=400$.
@@ -312,11 +307,11 @@ In the below table, we summarize performance (inception score) across all experi
 %The DCGAN and WGAN are shown at epoch 60.
 %There was not a substantial difference between different calibration methods, but we found a slight advantage for isotonic regression with the DCGAN and logistic regression for the WGAN\@.
 %In all cases we ran the MCMC procedure $K=640$ iterations as in Fig.~\ref{fig:incep_by_iter}.
-Behavior is qualitatively similar to that in Fig.~\ref{fig:incep_by_epoch}. While DRS improves on a direct GAN, MH-GAN improves inception score more in every case. Calibration helps in every case.\footnote{WGAN does not learn a typical GAN discriminator that outputs a probability, so calibration is actually required in this case.} Results are computed at epoch 60, as in Fig.~\ref{fig:incep_by_epoch} error bars and p-values are computed using a paired t-test across inception score batches, and all results are significantly better than the baseline GAN at \smash{$p < 0.05$}:
-    
+Behavior is qualitatively similar to that in Fig.~\ref{fig:incep_by_epoch}.
+While DRS improves on a direct GAN, MH-GAN improves inception score more in every case.
+Calibration helps in every case.\footnote{WGAN does not learn a typical GAN discriminator that outputs a probability, so calibration is actually required in this case.} Results are computed at epoch 60, as in Fig.~\ref{fig:incep_by_epoch} error bars and p-values are computed using a paired t-test across inception score batches, and all results are significantly better than the baseline GAN at \smash{$p < 0.05$}:
+
 %Results showing inception score~\citep{Salimans2016} improvements from MH-GAN on DCGAN and WGAN at epoch 60.
-
-
 
 %\begin{table}[htbp]
 \begin{center}
@@ -357,9 +352,11 @@ MH-GAN (cal) &        \textbf{3.379}(66) &  <0.0001 &      \textbf{3.106}(64) & 
 In Fig.~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
 We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
 The $Z$ statistic for the raw discriminator varies from $-77.57$ to $48.98$ over the first 60 epochs; even after Bonferroni correction at $K=60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
-The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated. Unsurprisingly, it significantly boosts performance in the MH-GAN\@.
+The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated.
+Unsurprisingly, it significantly boosts performance in the MH-GAN\@.
 
 % TODO: I don't know what that last paragraph means. Either take it our or tell me, hapless reader, what to think.
+% which one??
 
 %\paragraph{Conclusions}
 % usual wrap up BS paragraph
