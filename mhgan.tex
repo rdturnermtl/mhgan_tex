@@ -123,7 +123,7 @@
 % traditionally done with explicit likelihood, ancestral sampling in most models to get new synthetic data points from fit model
 Traditionally, density estimation is done with a model that can compute the data likelihood.
 Generative adversarial networks (GANs) \citep{Goodfellow2014} present a radically new way to do density estimation:
-they implicitly represent the density of the data via a classifier that distinguishes real from generated data.
+They implicitly represent the density of the data via a classifier that distinguishes real from generated data.
 % GAN uses D and G, but then D usually thrown away
 % Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
@@ -136,7 +136,7 @@ This principle is illustrated in Fig.~\ref{fig:block_diag}.
 The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
 This is based on the notion that the discriminator classifies between the generator $G$ and a data distribution:
 \begin{align}
-  D(\vec x) = \PD(\vec x)/(\PD(\vec x) + \PG(\vec x))\,, \label{eq:define PD}
+  D(\vec x) = \left. \PD(\vec x) \middle/ (\PD(\vec x) + \PG(\vec x)) \right. \,, \label{eq:define PD}
 \end{align}
 where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
 If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
@@ -200,18 +200,18 @@ We further improve the robustness of MCMC via use of a \emph{calibrator} on the 
 We refer to the initial distribution as $\pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
 The proposal $\vec x' \in \setx$ is accepted with probability
 \begin{align}
-  \accept(\vec x', \vec x_k) = \min\left(1, (\target(\vec x')\prop(\vec x_k))/(\target(\vec x_k)\prop(\vec x'))\right) \in [0,1]\,. \label{eq:alpha def}
+  \accept(\vec x', \vec x_k) = \min\left(1, (\target(\vec x')\prop(\vec x_k)) \middle/ (\target(\vec x_k)\prop(\vec x'))\right) \in [0,1]\,. \label{eq:alpha def}
 \end{align}
 If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
 We use an independent chain for each sample from $G'$.
 Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of $G'$.
 
-\textbf{GANs} implicitly model the data $\vec x$ via a synthetic data generator $G \in \R^{d} \rightarrow \setx$: $\vec x = G(\vec z)$, $\vec z \sample \norm(\vec 0, \vec I_{d})$.
+\textbf{GANs} implicitly model the data $\vec x$ via a synthetic data generator \smash{$G \in \R^{d} \rightarrow \setx$}: \smash{$\vec x = G(\vec z)$}, \smash{$\vec z \sample \norm(\vec 0, \vec I_{d})$}.
 This implies a (intractable) distribution on the data $\vec x \sample \PG$.
 We refer to the unknown true distribution on the data $\vec x$ as $\PR$.
 The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real.
 %GAN training forms a game between $D$ and $G$.
-If $D$ converges optimally for a fixed $G$, then $D = \PR/(\PR + \PG)$, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
+If $D$ converges optimally for a fixed $G$, then \smash{$D = \PR/(\PR + \PG)$}, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
 In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}.
 This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using a more advanced $D$.
 
@@ -223,7 +223,7 @@ In this section we show how to sample from the distribution $\PD$ implied by the
 If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:define PD}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
   \PD/\PG = (D^{-1}-1)^{-1} \implies
-  \accept(\vec x', \vec x_k) = \min\left(1, (D(\vec x_k)^{-1} - 1)/(D(\vec x')^{-1} - 1)\right)\,. \label{eq:alpha from D}
+  \accept(\vec x', \vec x_k) = \min\left(1, (D(\vec x_k)^{-1} - 1) \middle/ (D(\vec x')^{-1} - 1)\right)\,. \label{eq:alpha from D}
 \end{align}
 If $D$ is perfect, $\PD = \PR$.
 The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
@@ -244,10 +244,10 @@ If $D$ is well calibrated, % $y$ is indistinguishable from a $y \sample \bern(D(
 
 \paragraph{Initialization}
 We can also avoid the burn-in issues that usually plague MCMC methods.
-Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$), then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
-In most MCMC applications it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$)\@.
+Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ (\smash{$\vec x_k \sample \PD$}), then the marginal at time step $k+1$ will also follow $\PD$ (\smash{$\vec x_{k+1} \sample \PD$})\@.
+In most MCMC applications it is not possible to get an initial sample from the target distribution (\smash{$\vec x_0 \sample \PD$})\@.
 However, in MH-GANs, we are sampling from the \emph{data} distribution, so we may use a trick:
-just initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
+Initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
 If not a single generated sample is accepted, we restart sampling to ensure the initial real sample is never output.
 
 % note how requirement not that strong with calib and manifold
