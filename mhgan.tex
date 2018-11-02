@@ -128,6 +128,26 @@ In the typical setup, $D$ is thrown away at the end of training, and only $G$ is
 In this work we propose the Metropolis-Hastings GAN (MH-GAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
 This principle is illustrated in Fig.~\ref{fig:block_diag}.
 
+
+
+% Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
+% Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
+The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
+This is based on the notion that the discriminator classifies between the generator $G$ and a data distribution:
+\begin{align}
+  D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,, \label{eq:define PD}
+\end{align}
+where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
+If GAN training reaches its global equilibrium then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
+
+% We use MCMC independence sampler to get samples from \PR using multiple samples from G
+% MCMC not directly applicable since the likelihood of \PR and G are not available
+% However, MCMC only needs the ratio of \PR/G and this can be found from D
+We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
+A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
+Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
+However, our MCMC requires only the ratio $\PD / \PG$, which is available via the discriminator $D$.
+
 \begin{figure}[bhtp]
     \centering
     \begin{subfigure}[t]{2.25in}
@@ -149,24 +169,6 @@ This principle is illustrated in Fig.~\ref{fig:block_diag}.
     }}
     \label{fig:block_diag}
 \end{figure}
-
-% Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
-% Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
-The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
-This is based on the notion that the discriminator classifies between the generator $G$ and a data distribution:
-\begin{align}
-  D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,, \label{eq:define PD}
-\end{align}
-where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
-If GAN training reaches its global equilibrium then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
-
-% We use MCMC independence sampler to get samples from \PR using multiple samples from G
-% MCMC not directly applicable since the likelihood of \PR and G are not available
-% However, MCMC only needs the ratio of \PR/G and this can be found from D
-We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
-A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
-Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
-However, our MCMC requires only the ratio $\PD / \PG$, which is available via the discriminator $D$.
 
 \paragraph{Related Work}
 % Need to be clear on diff with NICE-MCMC
@@ -222,26 +224,27 @@ If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and 
   \PD/\PG = (D^{-1}-1)^{-1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, (D(\vec x_k)^{-1} - 1)/(D(\vec x')^{-1} - 1)\right)\,. \label{eq:alpha from D}
 \end{align}
-If $D$ is perfect then $\PD = \PR$.
+If $D$ is perfect, $\PD = \PR$.
 The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
 
 \paragraph{Calibration}
-A key element is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but must be on the right scale.
+The probabilities for $D$ must not merely provide a good AUC score, but must be well \emph{calibrated}.
 %Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
 We can test the calibration of $D$ using the statistic of~\citet{Dawid1997} on \emph{held out} samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
+To calibrate $D$, we use a held out calibration set and either logistic, isotonic, or beta~\citep{Kull2017} regression.
 If $D$ is well calibrated, % $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$
+%
 \begin{align}
   Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,. \label{eq:calib score}
 \end{align}
 % This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
-To calibrate $D$, we use a held out calibration set and either logistic, isotonic, or beta~\citep{Kull2017} regression.
 
 \paragraph{Initialization}
 We can also avoid the burn-in issues that usually plague MCMC methods.
-Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
+Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$), then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
 In most MCMC applications it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$)\@.
 However, in MH-GANs, we are sampling from the \emph{data} distribution, so we may use a trick:
-Just initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
+just initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
 If not a single generated sample is accepted, we restart sampling to ensure the initial real sample is never output.
 
 % note how requirement not that strong with calib and manifold
