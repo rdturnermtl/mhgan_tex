@@ -249,7 +249,7 @@ If not a single generated sample is accepted, we restart sampling to ensure the 
 
 % note how requirement not that strong with calib and manifold
 \paragraph{Perfect Discriminator}
-The assumption that $D$ is perfect may be weakened for two reasons:
+The assumption of perfect $D$ may be weakened for two reasons:
 (A)~Because we recalibrate the discriminator, actual probabilities can be incorrect as long as the decision boundary between real and fake is correct.
 (B)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from the generator $\PG$ and the real data $\PR$.
 % Don't have space for this anyway:
