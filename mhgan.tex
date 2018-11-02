@@ -230,17 +230,17 @@ The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
 
 \paragraph{Calibration}
 The probabilities for $D$ must not merely provide a good AUC score, but must be well \emph{calibrated}.
+To calibrate $D$, we use a \emph{held out} calibration set and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $D$.
 %Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
-We can test the calibration of $D$ using the statistic of~\citet{Dawid1997} on \emph{held out} samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
-To calibrate $D$, we use a held out calibration set and either logistic, isotonic, or beta~\citep{Kull2017} regression.
+We can also detect miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
 If $D$ is well calibrated, % $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$
-%
 \begin{align}
   {\textstyle
   Z := \left(\sum_{i=1}^N y_i - D(\vec x_i)\middle) \right/ \!\!\smash{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,.}
   \label{eq:calib score}
 \end{align}
 % This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
+For WGAN, calibration is required as it does not learn a typical GAN probabilistic discriminator.
 
 \paragraph{Initialization}
 We can also avoid the burn-in issues that usually plague MCMC methods.
@@ -248,7 +248,7 @@ Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the m
 In most MCMC applications it is not possible to get an initial sample from the target distribution (\smash{$\vec x_0 \sample \PD$})\@.
 However, in MH-GANs, we are sampling from the \emph{data} distribution, so we may use a trick:
 Initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
-If not a single generated sample is accepted, we restart sampling to ensure the initial real sample is never output.
+If not a single generated sample is accepted, we restart sampling from a synthetic sample to ensure the initial real sample is never output.
 
 % note how requirement not that strong with calib and manifold
 \paragraph{Perfect Discriminator}
