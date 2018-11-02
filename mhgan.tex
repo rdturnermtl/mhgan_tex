@@ -232,7 +232,7 @@ The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
 The probabilities for $D$ must not merely provide a good AUC score, but must be well \emph{calibrated}.
 To calibrate $D$, we use a \emph{held out} calibration set and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $D$.
 %Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
-We can also detect miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
+We also detect miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
 If $D$ is well calibrated, % $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$
 \begin{align}
   {\textstyle
@@ -243,7 +243,7 @@ If $D$ is well calibrated, % $y$ is indistinguishable from a $y \sample \bern(D(
 For WGAN, calibration is required as it does not learn a typical GAN probabilistic discriminator.
 
 \paragraph{Initialization}
-We can also avoid the burn-in issues that usually plague MCMC methods.
+We also avoid the burn-in issues that usually plague MCMC methods.
 Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ (\smash{$\vec x_k \sample \PD$}), then the marginal at time step $k+1$ will also follow $\PD$ (\smash{$\vec x_{k+1} \sample \PD$})\@.
 In most MCMC applications it is not possible to get an initial sample from the target distribution (\smash{$\vec x_0 \sample \PD$})\@.
 However, in MH-GANs, we are sampling from the \emph{data} distribution, so we may use a trick:
@@ -285,7 +285,7 @@ The assumption of perfect $D$ may be weakened for two reasons:
     The error bars on MH-GAN performance (in gray) are computed using a t-test on the variation per batch across 80 splits of the inception score.
     In the center we show the inception score vs.~MCMC iteration $k$ for the GAN at epoch 15.
     On the right, we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
-    When there is overlap MH-GAN can correct the $\PG$ distribution to have scores looking similar to the real data.
+    When there is overlap, the MH-GAN corrects the $\PG$ distribution to have scores looking similar to the real data.
     DRS fails to fully shift the distribution because 1)~it does not use calibration and 2)~its ``$\gamma$ shift'' setup violates the validity of rejection sampling.
     }}
 \end{figure}
@@ -354,7 +354,7 @@ MH-GAN (cal) &        \textbf{3.379}(66) &  <0.0001 &      \textbf{3.106}(64) & 
 % Look at distn on D to make look more like real
 %   both on synth and real
 In Fig.~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
-We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
+We see that MCMC shifts the distribution of the fakes to match the distribution on true images.
 The $Z$ statistic for the raw discriminator varies from $-77.57$ to $48.98$ over the first 60 epochs; even after Bonferroni correction at $K=60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
 The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated.
 Unsurprisingly, it significantly boosts performance in the MH-GAN\@.
