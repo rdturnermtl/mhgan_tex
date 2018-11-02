@@ -236,7 +236,9 @@ To calibrate $D$, we use a held out calibration set and either logistic, isotoni
 If $D$ is well calibrated, % $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$
 %
 \begin{align}
-  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,. \label{eq:calib score}
+  {\textstyle
+  Z := \left(\sum_{i=1}^N y_i - D(\vec x_i)\middle) \right/ \!\!\smash{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,.}
+  \label{eq:calib score}
 \end{align}
 % This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
 
