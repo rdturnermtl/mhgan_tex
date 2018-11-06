@@ -257,7 +257,7 @@ The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
 
 \paragraph{Calibration}
 The probabilities for $D$ must not merely provide a good AUC score, but must be well \emph{calibrated}.
-Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
+Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:define PD} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
 
 To calibrate $D$, we use a \emph{held out} calibration set and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $D$.
 Furthermore, for WGAN, calibration is required as it does not learn a typical GAN probabilistic discriminator.
