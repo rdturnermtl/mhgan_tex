@@ -120,7 +120,7 @@ We demonstrate results on common GAN data sets and wrap the popular DCGAN and WG
 
 % GANs provide implicit way to do density estimation
 Traditionally, density estimation is done with a model that can compute the data likelihood.
-Generative adversarial networks (GANs) \citep{Goodfellow2014} present a radically new way to do density estimation:
+Generative adversarial networks (GANs)~\citep{Goodfellow2014} present a radically new way to do density estimation:
 They implicitly represent the density of the data via a classifier that distinguishes real from generated data.
 Computing the likelihood has been at least as easy as sampling new data from the trained model.
 GANs turn this paradigm on its head.
@@ -145,7 +145,11 @@ We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples fr
 A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
 Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
 Neither of these quantities are available in GANs.
-However, the MH algorithm requires only the ratio \smash{$\PD / \PG = D(\vec x)/(1 - D(\vec x))$}, which only requires us to evaluate $D(\vec x)$.
+However, the MH algorithm requires only the ratio
+\begin{align}
+  \frac{\PD(\vec x)}{\PG(\vec x)} = \frac{D(\vec x)}{1 - D(\vec x)}\,,
+\end{align}
+which only requires us to evaluate $D(\vec x)$.
 
 \begin{figure}[bhtp]
     \centering
@@ -336,7 +340,7 @@ Results are computed at epoch 60, as in Figure~\ref{fig:incep_by_epoch} error ba
 \begin{table}[htbp]
 \begin{center}
   \caption{{\small
-    Results showing inception score~\citep{Salimans2016} improvements from MH-GAN on DCGAN and WGAN at epoch 60.
+    Results showing inception score improvements from MH-GAN on DCGAN and WGAN at epoch 60.
     Like Figure~\ref{fig:incep_by_epoch}, the error bars and p-values are computed using a paired t-test across inception score batches.
     All results except for DCGAN on celebA all significant at \smash{$p < 10^{-4}$}.
     WGAN does not learn a typical GAN discriminator that outputs a probability, so calibration is actually required in this case.
