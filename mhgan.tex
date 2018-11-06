@@ -135,7 +135,7 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
 The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
 This is built upon the notion that the discriminator classifies between the generator $G$ and a data distribution:
 \begin{align}
-  D(\vec x) = \left. \PD(\vec x) \middle/ (\PD(\vec x) + \PG(\vec x)) \right. \,, \label{eq:define PD}
+  D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)} \,, \label{eq:define PD}
 \end{align}
 where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
 If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
@@ -211,7 +211,7 @@ MCMC methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ that 
 We refer to the initial distribution as $\pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
 The proposal $\vec x' \in \setx$ is accepted with probability
 \begin{align}
-  \accept(\vec x', \vec x_k) = \min\left(1, (\target(\vec x')\prop(\vec x_k)) \middle/ (\target(\vec x_k)\prop(\vec x'))\right) \in [0,1]\,. \label{eq:alpha def}
+  \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right) \in [0,1]\,. \label{eq:alpha def}
 \end{align}
 If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
 Note that when estimating the distribution on $\target$ one must include the duplicates that are a result of rejections in $\vec x'$.
@@ -246,7 +246,7 @@ In this section we show how to sample from the distribution $\PD$ implied by the
 If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:define PD}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
   \PD/\PG = (D^{-1}-1)^{-1} \implies
-  \accept(\vec x', \vec x_k) = \min\left(1, (D(\vec x_k)^{-1} - 1) \middle/ (D(\vec x')^{-1} - 1)\right)\,. \label{eq:alpha from D}
+  \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
 \end{align}
 If $D$ is perfect, $\PD = \PR$.
 The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
@@ -261,8 +261,7 @@ Furthermore, for WGAN, calibration is required as it does not learn a typical GA
 We also detect miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
 If $D$ is well calibrated, i.e., $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$,
 \begin{align}
-  {\textstyle
-  Z := \left(\sum_{i=1}^N y_i - D(\vec x_i)\middle) \right/ \!\!\smash{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,.}
+  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,.
   \label{eq:calib score}
 \end{align}
 This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
