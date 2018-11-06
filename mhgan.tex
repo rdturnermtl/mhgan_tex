@@ -102,6 +102,7 @@
 % search for: can overuse, It is ...
 
 % TODO add lemma
+% TODO remove NIPS mention from style file
 
 \begin{document}
 % \nipsfinalcopy is no longer used
@@ -232,11 +233,13 @@ Using the state of the Markov chain to determine when to stop has the potential 
 \subsection{GANs}
 \label{sec:GANs}
 
-GANs implicitly model the data $\vec x$ via a synthetic data generator \smash{$G \in \R^{d} \rightarrow \setx$}: \smash{$\vec x = G(\vec z)$}, \smash{$\vec z \sample \norm(\vec 0, \vec I_{d})$}.
+GANs implicitly model the data $\vec x$ via a synthetic data generator \smash{$G \in \R^{d} \rightarrow \setx$}:
+\begin{align}
+  \vec x = G(\vec z)\,, \quad \vec z \sample \norm(\vec 0, \vec I_{d})\,.
+\end{align}
 This implies a (intractable) distribution on the data $\vec x \sample \PG$.
 We refer to the unknown true distribution on the data $\vec x$ as $\PR$.
 The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real (as opposed to being sampled from $\PG$)\@.
-% TODO break back out into eqn form
 If $D$ converges optimally for a fixed $G$, then \smash{$D = \PR/(\PR + \PG)$}, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
 GAN training forms a game between $D$ and $G$.
 In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}.
@@ -259,11 +262,11 @@ The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
 The probabilities for $D$ must not merely provide a good AUC score, but must be well \emph{calibrated}.
 Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:define PD} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
 
-To calibrate $D$, we use a \emph{held out} calibration set and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $D$.
+To calibrate $D$, we use a \emph{held out} calibration set (10\% of training data) and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $D$.
 Furthermore, for WGAN, calibration is required as it does not learn a typical GAN probabilistic discriminator.
 
-We also detect miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples $\vec x_{1:N}$ and real/fake labels $y_{1:N} \in \{0,1\}^N$.
-If $D$ is well calibrated, i.e., $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$,
+We also detect miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples \smash{$\vec x_{1:N}$} and real/fake labels \smash{$y_{1:N} \in \{0,1\}^N$}.
+If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \sample \bern(D(\vec x))$},
 \begin{align}
   Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,.
   \label{eq:calib score}
