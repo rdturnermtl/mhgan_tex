@@ -129,8 +129,7 @@ GANs turn this paradigm on its head.
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
 In the typical setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
 In this work we propose the Metropolis-Hastings GAN (MH-GAN), a GAN that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
-% TODO Fig. to Figure
-This principle is illustrated in Fig.~\ref{fig:block_diag}.
+This principle is illustrated in Figure~\ref{fig:block_diag}.
 
 % Assume D is bayes optimal
 The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
@@ -171,13 +170,15 @@ However, the MH algorithm requires only the ratio \smash{$\PD / \PG = D(\vec x)/
 \end{figure}
 
 The outline of this paper is as follows:
-% TODO related work
+Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
 In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
 We explain our methodology of combing these two very different areas in Section~\ref{sec:MCMC Methods}; here we derive the wrapped generator $G'$.
 Results on real data (CIFAR-10 and CelebA) and extending widespread GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
 Section~\ref{sec:conclusions} discusses implications and conclusions.
 
-\paragraph{Related Work}
+\section{Related Work}
+\label{sec:Related Work}
+
 % Need to be clear on diff with NICE-MCMC
 A few other works combine GANs and MCMC in some way.
 \citet{Song2017} use a GAN-like procedure to train a RealNVP~\citep{Dinh2016} MCMC proposal for sampling an externally provided target \smash{$\target$}.
@@ -275,7 +276,7 @@ Initialize the chain at a sample of real data (the correct distribution) to avoi
 If not a single generated sample is accepted, we restart sampling from a synthetic sample to ensure the initial real sample is never output.
 To make these restarts rare, we set $K$ large (often 640)\@.
 
-% note how requirement not that strong with calib and manifold
+% Note how requirement not that strong with calib and manifold
 \paragraph{Perfect Discriminator}
 The assumption of perfect $D$ may be weakened for two reasons:
 (A)~Because we recalibrate the discriminator, actual probabilities can be incorrect as long as the decision boundary between real and fake is correct.
@@ -319,25 +320,25 @@ The assumption of perfect $D$ may be weakened for two reasons:
 For experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets modeled using the DCGAN~\citep{Radford2015} and WGAN~\citep{Arjovsky2017}.
 %We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
 %These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
-To evaluate the generator $G'$, we plot inception scores~\citep{Salimans2016} per epoch in Fig.~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
+To evaluate the generator $G'$, we plot inception scores~\citep{Salimans2016} per epoch in Figure~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
 The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps because the amount $D$ is ahead or behind changes per epoch.
 Because GAN training is a game of sorts, how far ``ahead'' $D$ is will vary by epoch.
 Accordingly the statistical significance of the boost from $G$ to $G'$ with calibration varies from no significant change to boost with \smash{$p < 10^{-4}$}.
-Fig.~\ref{fig:incep_by_iter} shows inception score per MCMC iteration:
+Figure~\ref{fig:incep_by_iter} shows inception score per MCMC iteration:
 Most gains are made in the first $k=100$ iterations, but smaller gains continue to $k=400$.
 
 In Table~\ref{tbl:inception}, we summarize performance (inception score) across all experiments, running MCMC with $K=640$ iterations in all cases.
-Behavior is qualitatively similar to that in Fig.~\ref{fig:incep_by_epoch}.
+Behavior is qualitatively similar to that in Figure~\ref{fig:incep_by_epoch}.
 While DRS improves on a direct GAN, MH-GAN improves inception score more in every case.
 Calibration helps in every case.
 There was not a substantial difference between different calibration methods, but we found a slight advantage for isotonic regression
-Results are computed at epoch 60, as in Fig.~\ref{fig:incep_by_epoch} error bars and p-values are computed using a paired t-test across inception score batches, and all results are significantly better than the baseline GAN at \smash{$p < 0.05$}.
+Results are computed at epoch 60, as in Figure~\ref{fig:incep_by_epoch} error bars and p-values are computed using a paired t-test across inception score batches, and all results are significantly better than the baseline GAN at \smash{$p < 0.05$}.
 
 \begin{table}[htbp]
 \begin{center}
   \caption{{\small
     Results showing inception score~\citep{Salimans2016} improvements from MH-GAN on DCGAN and WGAN at epoch 60.
-    Like Fig.~\ref{fig:incep_by_epoch}, the error bars and p-values are computed using a paired t-test across inception score batches.
+    Like Figure~\ref{fig:incep_by_epoch}, the error bars and p-values are computed using a paired t-test across inception score batches.
     All results except for DCGAN on celebA all significant at \smash{$p < 10^{-4}$}.
     WGAN does not learn a typical GAN discriminator that outputs a probability, so calibration is actually required in this case.
     }}
@@ -365,7 +366,7 @@ MH-GAN (cal) &        \textbf{3.379}(66) &  <0.0001 &      \textbf{3.106}(64) & 
 %2.807(81) &  <0.0001 &     3.036(79) &  <0.0001
 %3.130(70) &   0.1080 &     2.865(88) &   0.0827
 
-In Fig.~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
+In Figure~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
 MCMC shifts the distribution of the fakes to match the distribution on true images.
 
 Additionally, to test GAN calibration, we found the $Z$ statistic for the raw discriminator $D$ varies from $-77.57$ to $48.98$ in the first 60 epochs; even after Bonferroni correction at $N \!\!=\!\! 60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
@@ -374,8 +375,8 @@ Unsurprisingly, it significantly boosts performance in the MH-GAN\@.
 
 \section{Conclusions}
 \label{sec:conclusions}
-% usual wrap up BS paragraph
 
+% Usual wrap up BS paragraph
 We have shown how to incorporate the knowledge in the discriminator $D$ into an improved generator $G'$.
 Our method is based on the premise that $D$ is ``ahead'' of $G$.
 The principled MCMC setup selects among samples from $G$ to correct biases in $G$.
