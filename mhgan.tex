@@ -177,7 +177,7 @@ which only requires us to evaluate $D(\vec x)$.
 The outline of this paper is as follows:
 Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
 In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
-We explain our methodology of combing these two very different areas in Section~\ref{sec:Methods}; here we derive the wrapped generator $G'$.
+We explain our methodology of combining these two very different areas in Section~\ref{sec:Methods}; here we derive the wrapped generator $G'$.
 Results on real data (CIFAR-10 and CelebA) and extending widespread GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
 Section~\ref{sec:conclusions} discusses implications and conclusions.
 
@@ -287,7 +287,7 @@ Initialize the chain at a sample of real data (the correct distribution) to avoi
 If not a single generated sample is accepted, we restart sampling from a synthetic sample to ensure the initial real sample is never output.
 To make these restarts rare, we set $K$ large (often 640)\@.
 
-% Note how requirement not that strong with calib and manifold
+% Note how requirement not that strong with calibration and manifold
 \paragraph{Perfect Discriminator}
 The assumption of perfect $D$ may be weakened for two reasons:
 (A)~Because we recalibrate the discriminator, actual probabilities can be incorrect as long as the decision boundary between real and fake is correct.
