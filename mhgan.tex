@@ -147,7 +147,7 @@ Standard MCMC implementations require (unnormalized) densities for the target $\
 Neither of these quantities are available in GANs.
 However, the MH algorithm requires only the ratio
 \begin{align}
-  \frac{\PD(\vec x)}{\PG(\vec x)} = \frac{D(\vec x)}{1 - D(\vec x)}\,,
+  \frac{\PD(\vec x)}{\PG(\vec x)} = \frac{D(\vec x)}{1 - D(\vec x)}\,, \label{eq:PD inv}
 \end{align}
 which only requires us to evaluate $D(\vec x)$.
 
@@ -247,9 +247,9 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using a m
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:define PD}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
+If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:PD inv}, we can apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
-  \PD/\PG = (D^{-1}-1)^{-1} \implies
+  \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
 \end{align}
 If $D$ is perfect, $\PD = \PR$.
