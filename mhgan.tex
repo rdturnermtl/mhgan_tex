@@ -197,7 +197,7 @@ In DRE the generator $G$ is fixed and the density is found by combining Bayes' r
 In GANs, the key is learning $G$ well; while in DRE the key is learning $D$ well.
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ in $G'$.
 
-% Diff to Google DRS work
+\paragraph{Discriminator rejection sampling}
 A very similar concurrent work is that of \citet{Azadi2018}, who propose discriminator rejection sampling (DRS) for GANs: performing rejection sampling of outputs of $G$ by using the probabilities given by $D$.
 This approach is conceptually simpler at first, but suffers from two major shortcomings in practice.
 First, it is necessary to find an upper-bound on $D$ over all possible samples (i.e., a valid proposal distribution for rejection sampling)\@.
@@ -208,6 +208,8 @@ We further improve the robustness of MCMC via use of a \emph{calibrator} on the 
 
 \section{Background and Notation}
 \label{sec:Background}
+
+In this section, we briefly review the notation and equations with MCMC and GANs.
 
 \subsection{MCMC Methods}
 \label{sec:MCMC Methods}
@@ -221,10 +223,13 @@ The proposal $\vec x' \in \setx$ is accepted with probability
 If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
 Note that when estimating the distribution on $\target$ one must include the duplicates that are a result of rejections in $\vec x'$.
 
+% TODO move after init section??
+\paragraph{Independent samples}
 Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of $G'$.
 That is, $\vec x_K$ is the output of $G'$: Each MCMC chain results in a single sample for $G'$.
 Independent chains are used for multiple samples from $G'$.
 
+\paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
 Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
 Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$.
@@ -271,7 +276,7 @@ If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \samp
   Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,.
   \label{eq:calib score}
 \end{align}
-This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
+This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), we reject the hypothesis that $D$ is well-calibrated.
 
 \paragraph{Initialization}
 We also avoid the burn-in issues that usually plague MCMC methods.
@@ -372,9 +377,12 @@ MH-GAN (cal) &        \textbf{3.379}(66) &  <0.0001 &      \textbf{3.106}(64) & 
 %2.807(81) &  <0.0001 &     3.036(79) &  <0.0001
 %3.130(70) &   0.1080 &     2.865(88) &   0.0827
 
+\paragraph{Score distribution}
 In Figure~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
 MCMC shifts the distribution of the fakes to match the distribution on true images.
 
+\paragraph{Calibration results}
+% TODO expand a bit??
 Additionally, to test GAN calibration, we found the $Z$ statistic for the raw discriminator $D$ varies from $-77.57$ to $48.98$ in the first 60 epochs; even after Bonferroni correction at $N \!\!=\!\! 60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
 The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated.
 Unsurprisingly, it significantly boosts performance in the MH-GAN\@.
