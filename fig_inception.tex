@@ -1,0 +1,33 @@
+\begin{figure}[htbp]
+    \centering
+    \begin{subfigure}[b]{0.32\textwidth}
+       \centering
+       \includegraphics[width=1.8in]{figures/per_epoch.pdf}
+       \caption{performance by epoch}
+       \label{fig:incep_by_epoch}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+       \centering
+       \includegraphics[width=1.8in]{figures/plot_per_mh.pdf}
+       \caption{performance by MCMC iteration}
+       \label{fig:incep_by_iter}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.32\textwidth}
+       \centering
+       \includegraphics[width=1.8in]{figures/score_dist_overlap.pdf}
+       \caption{epoch 13 scores}
+       \label{fig:score_dist_overlap}
+    \end{subfigure}
+    \caption{{\small
+    Results of the MH-GAN experiments on CIFAR-10 using the DCGAN\@.
+    On the left, we show the inception score by training epoch of the DCGAN at $K=640$.
+    MH-GAN denotes using the raw discriminator scores and ``MH-GAN (cal)'' for the calibrated scores.
+    The error bars on MH-GAN performance (in gray) are computed using a t-test on the variation per batch across 80 splits of the inception score.
+    In the center we show the inception score vs.~MCMC iteration $k$ for the GAN at epoch 15.
+    On the right, we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
+    When there is overlap, the MH-GAN corrects the $\PG$ distribution to have scores looking similar to the real data.
+    DRS fails to fully shift the distribution because 1)~it does not use calibration and 2)~its ``$\gamma$ shift'' setup violates the validity of rejection sampling.
+    }}
+    \label{fig:inception}
+\end{figure}
+
