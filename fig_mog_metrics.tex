@@ -23,7 +23,8 @@
     On the left, we show the standard deviation of samples within a single mode.
     The black line represents the scores the true distribution.
     In the center, we show the high quality rate (samples near a real mode) across different GAN setups.
-    On the right, we show the Jensen-Shannon divergence between the distribution on the nearest mode vs a uniform, which is the generating distribution on mixture components.
+    On the right, we show the Jensen-Shannon divergence (JSD) between the distribution on the nearest mode vs a uniform, which is the generating distribution on mixture components.
+    The MH-GAN shows, on average, a $5 \times$ improvement in JSD over DRS\@.
     We considered adding error bars to these plots via a bootstrap analysis, but the error bars are too small to be visible.
     }}
     \label{fig:mog_metrics}
