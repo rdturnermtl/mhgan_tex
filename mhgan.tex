@@ -350,11 +350,14 @@ All results are significantly better than the baseline GAN at \smash{$p < 0.05$}
 In Figure~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
 MCMC shifts the distribution of the fakes to match the distribution on true images.
 
+\input{fig_calibration}
+
 \paragraph{Calibration results}
-% TODO expand a bit??
-Additionally, to test GAN calibration, we found the $Z$ statistic for the raw discriminator $D$ varies from $-77.57$ to $48.98$ in the first 60 epochs; even after Bonferroni correction at $N \!\!=\!\! 60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
+Figure~\ref{fig:calibration} shows the results per epoch for both CIFAR-10 and CelebA\@.
+It shows that the raw discriminator is highly miscalibrated, but can be fixed with any of the standard calibration methods.
+The $Z$ statistic for the raw discriminator $D$ (DCGAN on CIFAR-10) varies from $-77.57$ to $48.98$ in the first 60 epochs; even after Bonferroni correction at $N \!\!=\!\! 60$ we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
 The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated.
-Unsurprisingly, it significantly boosts performance in the MH-GAN\@.
+Accordingly, it is unsurprising that the calibrated discriminator significantly boosts performance in the MH-GAN\@.
 
 % TODO need to insert some example images
 
