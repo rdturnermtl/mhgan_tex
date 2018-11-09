@@ -358,7 +358,13 @@ The $Z$ statistic for the raw discriminator $D$ (DCGAN on CIFAR-10) varies from 
 The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated.
 Accordingly, it is unsurprising that the calibrated discriminator significantly boosts performance in the MH-GAN\@.
 
-% TODO need to insert some example images
+\input{fig_cifar_samples}
+\input{fig_celeba_samples}
+
+\paragraph{Visual results}
+Finally, we also show example images from the CIFAR-10 and CelebA setups in Figures~\ref{fig:cifar_samples} and~\ref{fig:celeba_samples}.
+We can see the selectors (such as MH-GAN) results in a widing spread of probability mass across background colors.
+In the case of CIFAR-10 it enhances modes with animal-like outlines and vehicles.
 
 \section{Conclusions}
 \label{sec:conclusions}
