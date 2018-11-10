@@ -123,7 +123,6 @@ We demonstrate results on common datasets, including CIFAR-10 and CelebA, using 
 Traditionally, density estimation is done with a model that can compute the data likelihood.
 Generative adversarial networks (GANs)~\citep{Goodfellow2014} present a radically new way to do density estimation:
 They implicitly represent the density of the data via a classifier that distinguishes real from generated data.
-Computing the likelihood becomes as easy as sampling new data from the trained model.
 
 % GAN uses D and G, but then D usually thrown away => use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
@@ -141,7 +140,7 @@ where $\PG$ is the (intractable) density of samples from the generator $G$, and 
 If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
 
 % MCMC only needs the ratio of \PR/G and this can be found from D
-We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to  sample from $\PD$ by taking multiple samples from $G$\@.
+We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to sample from $\PD$ by taking multiple samples from $G$\@.
 A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
 Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
 However, the MH algorithm requires only the ratio
@@ -178,11 +177,12 @@ The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 \paragraph{Discriminator rejection sampling}
 Similar concurrent work from \citet{Azadi2018} is discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
 This approach is conceptually simpler at first, but suffers from two major shortcomings in practice.
-First, it is necessary to find an upper-bound on $D$ over all possible samples in order to obtain a valid proposal distribution for rejection sampling\@.
+First, it is necessary to find an upper-bound on $D$ over all possible samples in order to obtain a valid proposal distribution for rejection sampling.
 Because this is not possible, one must instead rely on trying to crudely estimate this bound by drawing many pilot samples.
-Secondly, even if one were to find a good bound, the acceptance rate would become very low due to the high-dimensionality of the sampling space. This leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores, making the model sample from a distribution different from $\PR$ even when $D$ is perfect.
+Secondly, even if one were to find a good bound, the acceptance rate would become very low due to the high-dimensionality of the sampling space.
+This leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores, making the model sample from a distribution different from $\PR$ even when $D$ is perfect.
 We use MCMC instead, which was invented precisely as a replacement for rejection sampling in higher dimensions.
-We further improve the robustness of MCMC via use of a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance rates.
+We further improve the robustness of MCMC via use of a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
 
 \section{Background and Notation}
 \label{sec:Background}
@@ -203,13 +203,14 @@ Note that when estimating the distribution $\target$, one must include the dupli
 
 % TODO move after init section??
 \paragraph{Independent samples}
+% TODO repetition in sentence start to fix
 Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of $G'$.
 Each MCMC chain results in a single sample $\vec x_K$, which is the output of $G'$.
 Independent chains are used for multiple samples from $G'$.
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
-Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, its Kullback-Leibler divergence to $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
+Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, its Kullback-Leibler (KL) divergence to $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
 Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$.
 Using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
 
@@ -280,11 +281,11 @@ We first show an illustrative synthetic mixture model example followed by real d
 
 \subsection{Mixture of 25 Gaussians}
 
-We consider the $5 \times 5$ grid of two-dimensional Gaussians used in~\citet{Azadi2018}, which has become a popular toy example in the GAN literature ~\citet{Dumoulin2016}.
+We consider the $5 \times 5$ grid of two-dimensional Gaussians used in~\citet{Azadi2018}, which has become a popular toy example in the GAN literature~\citet{Dumoulin2016}.
 The means are arranged on the grid $\mu \in \{{-2},{-1},0,1,2\}$ and use a standard deviation of $\sigma = 0.05$.
 
 \paragraph{Experimental setup}
-Following ~\citet{Azadi2018}, we use four fully connected layers with ReLU activations for both the generator and discriminator.
+Following~\citet{Azadi2018}, we use four fully connected layers with ReLU activations for both the generator and discriminator.
 The final output layer of the discriminator is a sigmoid, and no nonlinearity is applied to the final generator layer.
 The latent \smash{$\vec z \in \R^2$} and observed \smash{$\vec x \in \R^2$} vectors have dimension two.
 All hidden layers have size 100.
@@ -323,8 +324,6 @@ Using the principled approach of the MH-GAN along with calibrated probabilities 
 \subsection{Real Data}
 
 For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets modeled using the DCGAN~\citep{Radford2015} and WGAN~\citep{Arjovsky2017, Gulrajani2017}.
-%We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
-%These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
 To evaluate the generator $G'$, we plot Inception scores~\citep{Salimans2016} per epoch in Figure~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
 The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps because the amount $D$ is ahead or behind changes per epoch.
 Because GAN training is a game of sorts, how far ``ahead'' $D$ is will vary by epoch.
