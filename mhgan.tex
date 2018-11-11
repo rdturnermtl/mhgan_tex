@@ -224,6 +224,8 @@ GAN training forms a game between $D$ and $G$.
 In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}.
 This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using a more advanced $D$.
 
+\input{fig_univariate_example}
+
 \section{Methods}
 \label{sec:Methods}
 
@@ -236,6 +238,8 @@ If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and 
 \end{align}
 If $D$ is perfect, $\PD = \PR$.
 The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
+
+A graphical illustration of this sampling is shown in Figure~\ref{fig:univariate_example}.
 
 \paragraph{Calibration}
 The probabilities for $D$ must not merely provide a good AUC score, but must also be well \emph{calibrated}.
