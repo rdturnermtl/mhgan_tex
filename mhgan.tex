@@ -109,7 +109,7 @@ We introduce the Metropolis-Hastings generative adversarial network (MH-GAN), wh
 The MH-GAN samples from the distribution implicitly defined by the discriminator in a GAN\@.
 It uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
 With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly.
-We demonstrate the benefits of the improved generator on many benchmark datasets, including CIFAR-10 and CelebA, using DCGAN and WGAN\@.
+We demonstrate the benefits of the improved generator on multiple benchmark datasets, including CIFAR-10 and CelebA, using DCGAN and WGAN\@.
 \end{abstract}
 
 \section{Introduction}
@@ -243,7 +243,7 @@ A graphical illustration of this sampling is shown in Figure~\ref{fig:univariate
 
 \paragraph{Calibration}
 The probabilities for $D$ must not merely provide a good AUC score, but must also be well \emph{calibrated}.
-Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:define PD} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}, as it will result in erroneous density ratio values. 
+Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:define PD} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}, as it will result in erroneous density ratio values.
 
 To calibrate $D$, we use a \emph{held out} calibration set (10\% of training data) and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $D$.
 Furthermore, for WGAN, calibration is required as it does not learn a typical GAN probabilistic discriminator.
@@ -289,7 +289,7 @@ The final output layer of the discriminator is a sigmoid, and no nonlinearity is
 The latent \smash{$\vec z \in \R^2$} and observed \smash{$\vec x \in \R^2$} vectors have dimension two.
 All hidden layers have size 100.
 We used \num{64000} training points and generated \num{10000} points in test.
-%The training data was standardized before training. ??
+The training data was standardized before training.
 
 \input{fig_mog_metrics}
 
@@ -325,7 +325,6 @@ Using the principled approach of the MH-GAN along with calibrated probabilities 
 For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets modeled using the DCGAN~\citep{Radford2015} and WGAN~\citep{Arjovsky2017, Gulrajani2017}.
 To evaluate the generator $G'$, we plot Inception scores~\citep{Salimans2016} per epoch in Figure~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
 The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps due to fluctuations in the density ratio estimation performance per epoch.
-% Because GAN training is a game of sorts, how far ``ahead'' $D$ is will vary by epoch. ## Too informal
 Accordingly the statistical significance of the boost from $G$ to $G'$ with calibration varies from no significant change to boost with \smash{$p < 10^{-4}$}.
 Figure~\ref{fig:incep_by_iter} shows Inception score per MCMC iteration:
 most gains are made in the first $k=100$ iterations, but smaller gains continue to $k=400$.
@@ -364,11 +363,11 @@ In the case of CIFAR-10, it enhances modes with animal-like outlines and vehicle
 \section{Conclusions}
 \label{sec:conclusions}
 
-% Usual wrap up BS paragraph LOL
+% Usual wrap up BS paragraph
 We have shown how to incorporate the knowledge in the discriminator $D$ into an improved generator $G'$.
 Our method is based on the premise that $D$ is better at density ratio estimation than $G$ is at sampling data, which is inherently a harder task.
 The principled MCMC setup selects among samples from $G$ to correct biases in $G$.
-This is the only method in the literature which has the property that given a perfect $D$ one can recover $G$ such that $p_{G} = p_{\text{data}}$. 
+This is the only method in the literature which has the property that given a perfect $D$ one can recover $G$ such that $\PG = \PR$.
 We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
 The MH-GAN has great potential for extension: %TODO: fill in. e.g. larger networks/datasets, language tasks (or some non-image).
