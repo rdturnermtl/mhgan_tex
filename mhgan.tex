@@ -161,6 +161,7 @@ This principle is illustrated in Figure~\ref{fig:block_diag}.
     \end{subfigure}
     \caption{{\small
     If traditional GAN training produces a perfect $D$ for an imperfect $G$, the MGAN wraps $G$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
+    \rl{The left figure is not explained properly. What are the axes? what are the dots? What do shades of color mean?}
     On the right, we illustrate how the MGAN is essentially a selector from multiple draws of $G$.
     In the MGAN, the selector is built using a Metropolis-Hastings (MH) acceptance rule (i.e., MCMC) from the discriminator scores $D$.
     }}
@@ -193,8 +194,8 @@ However, MCMC can be performed using only the ratio $\PD / \PG$, a quantity avai
 
 The outline of this paper is as follows:
 In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
-We explain our methodology of combing these two very different areas in Section~\ref{sec:MCMC Methods}; here we derive the wrapped generator $G'$.
-Section~\ref{sec:MCMC Methods} also discusses a simplified deterministic approximation to the MGAN\@.
+We explain our methodology of combing these two very different areas in Section~\ref{sec:Methods}; here we derive the wrapped generator $G'$.
+Section~\ref{sec:Methods} also discusses a simplified deterministic approximation to the MGAN\@.
 Results on real data (CIFAR-10 and CelebA) and extending widespread GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
 Sections~\ref{sec:Discussion} and~\ref{sec:Conclusions} discuss implications and conclusions.
 % TODO consider bullet points for contributions??
@@ -233,6 +234,7 @@ That is, $\vec x_K$ is the output of $G'$: Each MCMC chain results in a single s
 Independent chains are used for multiple samples from $G'$.
 Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$.
 Using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
+\rl{And? Paragrah seems unfinished here. Does our method introduce less bias?}
 
 \subsection{GANs}
 \label{sec:GANs}
