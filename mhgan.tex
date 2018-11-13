@@ -314,7 +314,7 @@ This categorical distribution should be uniform over the 25 real modes for a per
 To assess generator quality, we look at the Jensen-Shannon divergence (JSD) between the sample mode distribution and a uniform distribution.
 This is a much more stringent test of appropriate spread of probability mass than checking if a single sample is produced near a mode (as was done in~\citet{Azadi2018})\@.
 
-In Figure~\ref{fig:jsd}, we see that the MH-GAN improves the JSD over DRS by $5 \times$ on average, meaning it acheives a much more balanced spread across modes.
+In Figure~\ref{fig:jsd}, we see that the MH-GAN improves the JSD over DRS by $5 \times$ on average, meaning it achieves a much more balanced spread across modes.
 DRS fails to make gains after epoch 30.
 Using the principled approach of the MH-GAN along with calibrated probabilities ensures a correct spread of probability mass.
 
