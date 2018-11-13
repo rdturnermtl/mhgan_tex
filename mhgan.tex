@@ -176,7 +176,7 @@ This is based on the notion that the discriminator classifies between the genera
   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,,
 \end{align}
 where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the real data density \emph{implied} by the discriminator $D$.
-If GAN training reaches its global equilibrium then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
+If GAN training reaches its global equilibrium then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$; here $\PR$ refers to the unknown true distribution the data.)~\citep{Goodfellow2014}.
 
 % We use MCMC independence sampler to get samples from \PR using multiple samples from G
 % MCMC not directly applicable since the likelihood of \PR and G are not available
