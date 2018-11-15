@@ -106,9 +106,9 @@
 
 \begin{abstract}
 We introduce the Metropolis-Hastings generative adversarial network (MH-GAN), which combines aspects of Markov chain Monte Carlo and GANs.
-The MH-GAN samples from the distribution implicitly defined by the discriminator in a GAN\@.
+The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to sampling in a standard GAN which draws sample from the distribution defined by the generator.
 It uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
-With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly.
+With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly even when the generator is imperfect.
 We demonstrate the benefits of the improved generator on multiple benchmark datasets, including CIFAR-10 and CelebA, using DCGAN and WGAN\@.
 \end{abstract}
 
