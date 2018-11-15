@@ -133,7 +133,7 @@ This is built upon the notion that the discriminator classifies between the gene
 \end{align}
 where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
 If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
-% TODO: Fix super confusing previous para
+% JBY: TODO: Fix super confusing previous para
 
 % MCMC only needs the ratio of \PR/G and this can be found from D
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to sample from $\PD$ by taking multiple samples from $G$\@.
