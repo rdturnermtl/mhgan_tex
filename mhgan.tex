@@ -189,10 +189,10 @@ The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
 \paragraph{Discriminator rejection sampling}
 \jby{HERE}
-Very similar concurrent work from \citet{Azadi2018} is discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
-This approach is conceptually simpler at first, but suffers from two major shortcomings in practice.
+A very similar concurrent work from \citet{Azadi2018} proposes discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
+This approach is conceptually simpler than our approach at first but suffers from two major shortcomings in practice.
 First, it is necessary to find an upper-bound on $D$ over all possible samples in order to obtain a valid proposal distribution for rejection sampling.
-Because this is not possible, one must instead rely on trying to crudely estimate this bound by drawing many pilot samples.
+Because this is not possible, one must instead rely on estimating this bound by drawing many pilot samples.
 Secondly, even if one were to find a good bound, the acceptance rate would become very low due to the high-dimensionality of the sampling space.
 This leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores, making the model sample from a distribution different from $\PR$ even when $D$ is perfect.
 We use MCMC instead, which was invented precisely as a replacement for rejection sampling in higher dimensions.
@@ -226,6 +226,7 @@ Independent chains are used for multiple samples from $G'$.
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
 Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
 Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$.
+\todo{What is the reader supposed to make of the previous sentence? Clarify or remove.}
 Using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
 
 \subsection{GANs}
@@ -237,7 +238,7 @@ GANs implicitly model the data $\vec x$ via a synthetic data generator \smash{$G
 \end{align}
 This implies a (intractable) distribution on the data $\vec x \sample \PG$.
 We refer to the unknown true distribution on the data $\vec x$ as $\PR$.
-The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real (as opposed to being sampled from $\PG$)\@.
+The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real as opposed to being sampled from $\PG$\@.
 If $D$ converges optimally for a fixed $G$, then \smash{$D = \PR/(\PR + \PG)$}, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
 GAN training forms a game between $D$ and $G$.
 In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}.
@@ -250,7 +251,7 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using the
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-If we assume that $D$ is a Bayes' discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:PD inv}, we apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
+If we assume that $D$ is a Bayes' discriminator \jby{Is this an assumption? Or is it true by the definition of $\PD$?} between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:PD inv}, we apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
   \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
@@ -259,6 +260,7 @@ If $D$ is perfect, $\PD = \PR$.
 The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
 
 A graphical illustration of this sampling is shown in Figure~\ref{fig:univariate_example}.
+\jby{As far as I can tell, Fig 2 does not show an illustration of sampling (it shows only marginals). Was this line perhaps written when we thought we'd make a Fig showing sampling?}
 
 \paragraph{Calibration}
 The probabilities for $D$ must not merely provide a good AUC score, but must also be well \emph{calibrated}.
