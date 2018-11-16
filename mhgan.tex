@@ -30,6 +30,22 @@
 \usepackage[group-separator={,}]{siunitx}
 
 \usepackage[numbers]{natbib}
+\usepackage{ownstyles}
+
+% Commenting highlights
+\newif\ifcomments
+
+%Uncomment one of the two lines below to turn todos on/off
+%\commentsfalse
+\commentstrue
+
+\ifcomments
+\newcommand{\comments}[1]{#1}
+\else
+\newcommand{\comments}[1]{}
+\fi
+% Commenting highlights
+
 
 \title{Metropolis-Hastings\\Generative Adversarial Networks}
 
@@ -131,19 +147,20 @@ This is built upon the notion that the discriminator classifies between the gene
 \begin{align}
   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)} \,, \label{eq:define PD}
 \end{align}
-where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$.
-If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$)~\citep{Goodfellow2014}.
-% JBY: TODO: Fix super confusing previous para
+where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$ with respect to $G$.
+If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PD = \PR$)~\citep{Goodfellow2014}.
+
+\jby{TODO: Fix super confusing previous para}
 
 % MCMC only needs the ratio of \PR/G and this can be found from D
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to sample from $\PD$ by taking multiple samples from $G$\@.
 Amazingly, using the algorithm we present, one can show that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, one can obtain exact samples from the true data distribution $\PR$.
 Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
-However, the MH algorithm requires only the ratio
+However, the Metropolis-Hastings (MH) algorithm requires only the ratio
 \begin{align}
   \frac{\PD(\vec x)}{\PG(\vec x)} = \frac{D(\vec x)}{1 - D(\vec x)}\,, \label{eq:PD inv}
 \end{align}
-so we only need to evaluate $D(\vec x)$.
+which we can obtain using only evaluation of $D(\vec x)$.
 
 \input{fig_intro}
 
@@ -160,18 +177,19 @@ Section~\ref{sec:conclusions} discusses implications and conclusions.
 % Need to be clear on diff with NICE-MCMC
 A few other works combine GANs and MCMC in some way.
 \citet{Song2017} use a GAN-like procedure to train a RealNVP~\citep{Dinh2016} MCMC proposal for sampling an externally provided target \smash{$\target$}.
-While \citet{Song2017} use GANs to accelerate MCMC, we use MCMC to enhance the samples from a GAN\@.
+Whereas \citet{Song2017} use GANs to accelerate MCMC, we use MCMC to enhance the samples from a GAN\@.
 Similar to \citet{Song2017}, \citet{Kempinska2017} improve proposals in particle filters rather than MCMC\@.
 \citet{Song2017} was recently generalized by~\citet{Neklyudov2018}.
 
 % DRE analogy
-The GAN approach to density estimation is complementary to the lesser known \emph{density ratio estimation}~\citep{Sugiyama2012} (DRE)\@.
+The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} (DRE) approach~\citep{Sugiyama2012}\@.
 In DRE the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
 In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
 \paragraph{Discriminator rejection sampling}
-Similar concurrent work from \citet{Azadi2018} is discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
+\jby{HERE}
+Very similar concurrent work from \citet{Azadi2018} is discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
 This approach is conceptually simpler at first, but suffers from two major shortcomings in practice.
 First, it is necessary to find an upper-bound on $D$ over all possible samples in order to obtain a valid proposal distribution for rejection sampling.
 Because this is not possible, one must instead rely on trying to crudely estimate this bound by drawing many pilot samples.
