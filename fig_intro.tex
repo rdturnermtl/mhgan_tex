@@ -14,7 +14,7 @@
     \caption{{\small
     \textbf{(a)} We diagram how training of $D$ and $G$ in GANs performs coordinate descent on the joint minimax value function, shown in the solid black arrow.
     If GAN training produces a perfect $D$ for an imperfect $G$, the MH-GAN wraps $G$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
-    Note that this drawing is just a cartoon; among other inaccuracies the real GAN value function is not convex.
+    The generator $G$ moves vertically towards the orange region while the discriminator $D$ moves horizontally towards the purple.
     \textbf{(b)} We illustrate how the MH-GAN is essentially a selector from multiple draws of $G$.
     In the MH-GAN, the selector is built using a Metropolis-Hastings (MH) acceptance rule from the discriminator scores $D$.
     }}
