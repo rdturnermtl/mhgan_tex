@@ -28,6 +28,7 @@
 \usepackage{subcaption}
 \usepackage{booktabs}
 \usepackage[group-separator={,}]{siunitx}
+\usepackage{placeins}
 
 \usepackage[numbers]{natbib}
 
@@ -91,6 +92,8 @@
 \newcommand{\accept}{\alpha}
 
 \newcommand{\setx}{\set{X}}
+
+\newcommand{\exfactor}{1.0}
 
 \begin{document}
 
@@ -360,6 +363,7 @@ We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
 The MH-GAN has great potential for extension.
 
+\FloatBarrier
 \bibliographystyle{abbrvnat}
 \bibliography{mgan_refs} % References file
 
