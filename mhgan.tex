@@ -113,7 +113,6 @@
 % \! arrow where needed
 % search for: can overuse, It is ...
 
-% TODO add lemma
 % TODO comment prune
 
 \begin{document}
@@ -148,9 +147,8 @@ This is built upon the notion that the discriminator classifies between the gene
   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)} \,, \label{eq:define PD}
 \end{align}
 where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$ with respect to $G$.
-If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PD = \PR$)~\citep{Goodfellow2014}.
-
-\jby{TODO: Fix super confusing previous para}
+If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the data distribution and the generator distribution ($\PD = \PR = \PG$)~\citep{Goodfellow2014}.
+Furthermore, if the discriminator $D$ is optimal for a fixed imperfect generator $G$ then the implied distribution still equals the data distribution ($\PD = \PR \neq \PG$)\@.
 
 % MCMC only needs the ratio of \PR/G and this can be found from D
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to sample from $\PD$ by taking multiple samples from $G$\@.
@@ -215,13 +213,9 @@ The proposal $\vec x' \in \setx$ is accepted with probability
 If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
 Note that when estimating the distribution $\target$, one must include the duplicates that are a result of rejections in $\vec x'$.
 
-% TODO move after init section??
 \paragraph{Independent samples}
-% TODO repetition in sentence start to fix
 Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain; in this case it is also the output of $G'$.
-Each MCMC chain results in a single sample $\vec x_K$,
-%, which is the output of $G'$.
-and independent chains are used for multiple samples from $G'$.
+Therefore, each MCMC chain results in a single sample $\vec x_K$, and independent chains are used for multiple samples from $G'$.
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
@@ -250,10 +244,7 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using the
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-%If we assume that $D$ is a Bayes' discriminator
-%\jby{Is this an assumption? Or is it true by the definition of $\PD$?}
-%between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:PD inv},
-We apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
+We apply~\eqref{eq:alpha def} and~\eqref{eq:PD inv} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
   \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
@@ -391,7 +382,7 @@ The principled MCMC setup selects among samples from $G$ to correct biases in $G
 This is the only method in the literature which has the property that given a perfect $D$ one can recover $G$ such that $\PG = \PR$.
 We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
-The MH-GAN has great potential for extension: %TODO: fill in. e.g. larger networks/datasets, language tasks (or some non-image).
+The MH-GAN has great potential for extension.
 
 \bibliographystyle{abbrvnat}
 \bibliography{mgan_refs} % References file
