@@ -101,7 +101,7 @@
 
 \begin{abstract}
 We introduce the Metropolis-Hastings generative adversarial network (MH-GAN), which combines aspects of Markov chain Monte Carlo and GANs.
-The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to sampling in a standard GAN which draws sample from the distribution defined by the generator.
+The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to sampling in a standard GAN which draws samples from the distribution defined by the generator.
 It uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
 With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly even when the generator is imperfect.
 We demonstrate the benefits of the improved generator on multiple benchmark datasets, including CIFAR-10 and CelebA, using DCGAN and WGAN\@.
@@ -202,7 +202,7 @@ Therefore, each MCMC chain results in a single sample $\vec x_K$, and independen
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
 Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.\footnote{The
 curious reader may wonder why we do not simply stop the chain after the first accept.
-In general allowing chain length $K$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.}
+In general, allowing chain length $K$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.}
 
 \subsection{GANs}
 \label{sec:GANs}
@@ -226,7 +226,7 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using the
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-We apply~\eqref{eq:alpha def} and~\eqref{eq:PD inv} for a target of $\target=\PD$ and proposal $\prop=\PG$:
+We apply~\eqref{eq:PD inv} and~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
   \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
@@ -274,7 +274,7 @@ We first show an illustrative synthetic mixture model example followed by real d
 
 \subsection{Mixture of 25 Gaussians}
 
-We consider the $5 \times 5$ grid of two-dimensional Gaussians used in~\citet{Azadi2018}, which has become a popular toy example in the GAN literature~\citet{Dumoulin2016}.
+We consider the $5 \times 5$ grid of two-dimensional Gaussians used in~\citet{Azadi2018}, which has become a popular toy example in the GAN literature~\citep{Dumoulin2016}.
 The means are arranged on the grid $\mu \in \{{-2},{-1},0,1,2\}$ and use a standard deviation of $\sigma = 0.05$.
 
 \paragraph{Experimental setup}
