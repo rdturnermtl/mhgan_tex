@@ -218,16 +218,15 @@ Note that when estimating the distribution $\target$, one must include the dupli
 % TODO move after init section??
 \paragraph{Independent samples}
 % TODO repetition in sentence start to fix
-Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of $G'$.
-Each MCMC chain results in a single sample $\vec x_K$, which is the output of $G'$.
-Independent chains are used for multiple samples from $G'$.
+Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain; in this case it is also the output of $G'$.
+Each MCMC chain results in a single sample $\vec x_K$,
+%, which is the output of $G'$.
+and independent chains are used for multiple samples from $G'$.
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
-Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
-Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$.
-\todo{What is the reader supposed to make of the previous sentence? Clarify or remove.}
-Using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
+Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.\footnote{The curious reader may wonder why we do not simply stop the chain after the first accept. In general allowing chain length $K$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.}
+
 
 \subsection{GANs}
 \label{sec:GANs}
@@ -251,16 +250,17 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using the
 
 % Derive basic trick for MCMC using D
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-If we assume that $D$ is a Bayes' discriminator \jby{Is this an assumption? Or is it true by the definition of $\PD$?} between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:PD inv}, we apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
+%If we assume that $D$ is a Bayes' discriminator
+%\jby{Is this an assumption? Or is it true by the definition of $\PD$?}
+%between the generator $\PG$ and \emph{some} alternative distribution $\PD$ as per~\eqref{eq:PD inv},
+We apply~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
   \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
 \end{align}
-If $D$ is perfect, $\PD = \PR$.
 The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
-
-A graphical illustration of this sampling is shown in Figure~\ref{fig:univariate_example}.
-\jby{As far as I can tell, Fig 2 does not show an illustration of sampling (it shows only marginals). Was this line perhaps written when we thought we'd make a Fig showing sampling?}
+If $D$ is perfect, $\PD = \PR$, so the sampler will marginally sample from $\PR$.
+A toy one-dimensional example with just such a perfect discriminator is shown in Figure~\ref{fig:univariate_example}.
 
 \paragraph{Calibration}
 The probabilities for $D$ must not merely provide a good AUC score, but must also be well \emph{calibrated}.
