@@ -11,8 +11,8 @@
     Additionally, due to the large maximum $D$, it needs a large number of draws before a single accept.
     DRS with $\gamma$ shift is much more sample efficient, but completely misses the right mode as the setup invalidates the rejection sampling equations.
     The MH-GAN is more adaptive in that it quickly accepts samples for the areas $\PG$ models well; more MCMC rejections occur before accepting a sample in the right poorly modeled mode.
-    However, in all cases the MH-GAN is more efficient than DRS without $\gamma$ shift.
-    Presumably, this effect only becomes greater in higher dimensions.
+    In all cases the MH-GAN is more efficient than DRS without $\gamma$ shift.
+    Presumably, this effect becomes greater in high dimensions.
     }}
     \label{fig:univariate_example}
 \end{figure}
