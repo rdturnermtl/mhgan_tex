@@ -30,22 +30,6 @@
 \usepackage[group-separator={,}]{siunitx}
 
 \usepackage[numbers]{natbib}
-\usepackage{ownstyles}
-
-% Commenting highlights
-\newif\ifcomments
-
-%Uncomment one of the two lines below to turn todos on/off
-%\commentsfalse
-\commentstrue
-
-\ifcomments
-\newcommand{\comments}[1]{#1}
-\else
-\newcommand{\comments}[1]{}
-\fi
-% Commenting highlights
-
 
 \title{Metropolis-Hastings\\Generative Adversarial Networks}
 
@@ -66,10 +50,10 @@
   Jane Hung \\
   Uber AI Labs
   \And
-  Jason Yosinski \\
+  Yunus Saatci \\
   Uber AI Labs
   \And
-  Yunus Saatci \\
+  Jason Yosinski \\
   Uber AI Labs
 }
 
@@ -107,13 +91,6 @@
 \newcommand{\accept}{\alpha}
 
 \newcommand{\setx}{\set{X}}
-
-% Typical finish clean up checks:
-% use smash where needed
-% \! arrow where needed
-% search for: can overuse, It is ...
-
-% TODO comment prune
 
 \begin{document}
 
@@ -186,7 +163,6 @@ In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ wel
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
 \paragraph{Discriminator rejection sampling}
-\jby{HERE}
 A very similar concurrent work from \citet{Azadi2018} proposes discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
 This approach is conceptually simpler than our approach at first but suffers from two major shortcomings in practice.
 First, it is necessary to find an upper-bound on $D$ over all possible samples in order to obtain a valid proposal distribution for rejection sampling.
