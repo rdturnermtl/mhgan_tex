@@ -129,6 +129,8 @@ where $\PG$ is the (intractable) density of samples from the generator $G$, and 
 If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the data distribution and the generator distribution ($\PD = \PR = \PG$)~\citep{Goodfellow2014}.
 Furthermore, if the discriminator $D$ is optimal for a fixed imperfect generator $G$ then the implied distribution still equals the data distribution ($\PD = \PR \neq \PG$)\@.
 
+\input{fig_intro}
+
 % MCMC only needs the ratio of \PR/G and this can be found from D
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to sample from $\PD$ by taking multiple samples from $G$\@.
 Amazingly, using the algorithm we present, one can show that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, one can obtain exact samples from the true data distribution $\PR$.
@@ -139,14 +141,12 @@ However, the Metropolis-Hastings (MH) algorithm requires only the ratio
 \end{align}
 which we can obtain using only evaluation of $D(\vec x)$.
 
-\input{fig_intro}
-
-The outline of this paper is as follows:
-Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
-In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
-We explain our methodology of combining these two seemingly disparate areas in Section~\ref{sec:Methods} where we derive the wrapped generator $G'$.
-Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
-Section~\ref{sec:conclusions} discusses implications and conclusions.
+%The outline of this paper is as follows:
+%Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
+%In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
+%We explain our methodology of combining these two seemingly disparate areas in Section~\ref{sec:Methods} where we derive the wrapped generator $G'$.
+%Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
+%Section~\ref{sec:conclusions} discusses implications and conclusions.
 
 \section{Related Work}
 \label{sec:Related Work}
@@ -164,7 +164,7 @@ In DRE the generator $G$ is fixed, and the density is found by combining Bayes' 
 In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
-\paragraph{Discriminator rejection sampling}
+\subsection{Discriminator Rejection Sampling}
 A very similar concurrent work from \citet{Azadi2018} proposes discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
 This approach is conceptually simpler than our approach at first but suffers from two major shortcomings in practice.
 First, it is necessary to find an upper-bound on $D$ over all possible samples in order to obtain a valid proposal distribution for rejection sampling.
