@@ -63,7 +63,9 @@
   }
 \else
   \if@nipsfinal
-    \newcommand{\@noticestring}{~}
+    \newcommand{\@noticestring}{%
+    Third workshop on Bayesian Deep Learning (NeurIPS \@nipsyear), \@nipslocation.%
+    }
   \else
     \newcommand{\@noticestring}{%
       Submitted to \@nipsordinal\/ Conference on Neural Information
