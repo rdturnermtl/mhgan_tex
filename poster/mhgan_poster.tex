@@ -106,7 +106,7 @@
 % The third is 19% wide and houses a logo for your university/organization or a photo of you
 % The widths of these boxes can be easily edited to accommodate your content as you see fit
 
-\begin{centering}{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{Metropolis-Hastings GAN} \color{Black}}\\ % Title
+\begin{centering}{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{Metropolis-Hastings Generative Adversarial Network} \color{Black}}\\ % Title
 \includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\ % TODO try and move this to the right?
 \Huge \textbf{Ryan Turner, Jane Hung, Yunus Saatci, Jason Yosinski}\\ % Author(s)
 % \huge Uber AI Labs \\ % University/organization
@@ -140,12 +140,11 @@
 
 \Large
 
-\mysection{Introduction}
+\mysection{Why Resample GANs?}
 
 \begin{itemize}
-  \item Traditional density estimation uses tractable likelihood
-  \item GANs present radically new implicit approach
-  \item GANs: Have two neural networks, $G$ and $D$, competing against each other
+  \item GANs can estimate densities differently than traditional methods: implicitly without a tractable likelihood
+  \item GANs consist of two neural networks, generator $G$ and discriminator $D$, competing against each other
   \item $D$ usually thrown away $\implies$ use new method to capture knowledge in $D$: wrap $G$ and create a more intelligent $G'$
 \end{itemize}
 %
@@ -166,7 +165,7 @@
 \includegraphics[scale=2.5]{../figures/coord_descent.pdf}
 \includegraphics[scale=2.5]{../figures/block_diag.pdf}
 
-\mysection{Sampling}
+\mysection{Rejection Sampling}
 
 \begin{itemize}
   \item Discriminator Rejection Sampling (DRS) also corrects $G$ using the probabilities given by $D$
@@ -177,7 +176,7 @@
   \item We use MCMC instead: invented as replacement for rejection sampling in high dimensions
 \end{itemize}
 
-\mysection{MCMC}
+\mysection{Metropolis-Hastings}
 
 \begin{itemize}
   \item Samples $\vec x_{1:K} \in \setx^K$ marginally from target $\target$
@@ -190,7 +189,7 @@
   \item Detailed balance: $\vec x_k \sample \target \implies \vec x_{k+1} \sample \target$, initialize as close to $\target$ as possible
 \end{itemize}
 
-\mysection{GANs}
+\mysection{MH-GAN Practical Details}
 
 \begin{itemize}
   \item Implicit model on $\vec x$ via \smash{$G \in \R^{d} \rightarrow \setx$}:
@@ -202,7 +201,6 @@
   \item If $D$ optimal for fixed $G$: $\PD = \PR \neq \PG$
 \end{itemize}
 
-\mysection{MH-GANs}
 
 Sample from $\PD$:
 \begin{align}
