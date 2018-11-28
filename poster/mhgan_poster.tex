@@ -93,6 +93,8 @@
 
 \usepackage{float} 
 
+\usepackage{array}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 
 \begin{document}
 
@@ -106,12 +108,21 @@
 % The third is 19% wide and houses a logo for your university/organization or a photo of you
 % The widths of these boxes can be easily edited to accommodate your content as you see fit
 
-\begin{centering}{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{Metropolis-Hastings Generative Adversarial Network} \color{Black}}\\ % Title
-\includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\ % TODO try and move this to the right?
-\Huge \textbf{Ryan Turner, Jane Hung, Yunus Saatci, Jason Yosinski}\\ % Author(s)
-% \huge Uber AI Labs \\ % University/organization
-\end{centering}
+{
+\setlength\extrarowheight{35pt}
+\begin{tabular}{P{15cm}cP{15cm}}
+~ &
+{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{Metropolis-Hastings Generative Adversarial Networks} \color{Black}}
+&
+\includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\
+~ &
+\Huge \textbf{Ryan Turner, Jane Hung, Yunus Saatci, Jason Yosinski} &
+~
+\end{tabular}
+}
 %
+
+\vspace{1cm}
 
 %
 
@@ -176,6 +187,8 @@
   \item We use MCMC instead: invented as replacement for rejection sampling in high dimensions
 \end{itemize}
 
+\columnbreak
+
 \mysection{Metropolis-Hastings}
 
 \begin{itemize}
@@ -201,7 +214,6 @@
   \item If $D$ optimal for fixed $G$: $\PD = \PR \neq \PG$
 \end{itemize}
 
-
 Sample from $\PD$:
 \begin{align}
   \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
@@ -220,6 +232,8 @@ Weaken perfect $D$ assumption:
   \item Apply recalibration $\implies$ probabilities need not be correct
   \item $D$ only needs to be correct on $\PG$ and $\PR$ manifold.
 \end{itemize}
+
+\columnbreak
 
 \mysection{Results}
 
