@@ -121,29 +121,11 @@
 \end{tabular}
 }
 %
-
-\vspace{1cm}
-
-%
-
-\begin{comment}
-\begin{minipage}[b]{0.04959\linewidth}
-  \includegraphics[width=20cm]{uber_ai_logo_bootleg.pdf} % Logo or a photo of you, adjust its dimensions here
-\end{minipage}
-\end{comment}
-
-\vspace{1cm} % A bit of extra whitespace between the header and poster content
+\vspace{2cm} % A bit of extra whitespace between the header and poster content
 
 %----------------------------------------------------------------------------------------
 
 \begin{multicols}{3} % This is how many columns your poster will be broken into, a poster with many figures may benefit from less columns whereas a text-heavy poster benefits from more
-
-%----------------------------------------------------------------------------------------
-%	ABSTRACT
-%----------------------------------------------------------------------------------------
-
-%\color{Navy} % Navy color for the abstract
-
 
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
@@ -240,16 +222,21 @@ Weaken perfect $D$ assumption:
 
 \mysection{Results}
 
-Consider 1D example to illustrate procedure:\\
+Consider 1D example to illustrate procedure
+\begin{center}
 \includegraphics[scale=2.5]{../figures/univariate_example.pdf}
-
-Use 25 Gaussians example using trained GAN:\\
+\end{center}
+Use 25 Gaussians example using trained GAN:
+\begin{center}
 \includegraphics[scale=1.0]{../figures/mog_example_150.pdf}
+\hspace{7mm}
 \includegraphics[scale=2.0]{../figures/jsd.pdf}
-
-Comparison on real data using CIFAR-10:\\
+\end{center}
+Comparison on real data using CIFAR-10:
+\begin{center}
 \includegraphics[scale=2.5]{../figures/per_epoch.pdf}
 \includegraphics[scale=2.5]{../figures/plot_per_mh.pdf}
+\end{center}
 
 \paragraph{Code}
 \centering
