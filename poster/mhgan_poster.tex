@@ -138,7 +138,7 @@
 \begin{itemize}
   \item GANs can estimate densities differently than traditional methods: implicitly without a tractable likelihood
   \item GANs consist of two neural networks, generator $G$ and discriminator $D$, competing against each other
-  \item $D$ usually thrown away $\implies$ use new method to capture knowledge in $D$: wrap $G$ and create a more intelligent $G'$
+  \item $D$ usually thrown away $\implies$ Use new method to capture knowledge in $D$: wrap $G$ and create a more intelligent $G'$
 \end{itemize}
 %
 \begin{align}
@@ -167,7 +167,7 @@
   \item Discriminator Rejection Sampling (DRS) also corrects $G$ using the probabilities given by $D$
   \item Rejection sampling uses $\accept = p_D/(Mp_G)$ with $M$ s.t.~$\alpha \leq 1$
   \item $M$ must be estimated from many pilot samples
-  \item Very low acceptance probabilities in high dimensions without $\gamma$-shift heuristic
+  \item Very low accept probs.~in high dimensions without $\gamma$-shift heuristic
   \item $\gamma$-shift heuristic violates rejection sampling validity
   \item We use MCMC instead: invented as replacement for rejection sampling in high dimensions
 \end{itemize}
@@ -181,10 +181,13 @@
   \item Use independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$
   \item Accept with probability:
   \begin{align}
-    \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right) \in [0,1]\,. \label{eq:alpha def}
+    \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right) \in [0,1]
   \end{align}
   \item Independent samples: $\vec x_0 \sample \pinit$ and then $K$ MH steps for $\vec x_K$ as output
-  \item Detailed balance: $\vec x_k \sample \target \implies \vec x_{k+1} \sample \target$, initialize as close to $\target$ as possible
+  \item Detailed balance: $\vec x_k \sample \target \implies \vec x_{k+1} \sample \target$
+  \begin{itemize}
+    \item Initialize as close to $\target$ as possible
+  \end{itemize}
 \end{itemize}
 
 \mysection{MH-GAN Practical Details}
@@ -192,9 +195,9 @@
 \begin{itemize}
   \item Implicit model on $\vec x$ via \smash{$G \in \R^{d} \rightarrow \setx$}:
   \begin{align}
-    \vec x = G(\vec z)\,, \quad \vec z \sample \norm(\vec 0, \vec I_{d})\,.
+    \vec x = G(\vec z)\,, \quad \vec z \sample \norm(\vec 0, \vec I_{d})
   \end{align}
-  \item Generator distribution $\vec x \sample \PG$, implied discriminator distribution $\PD$, unknown true distribution $\PR$
+  \item \textbf{Key notation}: generator distribution $\vec x \sample \PG$, implied discriminator distribution $\PD$, unknown true distribution $\PR$
   \item If $D$ and $G$ converge: $\PD = \PR = \PG$
   \item If $D$ optimal for fixed $G$: $\PD = \PR \neq \PG$
 \end{itemize}
@@ -208,14 +211,14 @@ If $D$ is perfect $\PD = \PR$ (perfect target distribution)
 
 Modifications:
 \begin{itemize}
-  \item $D$ must be well calibrated to build valid $\accept$ $\implies$ Correct using isotonic regression on held out data
-  \item Avoid burn-in by initialization: sample from \emph{data} distribution $\PR$ $\implies$ initialize at real sample
+  \item $D$ must be well calibrated to build valid $\accept$\\$\implies$ Correct using isotonic regression on held out data
+  \item Avoid burn-in by initialization: \!sample from \emph{data} distribution $p_0 \!=\! \PR$\\$\implies$ Initialize at real sample
 \end{itemize}
 
 Weaken perfect $D$ assumption:
 \begin{itemize}
-  \item Apply recalibration $\implies$ probabilities need not be correct
-  \item $D$ only needs to be correct on $\PG$ and $\PR$ manifold.
+  \item Apply recalibration $\implies$ Probabilities need not be correct
+  \item $D$ only needs to be correct on $\PG$ and $\PR$ manifold
 \end{itemize}
 
 \columnbreak
