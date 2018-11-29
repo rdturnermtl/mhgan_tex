@@ -112,13 +112,14 @@
 {
 \setlength\extrarowheight{35pt}
 \begin{tabular}{P{15cm}cP{15cm}}
-~ &
+\multirow{2}{*}{\includegraphics[width=5cm]{qr.png}}
+&
 {\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{Metropolis-Hastings Generative Adversarial Networks} \color{Black}}
 &
-\includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\
-~ &
-\Huge \textbf{Ryan Turner, Jane Hung, Yunus Saatci, Jason Yosinski} &
-~
+\multirow{2}{*}{\includegraphics[width=12cm]{uber_ai_logo_bootleg.pdf}} \\
+&
+\Huge \textbf{Ryan Turner, Jane Hung, Yunus Saatci, Jason Yosinski}
+&
 \end{tabular}
 }
 %
@@ -203,7 +204,7 @@
   \item If $D$ optimal for fixed $G$: $\PD = \PR \neq \PG$
 \end{itemize}
 
-Sample from $\PD$:
+Sample from target $\target=\PD$ using proposal $\prop=\PG$:
 \begin{align}
   \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
   \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)
