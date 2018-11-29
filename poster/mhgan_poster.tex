@@ -114,11 +114,11 @@
 \begin{tabular}{P{15cm}cP{15cm}}
 ~ &
 {\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{Metropolis-Hastings Generative Adversarial Networks} \color{Black}}
-& \\
-% \includegraphics[width=15cm]{uber_ai_logo_bootleg.pdf} \\
+&
+\includegraphics[width=10cm]{uber_ai_logo_bootleg.pdf} \\
 ~ &
-\Huge \textbf{Ryan Turner, Jane Hung, Yunus Saatci, Jason Yosinski} & 
-\includegraphics[width=15cm]{uber_ai_logo_bootleg.pdf}
+\Huge \textbf{Ryan Turner, Jane Hung, Yunus Saatci, Jason Yosinski} &
+~
 \end{tabular}
 }
 %
@@ -142,9 +142,9 @@
   \item $D$ usually thrown away $\implies$ Use new method to capture knowledge in $D$: wrap $G$ and create a more intelligent $G'$
 \end{itemize}
 %
-%% \begin{align}
-%%   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}
-%% \end{align}
+\begin{align}
+  D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}
+\end{align}
 %
 \begin{itemize}
   \item Use MCMC \emph{independence sampler} to sample from implied $\PD$ by taking multiple samples from $G$
@@ -155,6 +155,11 @@
 \begin{align}
   \frac{\PD(\vec x)}{\PG(\vec x)} = \frac{D(\vec x)}{1 - D(\vec x)}
 \end{align}
+%
+~\\
+\includegraphics[scale=2.75]{../figures/coord_descent.pdf}
+\hspace{7mm}
+\includegraphics[scale=2.75]{../figures/block_diag.pdf}
 \vspace{-2cm}
 
 \mysection{Rejection Sampling}
@@ -167,7 +172,7 @@
   \item $\gamma$-shift heuristic violates rejection sampling validity \frownie{}
 \end{itemize}
 
-%\columnbreak
+\columnbreak
 
 \mysection{Metropolis-Hastings}
 
@@ -179,25 +184,31 @@
   \begin{align}
     \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right) \in [0,1]
   \end{align}
+  \item Independent samples: $\vec x_0 \sample \pinit$ and then $K$ MH steps for $\vec x_K$ as output
+  \item Detailed balance: $\vec x_k \sample \target \implies \vec x_{k+1} \sample \target$
+  \begin{itemize}
+    \item Initialize as close to $\target$ as possible
+  \end{itemize}
 \end{itemize}
 
-\mysection{The MH-GAN Algorithm}
-
-\includegraphics[scale=2.75]{../figures/coord_descent.pdf}
-\hspace{7mm}
-\includegraphics[scale=2.75]{../figures/block_diag.pdf}
+\mysection{MH-GAN Practical Details}
 
 \begin{itemize}
-\item Use G as the independence sampler
-\item Compute acceptance probability using the following observations:
-  \begin{enumerate}
-  \item \begin{align}
-    \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
-    \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)
+  \item Implicit model on $\vec x$ via \smash{$G \in \R^{d} \rightarrow \setx$}:
+  \begin{align}
+    \vec x = G(\vec z)\,, \quad \vec z \sample \norm(\vec 0, \vec I_{d})
   \end{align}
-  \item If $D$ is perfect $\PD = \PR$ (perfect target distribution). If $D$ is pretrained then $\PD \approxeq \PR$ 
-  \end{enumerate}
+  \item \textbf{Key notation}: generator distribution $\vec x \sample \PG$, implied discriminator distribution $\PD$, unknown true distribution $\PR$
+  \item If $D$ and $G$ converge: $\PD = \PR = \PG$
+  \item If $D$ optimal for fixed $G$: $\PD = \PR \neq \PG$
 \end{itemize}
+
+Sample from $\PD$:
+\begin{align}
+  \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
+  \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)
+\end{align}
+If $D$ is perfect $\PD = \PR$ (perfect target distribution)
 
 Modifications:
 \begin{itemize}
@@ -215,10 +226,10 @@ Weaken perfect $D$ assumption:
 
 \mysection{Results}
 
-%% Consider 1D example to illustrate procedure
-%% \begin{center}
-%% \includegraphics[scale=2.5]{../figures/univariate_example.pdf}
-%% \end{center}
+Consider 1D example to illustrate procedure
+\begin{center}
+\includegraphics[scale=2.5]{../figures/univariate_example.pdf}
+\end{center}
 Use 25 Gaussians example using trained GAN:
 \begin{center}
 \includegraphics[scale=1.0]{../figures/mog_example_150.pdf}
@@ -231,7 +242,7 @@ Comparison on real data using CIFAR-10:
 \includegraphics[scale=2.5]{../figures/plot_per_mh.pdf}
 \end{center}
 
-\mysection{Code}
+\paragraph{Code}
 \centering
 \large {\url{github.com/uber-research/metropolis-hastings-gans}}
 
