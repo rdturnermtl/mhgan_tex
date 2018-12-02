@@ -18,7 +18,7 @@
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[a0,landscape]{a0poster}
+\documentclass[a0,portrait]{a0poster}
 
 \usepackage{multicol} % This is so we can have multiple columns of text side-by-side
 \columnsep=100pt % This is the amount of white space between the columns in the poster
@@ -97,6 +97,8 @@
 \usepackage{array}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 
+\usepackage{makecell}
+
 \begin{document}
 
 %----------------------------------------------------------------------------------------
@@ -110,11 +112,11 @@
 % The widths of these boxes can be easily edited to accommodate your content as you see fit
 
 {
-\setlength\extrarowheight{35pt}
+\setlength\extrarowheight{20pt}
 \begin{tabular}{P{15cm}cP{15cm}}
 \multirow{2}{*}{\includegraphics[width=5cm]{qr.png}}
 &
-{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{Metropolis-Hastings Generative Adversarial Networks} \color{Black}}
+{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{\makecell{Metropolis-Hastings\\Generative Adversarial Networks}} \color{Black}}
 &
 \multirow{2}{*}{\includegraphics[width=12cm]{uber_ai_logo_bootleg.pdf}} \\
 &
@@ -123,11 +125,11 @@
 \end{tabular}
 }
 %
-\vspace{2cm} % A bit of extra whitespace between the header and poster content
+\vspace{1cm} % A bit of extra whitespace between the header and poster content
 
 %----------------------------------------------------------------------------------------
 
-\begin{multicols}{3} % This is how many columns your poster will be broken into, a poster with many figures may benefit from less columns whereas a text-heavy poster benefits from more
+\begin{multicols}{2} % This is how many columns your poster will be broken into, a poster with many figures may benefit from less columns whereas a text-heavy poster benefits from more
 
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
@@ -173,7 +175,7 @@
   \item $\gamma$-shift heuristic violates rejection sampling validity \frownie{}
 \end{itemize}
 
-\columnbreak
+%\columnbreak
 
 \mysection{Metropolis-Hastings}
 
@@ -223,7 +225,7 @@ Weaken perfect $D$ assumption:
   \item $D$ only needs to be correct on $\PG$ and $\PR$ manifold
 \end{itemize}
 
-\columnbreak
+%\columnbreak
 
 \mysection{Results}
 
