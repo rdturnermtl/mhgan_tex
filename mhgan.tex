@@ -7,7 +7,7 @@
 %\usepackage{subfigure}
 \usepackage{booktabs} % for professional tables
 
-\usepackage{url}            % simple URL typesetting
+\usepackage[hyphens]{url}            % simple URL typesetting
 \usepackage{amsmath}
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
@@ -143,10 +143,7 @@ They implicitly represent the density of the data via a classifier that distingu
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
 In the typical setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
 In this work we propose the Metropolis-Hastings GAN (MH-GAN), a GAN that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
-This principle is illustrated in Figure~\ref{fig:intro}.\footnote{The
-code for this project is available at:\\
-\url{https://github.com/uber-research/metropolis-hastings-gans}}
-% TODO fix the footnote
+This principle is illustrated in Figure~\ref{fig:intro}.\footnote{A github link will be made available with the final version of this paper.}
 
 % Assume D is bayes optimal
 The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
@@ -170,12 +167,12 @@ However, the Metropolis-Hastings (MH) algorithm requires only the ratio
 \end{align}
 which we can obtain using only evaluation of $D(\vec x)$.
 
-%The outline of this paper is as follows:
-%Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
-%In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
-%We explain our methodology of combining these two seemingly disparate areas in Section~\ref{sec:Methods} where we derive the wrapped generator $G'$.
-%Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
-%Section~\ref{sec:conclusions} discusses implications and conclusions.
+The outline of this paper is as follows:
+Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
+In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
+We explain our methodology of combining these two seemingly disparate areas in Section~\ref{sec:Methods} where we derive the wrapped generator $G'$.
+Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
+Section~\ref{sec:conclusions} discusses implications and conclusions.
 
 \section{Related Work}
 \label{sec:Related Work}
@@ -200,9 +197,8 @@ First, it is necessary to find an upper-bound on $D$ over all possible samples i
 Because this is not possible, one must instead rely on estimating this bound by drawing many pilot samples.
 Secondly, even if one were to find a good bound, the acceptance rate would become very low due to the high-dimensionality of the sampling space.
 This leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores, making the model sample from a distribution different from $\PR$ even when $D$ is perfect.
-
 We use MCMC instead, which was invented precisely as a replacement for rejection sampling in higher dimensions.
-We further improve the robustness of MCMC via use of a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
+We further improve the robustness of MCMC via use of a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance.  % probabilities
 
 \section{Background and Notation}
 \label{sec:Background}
