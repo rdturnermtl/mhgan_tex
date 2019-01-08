@@ -200,6 +200,7 @@ First, it is necessary to find an upper-bound on $D$ over all possible samples i
 Because this is not possible, one must instead rely on estimating this bound by drawing many pilot samples.
 Secondly, even if one were to find a good bound, the acceptance rate would become very low due to the high-dimensionality of the sampling space.
 This leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores, making the model sample from a distribution different from $\PR$ even when $D$ is perfect.
+
 We use MCMC instead, which was invented precisely as a replacement for rejection sampling in higher dimensions.
 We further improve the robustness of MCMC via use of a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
 
