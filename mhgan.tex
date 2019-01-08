@@ -375,11 +375,8 @@ The $Z$ statistic for the raw discriminator $D$ (DCGAN on CIFAR-10) varies from 
 The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated.
 Accordingly, it is unsurprising that the calibrated discriminator significantly boosts performance in the MH-GAN\@.
 
-\input{fig_cifar_samples}
-\input{fig_celeba_samples}
-
 \paragraph{Visual results}
-Finally, we also show example images from the CIFAR-10 and CelebA setups in Figures~\ref{fig:cifar_samples} and~\ref{fig:celeba_samples}.
+Finally, we also show example images from the CIFAR-10 and CelebA setups in the supplementary material.
 The selectors (such as MH-GAN) result in a wider spread of probability mass across background colors.
 For CIFAR-10, it enhances modes with animal-like outlines and vehicles.
 
@@ -390,6 +387,7 @@ We have shown how to incorporate the knowledge in the discriminator $D$ into an 
 Our method is based on the premise that $D$ is better at density ratio estimation than $G$ is at sampling data, which is inherently a harder task.
 The principled MCMC setup selects among samples from $G$ to correct biases in $G$.
 This is the only method in the literature which has the property that given a perfect $D$ one can recover $G$ such that $\PG = \PR$.
+
 We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
 The MH-GAN has great potential for extension.
