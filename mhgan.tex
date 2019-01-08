@@ -238,6 +238,7 @@ GANs implicitly model the data $\vec x$ via a synthetic data generator \smash{$G
 This implies a (intractable) distribution on the data $\vec x \sample \PG$.
 We refer to the unknown true distribution on the data $\vec x$ as $\PR$.
 The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real as opposed to being sampled from $\PG$\@.
+
 If $D$ converges optimally for a fixed $G$, then \smash{$D = \PR/(\PR + \PG)$}, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
 GAN training forms a game between $D$ and $G$.
 In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}.
@@ -258,7 +259,9 @@ We apply~\eqref{eq:PD inv} and~\eqref{eq:alpha def} for a target of $\target=\PD
 \end{align}
 The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
 If $D$ is perfect, $\PD = \PR$, so the sampler will marginally sample from $\PR$.
+
 A toy one-dimensional example with just such a perfect discriminator is shown in Figure~\ref{fig:univariate_example}.
+In this example the MH-GAN is able to correctly reconstruct a missing mode in the generating distribution from the tail of a faulty generator.
 
 \paragraph{Calibration}
 The probabilities for $D$ must not merely provide a good AUC score, but must also be well \emph{calibrated}.
@@ -273,12 +276,15 @@ If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \samp
   Z &:= \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \label{eq:calib score} \\
   \implies Z &\sample \norm(0,1)\,.
 \end{align}
+That is, we expect the $Z$ diagnostic to be a Gaussian in large $N$ for any well-calibrated classifier.
 This means that for large values of $Z$, such as when $|Z| > 2$, we reject the hypothesis that $D$ is well-calibrated.
+Note this statistic is \emph{not} used for recalibration, but rather to demonstrate that GAN discriminators are typically poorly calibrated.
 
 \paragraph{Initialization}
 We also avoid the burn-in issues that usually plague MCMC methods.
 Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ (\smash{$\vec x_k \sample \PD$}), then the marginal at time step $k+1$ will also follow $\PD$ (\smash{$\vec x_{k+1} \sample \PD$})\@.
 In most MCMC applications it is not possible to get an initial sample from the target distribution (\smash{$\vec x_0 \sample \PD$})\@.
+
 However, in MH-GANs, we are sampling from the \emph{data} distribution, so we may use a trick:
 Initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
 If no generated sample is accepted by the end of the chain, restart sampling from a synthetic sample to ensure the initial real sample is never output.
