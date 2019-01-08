@@ -227,9 +227,10 @@ Therefore, each MCMC chain results in a single sample $\vec x_K$, and independen
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
-Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.\footnote{The
-curious reader may wonder why we do not simply stop the chain after the first accept.
-In general, allowing chain length $K$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.}
+Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
+
+The curious reader may wonder why we do not simply stop the chain after the first accept.
+In general, allowing chain length $K$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.
 
 \subsection{GANs}
 \label{sec:GANs}
@@ -255,8 +256,9 @@ This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using the
 In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
 We apply~\eqref{eq:PD inv} and~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
-  \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
-  \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
+  \frac{\PD}{\PG} &= \frac{1}{D^{-1} - 1} \\
+  \implies
+  \accept(\vec x', \vec x_k) &= \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
 \end{align}
 The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
 If $D$ is perfect, $\PD = \PR$, so the sampler will marginally sample from $\PR$.
@@ -272,8 +274,8 @@ Furthermore, for WGAN, calibration is required as it does not learn a typical GA
 We also detect miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples \smash{$\vec x_{1:N}$} and real/fake labels \smash{$y_{1:N} \in \{0,1\}^N$}.
 If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \sample \bern(D(\vec x))$},
 \begin{align}
-  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,.
-  \label{eq:calib score}
+  Z &:= \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \label{eq:calib score} \\
+  \implies Z &\sample \norm(0,1)\,.
 \end{align}
 This means that for large values of $Z$, such as when $|Z| > 2$, we reject the hypothesis that $D$ is well-calibrated.
 
