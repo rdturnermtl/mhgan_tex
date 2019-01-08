@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\begin{center}
+  \caption{{\small
+    Results showing Inception score improvements from MH-GAN on DCGAN and WGAN at epoch 60.
+    Like Figure~\ref{fig:incep_by_epoch}, the error bars and p-values are computed using a paired t-test across Inception score batches.
+    All results except for DCGAN on celebA are significant at \smash{$p < 10^{-4}$}.
+    WGAN does not learn a typical GAN discriminator that outputs a probability, so calibration is actually required in this case.
+    }}
+    \label{tbl:inception}
+{\scriptsize
+\begin{tabular}{|l|l|r|l|r||l|r|l|r|}
+\toprule
+~                 & \multicolumn{4}{c||}{DCGAN}                               & \multicolumn{4}{c|}{WGAN} \\
+\toprule
+~            & {CIFAR-10}                &      p   & CelebA                  &      p   & CIFAR-10                 &       p  & CelebA                 &       p  \\
+\midrule
+%\hline \\
+GAN          &        2.8789             &       -- &      2.3317             &       -- &       3.0734             &       -- &     2.7876             &       -- \\
+DRS          &        2.977(77)          &   0.0131 &      2.511(50)          &  <0.0001 &               ~          &        ~ &             ~          &        ~ \\
+DRS (cal)    &        3.073(80)          &  <0.0001 &      2.869(67)          &  <0.0001 &       3.137(64)          &   0.0497 &     2.861(66)          &   0.0277 \\
+MH-GAN       &        3.113(69)          &  <0.0001 &      2.682(50)          &  <0.0001 &               ~          &        ~ &             ~          &        ~ \\
+MH-GAN (cal) &        \textbf{3.379}(66) &  <0.0001 &      \textbf{3.106}(64) &  <0.0001 &       \textbf{3.305}(83) &  <0.0001 &     \textbf{2.889}(89) &   0.0266 \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+\end{table}
+

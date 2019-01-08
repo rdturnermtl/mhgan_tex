@@ -1,12 +1,9 @@
 \documentclass{article}
 
-% http://bayesiandeeplearning.org/
 % if you need to pass options to natbib, use, e.g.:
 % \PassOptionsToPackage{numbers, compress}{natbib}
 % before loading nips_2018
-
-% ready for submission
-\usepackage[final]{nips_2018}
+\usepackage[nonatbib,final]{nips_2018}
 
 % to compile a preprint version, e.g., for submission to arXiv, add
 % add the [preprint] option:
@@ -30,27 +27,12 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{booktabs}
-\usepackage{siunitx}
+\usepackage[group-separator={,}]{siunitx}
+\usepackage{placeins}
 
-\usepackage{ownstyles}
+\usepackage[numbers]{natbib}
 
-
-% % Commenting highlights
-\newif\ifcomments
-
-%Uncomment one of the two lines below to turn todos on/off
-%\commentsfalse
-\commentstrue
-
-\ifcomments
-\newcommand{\comments}[1]{#1}
-\else
-\newcommand{\comments}[1]{}
-\fi
-% % Commenting highlights
-
-
-\title{Metropolitan Generative Adversarial Networks}
+\title{Metropolis-Hastings\\Generative Adversarial Networks}
 
 % The \author macro works with any number of authors. There are two
 % commands used to separate the names and addresses of multiple
@@ -67,6 +49,9 @@
   Uber AI Labs
   \And
   Jane Hung \\
+  Uber AI Labs
+  \And
+  Yunus Saatci \\
   Uber AI Labs
   \And
   Jason Yosinski \\
@@ -103,457 +88,282 @@
 
 \newcommand{\PG}{{p_G}}
 \newcommand{\PD}{{p_D}}
-\newcommand{\PR}{{p_R}}
+\newcommand{\PR}{{p_{\textrm{data}}}}
 \newcommand{\accept}{\alpha}
 
 \newcommand{\setx}{\set{X}}
 
-% Finish clean up checks:
-% TODO use smash where needed
-% TODO \! arrow where needed
-% TODO can search, it is
+\newcommand{\exfactor}{1.0}
 
 \begin{document}
-% \nipsfinalcopy is no longer used
 
 \maketitle
 
-% Do at end
-% Might not be needed for workshop since 3 page limit anyway
 \begin{abstract}
-We introduce the Metropolitan generative adversarial network (MGAN), which combines aspect of Markov chain Monte Carlo and GANs.
-The MGAN samples from the distribution implicitly defined by the generator in a GAN\@.
-As such it uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
-With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly.
-We demonstrate results on common GAN data sets and wrap the popular DCGAN and WGAN\@.
+We introduce the Metropolis-Hastings generative adversarial network (MH-GAN), which combines aspects of Markov chain Monte Carlo and GANs.
+The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to sampling in a standard GAN which draws samples from the distribution defined by the generator.
+It uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
+With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly even when the generator is imperfect.
+We demonstrate the benefits of the improved generator on multiple benchmark datasets, including CIFAR-10 and CelebA, using DCGAN and WGAN\@.
 \end{abstract}
 
 \section{Introduction}
 
 % GANs provide implicit way to do density estimation
-% traditionally done with explicit likelihood, ancestral sampling in most models to get new synthetic data points from fit model
-Generative adversarial networks (GANs) presented a radically new way to do density estimation:
-they implicitly represent the density of the data via a classifier that distinguishes real from generated data.
-Traditionally, density estimation has been done with a model that can easily compute the likelihood of the observed data.
-Computing the likelihood has been at least as easy as sampling new data from the trained model.  % TODO consider citing RBMs as example??
-GANs turn this paradigm on its head.
+Traditionally, density estimation is done with a model that can compute the data likelihood.
+Generative adversarial networks (GANs)~\citep{Goodfellow2014} present a radically new way to do density estimation:
+They implicitly represent the density of the data via a classifier that distinguishes real from generated data.
 
-% GAN uses D and G, but then D usually thrown away
-% Use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
+% GAN uses D and G, but then D usually thrown away => use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
-Typically, in this setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
-% editor prefers "(MGAN), a GAN that" but that will cost us a line
-In this work, we propose the Metropolitan GAN (MGAN) that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
-This principle is illustrated in Figure~\ref{fig:block_diag}.
+In the typical setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
+In this work we propose the Metropolis-Hastings GAN (MH-GAN), a GAN that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
+This principle is illustrated in Figure~\ref{fig:intro}.\footnote{The
+code for this project is available at:\\
+\url{https://github.com/uber-research/metropolis-hastings-gans}}
 
-\begin{figure}[bhtp]
-    \centering
-    \begin{subfigure}[t]{2.25in}
-       \centering
-       \includegraphics[scale=1.0]{figures/coord_descent.pdf}
-       \caption{GAN objective}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[t]{3in}
-       \centering
-       \includegraphics[scale=1.0]{figures/block_diag.pdf}
-       \caption{$G'$ wraps $G$}
-    \end{subfigure}
-    \caption{{\small
-    If traditional GAN training produces a perfect $D$ for an imperfect $G$, the MGAN wraps $G$ to produce a perfect generator $G'$, as shown in the final dashed arrow.
-    \rl{The left figure is not explained properly. What are the axes? what are the dots? What do shades of color mean?}
-    On the right, we illustrate how the MGAN is essentially a selector from multiple draws of $G$.
-    In the MGAN, the selector is built using a Metropolis-Hastings (MH) acceptance rule (i.e., MCMC) from the discriminator scores $D$.
-    }}
-    \label{fig:block_diag}
-\end{figure}
-
-% Approach is based on notion that we can sample from real distn \PR implied by D that discriminates between \PR
-% Corollary is that if D is perfect, but G is good, we can sample from the data generating distn exactly
-The MGAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
-This is based on the notion that the discriminator classifies between the generator $G$ and a real data distribution:
+% Assume D is bayes optimal
+The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
+This is built upon the notion that the discriminator classifies between the generator $G$ and a data distribution:
 \begin{align}
-  D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)}\,,
+  D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)} \,, \label{eq:define PD}
 \end{align}
-where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the real data density \emph{implied} by the discriminator $D$.
-If GAN training reaches its global equilibrium then this discriminator distribution $\PD$ is equal to the true distribution on the data ($\PR = \PD$; here $\PR$ refers to the unknown true distribution the data.)~\citep{Goodfellow2014}.
+where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$ with respect to $G$.
+If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the data distribution and the generator distribution ($\PD = \PR = \PG$)~\citep{Goodfellow2014}.
+Furthermore, if the discriminator $D$ is optimal for a fixed imperfect generator $G$ then the implied distribution still equals the data distribution ($\PD = \PR \neq \PG$)\@.
 
-% We use MCMC independence sampler to get samples from \PR using multiple samples from G
-% MCMC not directly applicable since the likelihood of \PR and G are not available
-% However, MCMC only needs the ratio of \PR/G and this can be found from D
-We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to get samples from $\PD$ using multiple samples from $G$ (as the proposal)\@.
-A corollary is that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, we can obtain exact samples from the true data distribution $\PR$.
-Standard MCMC implementations cannot achieve this because MCMC requires (unnormalized) densities for the target $\PD$ and the proposal $\PG$.
-Neither of these quantities are available in GANs.
-However, MCMC can be performed using only the ratio $\PD / \PG$, a quantity available directly from the discriminator $D$.
+\input{fig_intro}
 
-% We also avoid the burn in issues usually associated with MCMC
-% Typically, we cannot get a good initial sample because sampling over parameter space from posterior
-% But in this application we are sampling from data space
-% So, if init from true data point, then already at true distn for init, and will stay at true distn as result of detailed balance
+% MCMC only needs the ratio of \PR/G and this can be found from D
+We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to sample from $\PD$ by taking multiple samples from $G$\@.
+Amazingly, using the algorithm we present, one can show that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, one can obtain exact samples from the true data distribution $\PR$.
+Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
+However, the Metropolis-Hastings (MH) algorithm requires only the ratio
+\begin{align}
+  \frac{\PD(\vec x)}{\PG(\vec x)} = \frac{D(\vec x)}{1 - D(\vec x)}\,, \label{eq:PD inv}
+\end{align}
+which we can obtain using only evaluation of $D(\vec x)$.
 
-The outline of this paper is as follows:
-In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
-We explain our methodology of combing these two very different areas in Section~\ref{sec:Methods}; here we derive the wrapped generator $G'$.
-Section~\ref{sec:Methods} also discusses a simplified deterministic approximation to the MGAN\@.
-Results on real data (CIFAR-10 and CelebA) and extending widespread GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
-Sections~\ref{sec:Discussion} and~\ref{sec:Conclusions} discuss implications and conclusions.
-% TODO consider bullet points for contributions??
+%The outline of this paper is as follows:
+%Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
+%In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
+%We explain our methodology of combining these two seemingly disparate areas in Section~\ref{sec:Methods} where we derive the wrapped generator $G'$.
+%Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
+%Section~\ref{sec:conclusions} discusses implications and conclusions.
 
-\section{Background}
+\section{Related Work}
+\label{sec:Related Work}
+
+% Need to be clear on diff with NICE-MCMC
+A few other works combine GANs and MCMC in some way.
+\citet{Song2017} use a GAN-like procedure to train a RealNVP~\citep{Dinh2016} MCMC proposal for sampling an externally provided target \smash{$\target$}.
+Whereas \citet{Song2017} use GANs to accelerate MCMC, we use MCMC to enhance the samples from a GAN\@.
+Similar to \citet{Song2017}, \citet{Kempinska2017} improve proposals in particle filters rather than MCMC\@.
+\citet{Song2017} was recently generalized by~\citet{Neklyudov2018}.
+
+% DRE analogy
+The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} (DRE) approach~\citep{Sugiyama2012}\@.
+In DRE the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
+In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
+The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
+
+\subsection{Discriminator Rejection Sampling}
+A very similar concurrent work from \citet{Azadi2018} proposes discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
+This approach is conceptually simpler than our approach at first but suffers from two major shortcomings in practice.
+First, it is necessary to find an upper-bound on $D$ over all possible samples in order to obtain a valid proposal distribution for rejection sampling.
+Because this is not possible, one must instead rely on estimating this bound by drawing many pilot samples.
+Secondly, even if one were to find a good bound, the acceptance rate would become very low due to the high-dimensionality of the sampling space.
+This leads~\citet{Azadi2018} to use an extra $\gamma$ heuristic to shift the logit $D$ scores, making the model sample from a distribution different from $\PR$ even when $D$ is perfect.
+We use MCMC instead, which was invented precisely as a replacement for rejection sampling in higher dimensions.
+We further improve the robustness of MCMC via use of a \emph{calibrator} on the discriminator to get more accurate probabilities for computing acceptance probabilities.
+
+\section{Background and Notation}
 \label{sec:Background}
 
-% Short page limit so let's just get on same page with notation here.
-In this section, we quickly review the notation and equations with MCMC and GANs.
+In this section, we briefly review the notation and equations with MCMC and GANs.
 
 \subsection{MCMC Methods}
 \label{sec:MCMC Methods}
 
-MCMC methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ marginally from a target distribution $\vec x \sample \target$.
-The Markov chain in MCMC works by drawing a first sample from an initial distribution $\vec x_0 \sample \pinit$.
-In general, the proposed points $\vec x' \in \setx$ are drawn from a conditional distribution $\vec x' \sample \prop(\vec x' \given \vec x_k)$ (the proposal distribution)\@.
-However, in this work we are using an independence sampler, which means $\vec x' \sample \prop(\vec x')$.
-The proposal $\vec x'$ is accepted with probability:
+MCMC methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ that marginally come from a target distribution $\target$.
+We refer to the initial distribution as $\pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
+The proposal $\vec x' \in \setx$ is accepted with probability
 \begin{align}
-  \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k \given \vec x')}{\target(\vec x_k)\prop(\vec x' \given \vec x_k)}\right) \in [0,1]\,,
+  \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right) \in [0,1]\,. \label{eq:alpha def}
 \end{align}
-which for an independence sampler is:
-\begin{align}
-  \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right)\,.
-\end{align}
-If the point $\vec x'$ is accepted then $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
-This acceptance probability is known as the Metropolis-Hastings rule from which we derive the name Metropolitan GAN\@.
-Note that when estimating the distribution on $\target$ one must include the duplicates that are a result of rejections in $\vec x'$.
+If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \vec x_k$.
+Note that when estimating the distribution $\target$, one must include the duplicates that are a result of rejections in $\vec x'$.
 
+\paragraph{Independent samples}
+Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain; in this case it is also the output of $G'$.
+Therefore, each MCMC chain results in a single sample $\vec x_K$, and independent chains are used for multiple samples from $G'$.
+
+\paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
-Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, its KL divergence to $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.
-
-% also include not on bias from stopping rules
-In our setup, in order to obtain independent samples, we sample $\vec x \sample \pinit$ and then run the chain a fixed number of iterations $K$ to obtain the final sample produced by the ``wrapped GAN'' $G'$.
-That is, $\vec x_K$ is the output of $G'$: Each MCMC chain results in a single sample for $G'$.
-Independent chains are used for multiple samples from $G'$.
-Note that the number of samples $K$ is meant to be ancillary to the state of the Markov chain $\vec x_k$.
-Using the state of the Markov chain to determine when to stop has the potential to introduce bias~\citep{Cowles1999}.
-\rl{And? Paragrah seems unfinished here. Does our method introduce less bias?}
+Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ will always decrease as $k$ increases~\citep{Murray2008,Cover2012}.\footnote{The
+curious reader may wonder why we do not simply stop the chain after the first accept.
+In general, allowing chain length $K$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.}
 
 \subsection{GANs}
 \label{sec:GANs}
 
-GANs implicitly model the distribution on data $\vec x \sample \PR$ by sampling synthetic data points from a generator; we use $\PR$ to refer to the unknown true distribution on the data $\vec x$.
-The generator works by taking a sample from a Gaussian $\vec z \sample \norm(\vec 0,\mat I)$ and then transforming it with a generator network $G \in \R^L \rightarrow \setx$: $\vec x = G(\vec z)$, $\vec z \in \R^L$.
-This implies a distribution on the data $\vec x \sample \PG$.
-However, because $G$ is often a complex and non-invertible function, $\PG$ is generally intractable to compute.
-
-The discriminator function $D \in \setx \rightarrow [0,1]$ is merely a standard binary classifier; it outputs the probability a data point is real (as opposed to being sampled from $\PG$)\@.
-The training of a GAN interleaves updates where $D$ is trained as a standard classifier to maximize its performance classifying real samples from generated samples; and $G$ is trained to minimize the performance of $D$.
-Therefore, GAN training forms a game between $D$ and $G$.
-The original work of~\citet{Goodfellow2014} showed that if this training game converges to its global equilibrium, then
+GANs implicitly model the data $\vec x$ via a synthetic data generator \smash{$G \in \R^{d} \rightarrow \setx$}:
 \begin{align}
-  \PG = \PR,\, \quad D = \frac{\PR}{\PR + \PG} = \frac{1}{2}\,.
+  \vec x = G(\vec z)\,, \quad \vec z \sample \norm(\vec 0, \vec I_{d})\,.
 \end{align}
-In practice, it is often found that it is much easier to get $D$ close to its Bayes optimal solution (\smash{$\PR/(\PR + \PG)$}) than $G$ close to the true distribution $\PR$~\citep{Shibuya2017}.
-This motivates our approach of wrapping an imperfect $G$ to obtain an improved $G'$ using a near perfect $D$.
+This implies a (intractable) distribution on the data $\vec x \sample \PG$.
+We refer to the unknown true distribution on the data $\vec x$ as $\PR$.
+The discriminator $D \in \setx \rightarrow [0,1]$ is a soft classifier predicting if a data point is real as opposed to being sampled from $\PG$\@.
+If $D$ converges optimally for a fixed $G$, then \smash{$D = \PR/(\PR + \PG)$}, and if both $D$ and $G$ converge then $\PG = \PR$~\citep{Goodfellow2014}.
+GAN training forms a game between $D$ and $G$.
+In practice $D$ is often better at estimating the density ratio than G is at generating high-fidelity samples~\citep{Shibuya2017}.
+This motivates wrapping an imperfect $G$ to obtain an improved $G'$ by using the density ratio information encapsulated in $D$.
 
-% Could also hint at calibration, and cherry pick approx
-An important aspect of using the discriminator in MCMC is to have well calibrated probabilities in $D$.
-Typical GAN usage does not directly use $D$ and can survive poorly calibrated discriminators, however these probabilities become crucial for accept/reject probabilities.
-We use a held out set recalibration routine for the MGAN setup; and show that indeed the raw probabilities from $D$ in typical GAN training are poorly calibrated.
-
-We also derive a simple deterministic approximation to MCMC that is very accurate in the regimes that GANs operate in.
-
-\subsection{Related Work}
-
-% Need to be clear on diff with NICE-MCMC
-There have been a few other works that in some way combine GAN training and MCMC methods.
-The work of~\citet{Song2017} uses a GAN-like training procedure to improve the proposal used in MCMC to sample from an externally provided target density $\target$.
-They use a RealNVP network~\citep{Dinh2016} as the proposal since invertibility is important for computation of the acceptance probability $\accept$.
-The difference with this work is best summarized as:~\citet{Song2017} uses GANs to accelerate MCMC whereas we use MCMC to enhance the samples from a GAN\@.
-A similar approach to~\citet{Song2017} was taken in~\citet{Kempinska2017}, but with respect to finding improved proposals for particle filters as opposed to MCMC\@.
-
-The GAN approach to density estimation is complementary to the lesser known technique of \emph{density ratio estimation}~\citep{Sugiyama2012}.
-Here, the generator $G$ is typically fixed or simple; and the density of the data is determined entirely by combining Bayes' rule and the learned classifier $D$.
-In GANs, the key to success is learning $G$ well; while in density ratio estimation, the key to success is learning $D$ well.
-The MGAN, in effect, combines elements of both approaches to construct the wrapped GAN $G'$.
+\input{fig_univariate_example}
 
 \section{Methods}
 \label{sec:Methods}
 
 % Derive basic trick for MCMC using D
-In this section, we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
-If we assume that $D$ is an optimal discriminator between the generator $\PG$ and \emph{some} alternative distribution $\PD$, then:
+In this section we show how to sample from the distribution $\PD$ implied by the discriminator $D$.
+We apply~\eqref{eq:PD inv} and~\eqref{eq:alpha def} for a target of $\target=\PD$ and proposal $\prop=\PG$:
 \begin{align}
-  D = \frac{\PD}{\PD + \PG} \implies \frac{\PD}{\PG} = \frac{1}{D^{-1}-1}\,, \label{eq:PD def}
+  \frac{\PD}{\PG} = \frac{1}{D^{-1} - 1} \implies
+  \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,. \label{eq:alpha from D}
 \end{align}
-and if $D$ is perfect then $\PD = \PR$.
-We can use an MCMC independence sampler with a target distribution of $\target=\PD$ and a proposal distribution of $\PG$.
-This gives an acceptance probability of:
-\begin{align}
-  % = \min\left(1, \frac{\PD(x')\PG(\vec x_k)}{\PD(\vec x_k)\PG(\vec x')}\right)
-  \accept(\vec x', \vec x_k)
-    = \min\left(1, \frac{\PD(x')}{\PG(\vec x')} \frac{\PG(\vec x_k)}{\PD(\vec x_k)}\right)
-    = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)\,, \label{eq:alpha from D}
-\end{align}
-which is computable using only the discriminator $D$ and no densities.
+The ratio $\PD/\PG$ is computed entirely from the discriminator scores $D$.
+If $D$ is perfect, $\PD = \PR$, so the sampler will marginally sample from $\PR$.
+A toy one-dimensional example with just such a perfect discriminator is shown in Figure~\ref{fig:univariate_example}.
 
 \paragraph{Calibration}
-A key element to this is \emph{calibration}: The probabilities for $D$ must not merely provide a good AUC score, but be on the right scale.
-Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:PD def} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}.
-To test the calibration of the discriminator, we use a calibration test statistic defined in~\citet{Dawid1997} on a \emph{held out} data set of samples $\vec x_{1:N}$ with real/fake labels $y_{1:N} \in \{0,1\}^N$:
+The probabilities for $D$ must not merely provide a good AUC score, but must also be well \emph{calibrated}.
+Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:define PD} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}, as it will result in erroneous density ratio values.
+
+To calibrate $D$, we use a \emph{held out} calibration set (10\% of training data) and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $D$.
+Furthermore, for WGAN, calibration is required as it does not learn a typical GAN probabilistic discriminator.
+
+We also detect miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples \smash{$\vec x_{1:N}$} and real/fake labels \smash{$y_{1:N} \in \{0,1\}^N$}.
+If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \sample \bern(D(\vec x))$},
 \begin{align}
-  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R\,. \label{eq:calib score}
+  Z := \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \implies Z \sample \norm(0,1)\,.
+  \label{eq:calib score}
 \end{align}
-If $D$ is well calibrated, i.e., $y$ is indistinguishable from a $y \sample \bern(D(\vec x))$, then $Z \sample \norm(0,1)$.
-This means that large magnitude values for $Z$, i.e., ($|Z| > 2$), reject the hypothesis that $D$ is well-calibrated.
-To correct any miscalibration we then use the held out calibration set to calibrate $D$ using either logistic regression, isotonic regression, or beta calibration~\citep{Kull2017}.
+This means that for large values of $Z$, such as when $|Z| > 2$, we reject the hypothesis that $D$ is well-calibrated.
 
 \paragraph{Initialization}
-We can also avoid the burn-in issues that usually plague MCMC methods.
-Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ ($\vec x_k \sample \PD$) then the marginal at time step $k+1$ will also follow $\PD$ ($\vec x_{k+1} \sample \PD$)\@.
-Often it is not possible to get an initial sample from the target distribution ($\vec x_0 \sample \PD$) because
-the target distribution cannot be directly sampled from.\footnote{E.g., where MCMC is applied to generate samples of \emph{parameters} from a Bayesian posterior distribution, we have no example samples of parameters from these distributions to start from.}
-However, in MGANs, we are sampling from the \emph{data} distribution.
-Therefore, by initializing the chain at a sample of real data, we are already initializing it from the correct distribution and avoid burn-in issues.
+We also avoid the burn-in issues that usually plague MCMC methods.
+Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ (\smash{$\vec x_k \sample \PD$}), then the marginal at time step $k+1$ will also follow $\PD$ (\smash{$\vec x_{k+1} \sample \PD$})\@.
+In most MCMC applications it is not possible to get an initial sample from the target distribution (\smash{$\vec x_0 \sample \PD$})\@.
+However, in MH-GANs, we are sampling from the \emph{data} distribution, so we may use a trick:
+Initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
+If no generated sample is accepted by the end of the chain, restart sampling from a synthetic sample to ensure the initial real sample is never output.
+To make these restarts rare, we set $K$ large (often 640)\@.
 
-% This paragraph is kind of redundant, but we can lift some elements
-%The other key aspect in any MCMC chain procedure is how one initializes the first sample $\vec x_0$.
-%In this process we can initialize $\vec x_0$ with a random draw of real data (ideally held out)\@.
-%Now, marginally $\vec x_0 \sample \PR$ exactly, and if $D$ is perfect, then by detailed balance $\vec x_k \sample \PR$ exactly as well, even if $\PG \neq \PR$.
-%However, if the generator $G$ is too poor we will never receive a proposal sample $\vec x'$ good enough to accept and replace the real data sample $\vec x_0$ with a generated one.
-%Another interesting note is that we do not actually need to store real data samples for this initialization procedure.
-%Since~\eqref{eq:alpha from D} is merely a function of the discriminator scores, one must merely take a sample from the distribution on $D(\vec x)$ where $\vec x \sample \PR$.
-%This score $D(\vec x_0)$ forms a ``bar raiser'' that $D(\vec x')$ must come close to, but not necessarily exceed as per~\eqref{eq:alpha from D}, to be accepted.
+% Note how requirement not that strong with calibration and manifold
+\paragraph{Perfect Discriminator}
+The assumption of a perfect $D$ may be weakened for two reasons:
+(A)~Because we recalibrate the discriminator, actual probabilities can be incorrect as long as the decision boundary between real and fake is correct.
+(B)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from the generator $\PG$ and the real data $\PR$.
 
-% note how requirement not that strong with calib and manifold
-The assumption that $D$ is perfect can be weakened for two reasons:
-1)~Because we recalibrate the discriminator, the decision boundaries must be correct, but the probabilities can be suboptimal.
-2)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from the generator $\PG$ and the real data $\PR$.
-This is almost equivalent to saying that the discriminator must rank samples from $G$ (and real samples) the same way that the exact discriminator would.
-
-% discuss what to do if we can't get a synth sample
-Some strategy must be employed if we do not accept a single synthetic sample after we have exhausted the computational budget for a single chain $K$.
-A simple approach is to simply replay the same chain using the same samples, but instead initializing at a generated sample.
-This, of course, invalidates the guarantee that $\vec x_K \sample \PR$.
-However, the potential discrepancy is observable by monitoring the portion of chains that reach time step $K$ without accepting a single generated sample.
-
-% Maybe discuss using side discriminator, but only is adds anything
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{figures/alpha2.pdf}
-    \caption{{\small
-    We show the acceptance probabilities $\accept$ from~\eqref{eq:alpha from D} across different values for the discriminator score of the current state $D(\vec x_k)$ and the discriminator score of the proposed state $D(\vec x')$.
-    On the right, we plot the curves in logit scale to allow closer examination of the limiting cases with $D$ close to zero and one.
-    Small values of $D(\vec x_k)$ result in a linear ramp while large values of $D(\vec x_k)$ can be approximated as a step function.
-    }}
-    \label{fig:alpha}
-\end{figure}
-
-% Cherry picking approximation
-\paragraph{Deterministic approximation}
-It is also possible to replace the Markov chain with a deterministic approximation that is more parallelizable.
-In Figure~\ref{fig:alpha}, we show the acceptance probabilities for different discriminator scores of the current state $D(\vec x_k)$ and the proposal $D(\vec x')$.
-The qualitative behavior of the curves are easily summarized.
-In all curves, if $D(\vec x') \geq D(\vec x_k)$ then $\vec x'$ is always accepted.
-As $D(\vec x_k) \rightarrow 0$ the region where $D(\vec x') < D(\vec x_k)$ becomes a linear ramp; and as $D(\vec x_k) \rightarrow 1$, it becomes a step function.
-If $\PG$ and $\PR$ are well separated (which is believed to often be the case in GANs~\citep{Arjovsky2017}), and $D$ is near perfect, then $D(\vec x_0) \approx 1$: The acceptance probability becomes a step function if $\vec x_0 \sample \PR$.
-Therefore, $D(\vec x_k)$ will stay near one and the acceptance function will be step function like.
-In this scenario, we can approximate, $\accept(\vec x', \vec x_k) \approx \I\{D(\vec x') > D(\vec x_k)\}$, and therefore $G'$ takes the sample in the chain with the maximum score $D$.
-However, this is with the provision that we beat the score of a randomly chosen sample of real data $D(\vec x_0)$.
-This maximum procedure is a reduction and is therefore easily parallelizable.
-The other advantage of this approximation is that it is invariant to monotonic transformation in the discriminator scores $D$ and therefore negates the need for calibration.
-
-% Maybe Importance sampling also an option to include
+\input{fig_mog_example}
 
 \section{Results}
 \label{sec:Results}
 
-%We use an illustrative toy examples and real GANs on real data to illustrate the improvements made by the wrapped classifier $G'$.
-%\subsection{Toy Data}
-%We first demonstrate the MGAN on the toy two Gaussians example presented in~\citet{Arjovsky2017}.
-%Figure~\ref{} shows how the convergence of samples to the true distribution over MCMC iterations.
-%Note that if we don't strictly require all chains to end with a synthetic sample then the MGAN samples match the true distribution exactly at any number of MCMC iterations $K$.
+We first show an illustrative synthetic mixture model example followed by real data with images.
 
-\begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-       \centering
-       \includegraphics[width=2.75in]{figures/base_iso.pdf}
-       \caption{performance by epoch}
-       \label{fig:incep_by_epoch}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
-       \centering
-       \includegraphics[width=2.75in]{figures/plot_per_mh.pdf}
-       \caption{performance by MCMC iteration}
-       \label{fig:incep_by_iter}
-    \end{subfigure}
-    \caption{{\small
-    Results of the MGAN experiments on CIFAR-10 using the DCGAN\@.
-    On the left, we show the inception score by training epoch of the DCGAN at $K=640$.
-    The error bars on MGAN performance (in gray) are computed using a t-test on the variation per batch across different splits of the inception score.
-    On the right, we show the inception score as a function of the number of MCMC iterations $K$ for the GAN at epoch 15.
-    }}
-\end{figure}
+\subsection{Mixture of 25 Gaussians}
 
-%\subsection{Real Data}
+We consider the $5 \times 5$ grid of two-dimensional Gaussians used in~\citet{Azadi2018}, which has become a popular toy example in the GAN literature~\citep{Dumoulin2016}.
+The means are arranged on the grid $\mu \in \{{-2},{-1},0,1,2\}$ and use a standard deviation of $\sigma = 0.05$.
 
-For real data experiments, we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets.
-We consider the traditional DCGAN~\citep{Radford2015} and the popular WGAN~\citep{Arjovsky2017}\@.
-We first examine the performance of the discriminator on held out data with and without calibration for DCGAN\@.
-For WGAN, we can only use the calibrated discriminator as it does not output a probability.
-% Look at losses for discriminator
-%    maybe rescale all loses to 0-1 scale for plotting
-We also show the results of the calibration statistic $Z$ from~\eqref{eq:calib score}.
-These results confirm our expectation that the raw discriminators do not output well calibrated probabilities.
+\paragraph{Experimental setup}
+Following~\citet{Azadi2018}, we use four fully connected layers with ReLU activations for both the generator and discriminator.
+The final output layer of the discriminator is a sigmoid, and no nonlinearity is applied to the final generator layer.
+The latent \smash{$\vec z \in \R^2$} and observed \smash{$\vec x \in \R^2$} vectors have dimension two.
+All hidden layers have size 100.
+We used \num{64000} training points and generated \num{10000} points in test.
+The training data was standardized before training.
 
-\begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-       \centering
-       \includegraphics[scale=0.9]{figures/score_dist_overlap.pdf}
-       \caption{epoch 13 scores}
-       \label{fig:score_dist_overlap}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
-       \centering
-       \includegraphics[scale=0.9]{figures/score_dist_no_overlap.pdf}
-       \caption{epoch 14 scores}
-       \label{fig:score_dist_no_overlap}
-    \end{subfigure}
-    \caption{{\small
-    The distribution on discriminator scores at different training epochs for DCGAN on CIFAR-10 data set with $K=640$.
-    On the right, we show the scores at epoch 13 where there is some overlap between the scores of fake and real images.
-    At epoch 14, on the left, the distributions are far apart even in logit scale.
-    When there is overlap MGAN can correct the $\PG$ distribution to have scores looking similar to the real data.
-    The deterministic approximation also fixes the distribution, but results in too much mass near the mode.
-    However, when the distributions are too separated the generator $G$ is essentially unfixable.
-    In this case, the deterministic approximation can be used in place of the proper MGAN\@.
-    }}
-\end{figure}
+\paragraph{Visual results}
+In Figure~\ref{fig:mog_example}, we show the original data along with samples generated by the GAN\@.
+We also show samples enhanced via the MH-GAN (with calibration) and with DRS\@.
+The standard GAN creates spurious links along the grid lines between modes.
+It also missed some modes along the bottom row.
+DRS is able to ``clean up'' some of the spurious links but not fill in the missing modes.
+The MH-GAN recovers these under-estimated modes and further ``clean up'' the spurious links.
 
-% Look at incep score over 3 method on 3 data sets per epoch
-% Can also show results by MH iteration
-% DC GAN, WGAN, PGAN
-% Use JY scatter plot
-To evaluate the performance of the resulting wrapper generator $G'$, we plot inception scores per epoch in Figure~\ref{fig:incep_by_epoch}.
-We see a consistent and statistically significant boost in inception score from $G'$ above $G$.
-The actual gap of improvement made by MGAN oscillates from one epoch to the next.
-This makes sense as we rely on $D$ being ``ahead'' in some sense.
-Because GAN training is a game of sorts, how far ahead $D$ is will vary by epoch.
+\paragraph{Quantitative results}
+These results are made more quantitative in Figure~\ref{fig:mog_metrics}, where we follow some of the metrics for the example from~\citet{Azadi2018}.
+We consider the standard deviations within each mode in Figure~\ref{fig:std} and the rate of ``high quality'' samples in Figure~\ref{fig:hqr}.
+A sample is assigned to a mode if its $L_2$ distance is within four standard deviations ($\leq 4 \sigma = 0.2$) of its mean.
+Samples within four standard deviations of any mixture component are considered ``high quality''.
+The within standard deviation plot (Figure~\ref{fig:std}) shows a slight improvement for MH-GAN, and the high quality sample rate (Figure~\ref{fig:hqr}) approaches 100\% faster for the MH-GAN than the GAN or DRS\@.
 
-In Figure~\ref{fig:incep_by_iter}, we also plot the inception score per epoch after $K=640$ MCMC iterations.
-We see that most of gains are made in the first $k=100$ iterations, but smaller gains continue up to iteration $k=400$.
+To test the spread of the distribution, we inspect the categorical distribution of the closest mode.
+Far away (non-high quality) samples are assigned to a 26th unassigned category.
+This categorical distribution should be uniform over the 25 real modes for a perfect generator.
+To assess generator quality, we look at the Jensen-Shannon divergence (JSD) between the sample mode distribution and a uniform distribution.
+This is a much more stringent test of appropriate spread of probability mass than checking if a single sample is produced near a mode (as was done in~\citet{Azadi2018})\@.
 
-% TODO shouldn't we remove non-calib for WGAN since it makes no sense?
-\begin{table}[htbp]
-\centering
-    \caption{{\small
-    Results showing inception score~\citep{Salimans2016} improvements from MGAN on DCGAN and WGAN\@.
-    Like Figure~\ref{fig:incep_by_epoch}, the error bars and p-values are computed using a paired t-test from the variation per batch across 80 different splits of the inception score.
-    All results except for DCGAN on celebA all significant at \smash{$p < 10^{-4}$}.
-    We show the MGAN using the raw discriminator scores and the MGAN using the calibrated discriminator scores in ``MGAN (cal.)''.
-    }}
-    \label{tbl:inception}
-{\scriptsize
-\begin{tabular}{|l|l|r|l|r||l|r|l|r|}
-\toprule
-~                 & \multicolumn{4}{c}{DCGAN}                               & \multicolumn{4}{c}{WGAN} \\
-\toprule
-~                 & CIFAR-10         &      p   & CelebA         &      p   & CIFAR-10        &      p   & CelebA        &      p \\
-\midrule
-MGAN              &        3.637(97) &  <0.0001 &      2.374(79) &  0.8584  &       2.674(61) &  <0.0001 &     2.674(61) &  <0.0001 \\
-MGAN (cal.)       &        3.753(99) &  <0.0001 &      2.58(22)  &  0.0587  &       2.774(64) &  <0.0001 &     2.774(64) &  <0.0001 \\
-GAN               &        3.3699(0) &       -- &      2.3676(0) &      --  &       2.5165(0) &       -- &     2.5165(0) &       -- \\
-D-MGAN            &        3.706(86) &  <0.0001 &      2.59(18)  &  0.0218  &       2.763(59) &  <0.0001 &     2.763(59) &  <0.0001 \\
-\bottomrule
-\end{tabular}
-}
-\end{table}
+\input{fig_mog_metrics}
+\input{fig_inception}
 
-We summarize the performance across all base GANs and data sets in Table~\ref{tbl:inception}.
-The DCGAN and WGAN are shown at epoch 60.
-There was not a substantial difference between different calibration methods, but we found a slight advantage for isotonic regression with the DCGAN and logistic regression for the WGAN\@.
-In all cases, we ran the MCMC procedure $K=640$ iterations as in Figure~\ref{fig:incep_by_iter}.
-We see the same qualitative behavior as in Figure~\ref{fig:incep_by_epoch} with the MGAN correction providing a significant boost in inception score.
-Boosts are seen using MGAN from the raw scores, but further improvements are made using the calibrated scores.
+In Figure~\ref{fig:jsd}, we see that the MH-GAN improves the JSD over DRS by $5 \times$ on average, meaning it achieves a much more balanced spread across modes.
+DRS fails to make gains after epoch 30.
+Using the principled approach of the MH-GAN along with calibrated probabilities ensures a correct spread of probability mass.
 
-% Look at distn on D to make look more like real
-%   both on synth and real
-We also consider the distribution on discriminator scores.
-In Figure~\ref{fig:score_dist_overlap}, the distributions on scores from real and fake images are well separated, but still contain \emph{some overlap}.
-We can see that MCMC shifts the distribution of the fakes to match the distribution on true images.
-In this case, our deterministic approximation focuses too much on the mode as a result of the overlap, but still makes an improvement over the base generator $G$.
+\subsection{Real Data}
 
-\begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.49\textwidth}
-       \centering
-       \includegraphics[scale=0.9]{figures/disc_calib.pdf}
-       \caption{calibration $Z$}
-       \label{fig:calibration stat}
-    \end{subfigure}
-    \begin{subfigure}[b]{0.49\textwidth}
-       \centering
-       \includegraphics[scale=0.9]{figures/disc_perf.pdf}
-       \caption{discriminator performance}
-       \label{fig:discriminator_perf}
-    \end{subfigure}
-    \caption{{\small
-    On the left, we show the calibration statistic $Z$ for the discriminator for the DCGAN on CIFAR-10.
-    The raw discriminator is clearly miscalibrated.
-    All the calibration methods give roughly equivalent results.
-    The left shows the predictive performance of the discriminator.
-    The various performance metrics have been rescaled so a perfect classifier has score 1 and random classifier has score 0.5.
-    The calibrated discriminator has higher predictive performance, but the oscillations are highly correlated with the ranking based performance metrics (AUC and AP)\@.
-    Most of the variation from epoch to epoch is not merely differences in calibratedness.
-    }}
-    \label{fig:calibration}
-\end{figure}
+For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets modeled using the DCGAN~\citep{Radford2015} and WGAN~\citep{Arjovsky2017, Gulrajani2017}.
+To evaluate the generator $G'$, we plot Inception scores~\citep{Salimans2016} per epoch in Figure~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
+The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps due to fluctuations in the density ratio estimation performance per epoch.
+Accordingly the statistical significance of the boost from $G$ to $G'$ with calibration varies from no significant change to boost with \smash{$p < 10^{-4}$}.
+Figure~\ref{fig:incep_by_iter} shows Inception score per MCMC iteration:
+most gains are made in the first $k=100$ iterations, but smaller gains continue to $k=400$.
 
-In Figure~\ref{fig:calibration}, we show how calibration of the discriminator is necessary based on its raw performance.
-Therefore, it is not surprising that it improves performance when used for the MGAN\@.
+\input{fig_calibration}
+\input{tbl_inception}
 
-% Qualitative examples
-% Finally, in Figure~\ref we show some qualitative examples of samples comparing the base generator $G$ and the improved MCMC version $G'$.
+In Table~\ref{tbl:inception}, we summarize performance (Inception score) across all experiments, running MCMC with $K=640$ iterations in all cases.
+Behavior is qualitatively similar to that in Figure~\ref{fig:incep_by_epoch}.
+While DRS improves on a direct GAN, MH-GAN improves Inception score more in every case.
+Calibration helps in every case.
+There was not a substantial difference between different calibration methods, but we found a slight advantage for isotonic regression.
+Results are computed at epoch 60, and as in Figure~\ref{fig:incep_by_epoch}, error bars and p-values are computed using a paired t-test across Inception score batches.
+All results are significantly better than the baseline GAN at \smash{$p < 0.05$}.
 
-\section{Discussion}
-\label{sec:Discussion}
+\paragraph{Score distribution}
+In Figure~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
+MCMC shifts the distribution of the fakes to match the distribution on true images.
 
-% How many MH iters usually needed, what about computation burden
-The wrapped GAN $G'$ will indeed have $K$ times the computational burden of $G$ when drawing samples; and Figure~\ref{fig:incep_by_epoch} shows improvements can be made even for smaller values of $K$.
-However, the large computational burden of GANs is during training not when drawing samples (test)\@.
-Therefore, in applications where the test speed is not the bottleneck, the wrapped GAN $G'$ is a good option.
+\paragraph{Calibration results}
+Figure~\ref{fig:calibration} shows the results per epoch for both CIFAR-10 and CelebA\@.
+It shows that the raw discriminator is highly miscalibrated, but can be fixed with any of the standard calibration methods.
+The $Z$ statistic for the raw discriminator $D$ (DCGAN on CIFAR-10) varies from $-77.57$ to $48.98$ in the first 60 epochs; even after Bonferroni correction at $N \!\!=\!\! 60$, we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
+The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated.
+Accordingly, it is unsurprising that the calibrated discriminator significantly boosts performance in the MH-GAN\@.
 
-% What does cherry picking perf say about distns in question
-%    examples for resampling when overlap and no overlap
-%    how it effects cherry pick approx
-The deterministic approximation often has very similar behavior and performance to the full MGAN\@.
-This validates the common view that base of support between $\PG$ and $\PR$ have little overlap.
-% Implications on how it can be applied more generally
-%   Will be most interesting cases where might be some overlap
-However, applications where there is non-negligible overlap between $\PG$ and $\PR$ are perhaps the most interesting because proper calibration of the acceptance probabilities $\accept$ are the most critical in these cases.
+\input{fig_cifar_samples}
+\input{fig_celeba_samples}
 
-% Generally interesting notes on calibration and side disc
-%   And that D is always so good
-Along these lines, we have shown the raw discriminators in GANs are poorly calibrated.
-This is not a big surprise, but to our knowledge is the first time research has evaluated the discriminator in this way.
-
-% Might need to consider stopping rule
-A direction for possible future extensions to this work include finding appropriate stopping rules for the MCMC chain that introduce minimal bias.
-In our setup, we must run the chain until at least receiving a single accept.
-However, ending the chain at the first accept can potentially introduce a bias into the resulting distribution; This requires us to run the chain until a fixed, but perhaps too large, number of iterations $K$.
+\paragraph{Visual results}
+Finally, we also show example images from the CIFAR-10 and CelebA setups in Figures~\ref{fig:cifar_samples} and~\ref{fig:celeba_samples}.
+The selectors (such as MH-GAN) result in a wider spread of probability mass across background colors.
+For CIFAR-10, it enhances modes with animal-like outlines and vehicles.
 
 \section{Conclusions}
-\label{sec:Conclusions}
+\label{sec:conclusions}
 
-% usual wrap up BS paragraph
-We have presented a way to incorporate the knowledge embedded in the discriminator $D$ into an improved generator $G'$ in a principled manner using MCMC methods.
-Our method is based on the premise that the discriminator $D$ is essentially ``ahead'' of the generator $G$.
-The principled MCMC setup stochastically selects among samples from $G$ to correct biases in the generator $G$.
-This requires some modification to the MCMC equations as the neither the densities $\PG$ nor $\PR$ are available.
-This method can perform the final coordinate descent move to optimize $G$ assuming $D$ is near perfect.
-Further improvements for fancier proposals can potentially make these results possible with even shorter chains $K$.
+We have shown how to incorporate the knowledge in the discriminator $D$ into an improved generator $G'$.
+Our method is based on the premise that $D$ is better at density ratio estimation than $G$ is at sampling data, which is inherently a harder task.
+The principled MCMC setup selects among samples from $G$ to correct biases in $G$.
+This is the only method in the literature which has the property that given a perfect $D$ one can recover $G$ such that $\PG = \PR$.
+We have shown the raw discriminators in GANs and DRS are poorly calibrated.
+To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
+The MH-GAN has great potential for extension.
 
+\FloatBarrier
 \bibliographystyle{abbrvnat}
 \bibliography{mgan_refs} % References file
 

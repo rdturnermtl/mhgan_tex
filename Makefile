@@ -6,7 +6,7 @@ sourcebib := $(shell ls *.bib )
 
 
 
-all: ${paper}.pdf ${supp}.pdf
+all: ${paper}.pdf
 
 ${paper}.bbl: ${sourcebib}
 	pdflatex ${paper}
@@ -30,7 +30,7 @@ watch: quick skim
 	while true; do for file in ${source}; do if [ "$$file" -nt ${paper}.pdf ]; then make quick skimbg; fi; done; sleep 1; done
 
 clean:
-	rm -rf *.aux *.blg *.bbl *.log *.out ${paper}.pdf ${supp}.pdf arxiv
+	rm -rf *.aux *.blg *.bbl *.log *.out ${paper}.pdf arxiv
 
 
 
