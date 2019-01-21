@@ -383,9 +383,9 @@ For CIFAR-10, it enhances modes with animal-like outlines and vehicles.
 
 \subsection{Progressive GAN}
 
-To further illustrate the power of the MH-GAN approach we consider the progressive GAN~\citep{}, which recently produced shockingly realistic images.
+To further illustrate the power of the MH-GAN approach we consider the progressive GAN~\citep{Karras2017}, which recently produced shockingly realistic images.
 We applied the MH-GAN to a progressive GAN using the same setup as with DCGAN, using $K=800$.
-We used the pre-trained network of~\citet{} at epoch XXX.  % TODO fill in
+We used the pre-trained network of~\citet{Karras2017} on CelebA-HQ (1024$\times$1024)\@.
 
 In Table~\ref{tbl:pgan} we show completely random samples from the progressive GAN (the base GAN), as well as the enhanced GANs from DRS and the MH-GAN\@.
 The different selectors (MH-GAN and DRS) are run on the same batches of images.
@@ -407,12 +407,10 @@ We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
 The MH-GAN has great potential for extension.
 
-% TODO cite PGAN
-
 \begin{table*}[htbp]
 \begin{center}
   \caption{{\small
-    Random samples using a pre-trained progressive GAN (PGAN)~\citep{} as the base GAN\@.
+    Random samples using a pre-trained progressive GAN (PGAN) as the base GAN\@.
     Here we compare 16 \emph{random samples} from the PGAN, DRS, and the MH-GAN\@.
     The MH-GAN almost perfectly produces the realistic images from the somewhat flawed PGAN\@.
     }}
