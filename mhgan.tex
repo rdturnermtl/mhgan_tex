@@ -392,7 +392,22 @@ Although, the progressive GAN sometimes produces near photo realistic images, wh
 Both DRS and MH-GAN show an ability to preserve just the realistic images.
 However, it is evident from the samples that the MH-GAN is near perfect in its samples, while DRS still has many flawed samples.
 
-% TODO put in pseudo-code here??
+\begin{algorithm}[tb]
+   \caption{MH-GAN}
+   \label{alg:mhgan}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} base generator $G$, discriminator $D$, real samples $\vec x$
+   \STATE Assign random real sample to $\vec x$
+   \FOR{$k=1$ {\bfseries to} $K$}
+   \STATE Draw $\vec x'$ from $G$
+   \STATE Draw $U$ from uniform
+   \IF{$U \leq \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}$}
+   \STATE $\vec x \leftarrow \vec x'$
+   \ENDIF
+   \ENDFOR
+   \STATE Return $\vec x$  % TODO try return
+\end{algorithmic}
+\end{algorithm}
 
 \section{Conclusions}
 \label{sec:conclusions}
