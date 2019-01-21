@@ -408,10 +408,12 @@ To our knowledge, this is the first work to evaluate the discriminator in this w
 The MH-GAN has great potential for extension.
 
 \begin{table*}[htbp]
+\vspace{-3mm}  % alignment looks a little better
 \begin{center}
   \caption{{\small
     Random samples using a pre-trained progressive GAN (PGAN) as the base GAN\@.
-    Here we compare 16 \emph{random samples} from the PGAN, DRS, and the MH-GAN\@.
+    Since the PGAN does not output a probability, we must calibrate the scores by isotonic regression.
+    Here we compare 16 \emph{random samples} from the PGAN, calibrated (improved) DRS, and calibrated MH-GAN\@.
     The MH-GAN almost perfectly produces the realistic images from the somewhat flawed PGAN\@.
     }}
   \label{tbl:pgan}
