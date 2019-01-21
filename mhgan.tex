@@ -380,6 +380,10 @@ Finally, we also show example images from the CIFAR-10 and CelebA setups in the 
 The selectors (such as MH-GAN) result in a wider spread of probability mass across background colors.
 For CIFAR-10, it enhances modes with animal-like outlines and vehicles.
 
+% TODO explain visual
+
+% TODO put in pseudo-code here??
+
 \section{Conclusions}
 \label{sec:conclusions}
 
@@ -391,6 +395,25 @@ This is the only method in the literature which has the property that given a pe
 We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
 The MH-GAN has great potential for extension.
+
+% TODO put in table with comparison of figs for MH, DRS, base
+
+\begin{table*}[htbp]
+\begin{tabular}{ccc}
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} \\
+\end{tabular}
+\end{table*}
 
 \FloatBarrier
 \bibliography{mgan_refs}
