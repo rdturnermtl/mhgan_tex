@@ -3,7 +3,7 @@
 % Recommended, but optional, packages for figures and better typesetting:
 \usepackage{microtype}
 \usepackage{graphicx}
-% TODO figure out why we must comment this out with subcaption
+% For some reason this is incompatible with subcaption:
 %\usepackage{subfigure}
 \usepackage{booktabs} % for professional tables
 
@@ -381,7 +381,16 @@ Finally, we also show example images from the CIFAR-10 and CelebA setups in the 
 The selectors (such as MH-GAN) result in a wider spread of probability mass across background colors.
 For CIFAR-10, it enhances modes with animal-like outlines and vehicles.
 
-% TODO explain visual
+\subsection{Progressive GAN}
+
+To further illustrate the power of the MH-GAN approach we consider the progressive GAN~\citep{}, which recently produced shockingly realistic images.
+We applied the MH-GAN to a progressive GAN using the same setup as with DCGAN, using $K=800$.
+We used the pre-trained network of~\citet{} at epoch XXX.  % TODO fill in
+
+In Table~\ref{tbl:pgan} we show completely random samples from the progressive GAN (the base GAN), as well as the enhanced GANs from DRS and the MH-GAN\@.
+Although, the progressive GAN sometimes produces near photo realistic images, which made it famous, it also produces many flawed nightmare like images.
+Both DRS and MH-GAN show an ability to preserve just the realistic images.
+However, it is evident from the samples that the MH-GAN is near perfect in its samples, while DRS still has many flawed samples.
 
 % TODO put in pseudo-code here??
 
@@ -402,9 +411,11 @@ The MH-GAN has great potential for extension.
 \begin{table*}[htbp]
 \begin{center}
   \caption{{\small
-    Random samples using a pre-trained progressive GAN (PGAN) as the base GAN\@.
-    Here we compare 16 completely \emph{random samples} from the PGAN, DRS, and the MH-GAN\@.
+    Random samples using a pre-trained progressive GAN (PGAN)~\citep{} as the base GAN\@.
+    Here we compare 16 \emph{random samples} from the PGAN, DRS, and the MH-GAN\@.
+    The MH-GAN almost perfectly produces the realistic images from the somewhat flawed PGAN\@.
     }}
+  \label{tbl:pgan}
 \setlength\tabcolsep{2pt} % default value: 6pt
 \begin{tabular}{cc|cc|cc}
 \multicolumn{2}{c|}{GAN} & \multicolumn{2}{c|}{DRS} & \multicolumn{2}{c}{MH-GAN} \\
