@@ -72,6 +72,7 @@
 \newcommand{\setx}{\set{X}}
 
 \newcommand{\exfactor}{1.0}
+\newcommand{\pganw}{1.0in}
 
 \begin{document}
 
@@ -396,23 +397,68 @@ We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
 The MH-GAN has great potential for extension.
 
-% TODO put in table with comparison of figs for MH, DRS, base
+% TODO cite PGAN
 
 \begin{table*}[htbp]
-\begin{tabular}{ccc}
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} \\
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} \\
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} \\
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} &
-\includegraphics[width=2.2in]{figures/pgan/0_base_raw_base.png} \\
+\begin{center}
+  \caption{{\small
+    Random samples using a pre-trained progressive GAN (PGAN) as the base GAN\@.
+    Here we compare 16 completely \emph{random samples} from the PGAN, DRS, and the MH-GAN\@.
+    }}
+\setlength\tabcolsep{2pt} % default value: 6pt
+\begin{tabular}{cc|cc|cc}
+\multicolumn{2}{c|}{GAN} & \multicolumn{2}{c|}{DRS} & \multicolumn{2}{c}{MH-GAN} \\
+\toprule
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} \\
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
+\includegraphics[width=\pganw	]{figures/pgan/0_base_raw_base.png}
 \end{tabular}
+\end{center}
 \end{table*}
 
 \FloatBarrier
