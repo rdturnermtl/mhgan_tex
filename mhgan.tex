@@ -396,7 +396,7 @@ However, it is evident from the samples that the MH-GAN is near perfect in its s
    \caption{MH-GAN}
    \label{alg:mhgan}
 \begin{algorithmic}
-   \STATE {\bfseries Input:} generator $G$, discriminator $D$, real samples
+   \STATE {\bfseries Input:} generator $G$, calibrated disc.~$D$, real samples
    \STATE Assign random real sample $\vec x_0$ to $\vec x$
    \FOR{$k=1$ {\bfseries to} $K$}
    \STATE Draw $\vec x'$ from $G$
@@ -406,7 +406,7 @@ However, it is evident from the samples that the MH-GAN is near perfect in its s
    \ENDIF
    \ENDFOR
    \STATE If $\vec x$ is still real sample $\vec x_0$ restart with draw from $G$ as $\vec x_0$
-   \STATE Return $\vec x$  % TODO try return
+   \STATE {\bfseries Output:} sample $\vec x$ from $G'$
 \end{algorithmic}
 \end{algorithm}
 
