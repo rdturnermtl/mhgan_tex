@@ -416,7 +416,7 @@ We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
 The MH-GAN has great potential for extension.
 
-\fboxsep=2pt  % padding thickness
+\fboxsep=1.5pt  % padding thickness
 \newcommand{\unreal}[1]{\fcolorbox{white}{red}{#1}}
 
 % TODO fill in xxx
@@ -433,58 +433,58 @@ The MH-GAN has great potential for extension.
     Even with 16 samples, the MH-GAN is significantly better under a one-sided pairwise trinomial test~\citep{Coakley1996} at $p=xxx$ vs DRS and $p=xxx$ vs PGAN\@.
     }}
   \label{tbl:pgan}
-\setlength\tabcolsep{2pt} % default value: 6pt
+\setlength\tabcolsep{1pt} % default value: 6pt
 \begin{tabular}{cc|cc|cc}
 \multicolumn{2}{c|}{PGAN} & \multicolumn{2}{c|}{DRS (cal)} & \multicolumn{2}{c}{MH-GAN (cal)} \\
 \toprule
-\includegraphics[width=\pganw]{figures/pgan/0_base_raw_base.png} &
-\unreal{\includegraphics[width=\pganw]{figures/pgan/1_base_raw_base.png}} &
-\includegraphics[width=\pganw]{figures/pgan/0_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/1_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/0_base_iso_MH.png} &
-\includegraphics[width=\pganw]{figures/pgan/1_base_iso_MH.png} \\
-\includegraphics[width=\pganw]{figures/pgan/2_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/3_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/2_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/3_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/2_base_iso_MH.png} &
-\includegraphics[width=\pganw]{figures/pgan/3_base_iso_MH.png} \\
-\includegraphics[width=\pganw]{figures/pgan/4_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/5_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/4_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/5_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/4_base_iso_MH.png} &
-\includegraphics[width=\pganw]{figures/pgan/5_base_iso_MH.png} \\
-\includegraphics[width=\pganw]{figures/pgan/6_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/7_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/6_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/7_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/6_base_iso_MH.png} &
-\includegraphics[width=\pganw]{figures/pgan/7_base_iso_MH.png} \\
-\includegraphics[width=\pganw]{figures/pgan/8_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/9_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/8_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/9_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/8_base_iso_MH.png} &
-\includegraphics[width=\pganw]{figures/pgan/9_base_iso_MH.png} \\
-\includegraphics[width=\pganw]{figures/pgan/10_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/11_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/10_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/11_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/10_base_iso_MH.png} &
-\includegraphics[width=\pganw]{figures/pgan/11_base_iso_MH.png} \\
-\includegraphics[width=\pganw]{figures/pgan/12_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/13_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/12_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/13_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/12_base_iso_MH.png} &
-\includegraphics[width=\pganw]{figures/pgan/13_base_iso_MH.png} \\
-\includegraphics[width=\pganw]{figures/pgan/14_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/15_base_raw_base.png} &
-\includegraphics[width=\pganw]{figures/pgan/14_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/15_base_iso_reject.png} &
-\includegraphics[width=\pganw]{figures/pgan/14_base_iso_MH.png} &
-\includegraphics[width=\pganw]{figures/pgan/15_base_iso_MH.png}
+\unreal{\includegraphics[width=\pganw]{figures/pgan/48_base_iso_base.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/49_base_iso_base.jpg} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/48_base_iso_reject.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/49_base_iso_reject.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/48_base_iso_MH.jpg} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/49_base_iso_MH.jpg}} \\
+\unreal{\includegraphics[width=\pganw]{figures/pgan/50_base_iso_base.jpg}} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/51_base_iso_base.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/50_base_iso_reject.jpg} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/51_base_iso_reject.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/50_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/51_base_iso_MH.jpg} \\
+\includegraphics[width=\pganw]{figures/pgan/52_base_iso_base.jpg} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/53_base_iso_base.jpg}} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/52_base_iso_reject.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/53_base_iso_reject.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/52_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/53_base_iso_MH.jpg} \\
+\includegraphics[width=\pganw]{figures/pgan/54_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/55_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/54_base_iso_reject.jpg} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/55_base_iso_reject.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/54_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/55_base_iso_MH.jpg} \\
+\includegraphics[width=\pganw]{figures/pgan/56_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/57_base_iso_base.jpg} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/56_base_iso_reject.jpg}} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/57_base_iso_reject.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/56_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/57_base_iso_MH.jpg} \\
+\includegraphics[width=\pganw]{figures/pgan/58_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/59_base_iso_base.jpg} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/58_base_iso_reject.jpg}} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/59_base_iso_reject.jpg}} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/58_base_iso_MH.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/59_base_iso_MH.jpg} \\
+\includegraphics[width=\pganw]{figures/pgan/60_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/61_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/60_base_iso_reject.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/61_base_iso_reject.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/60_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/61_base_iso_MH.jpg} \\
+\unreal{\includegraphics[width=\pganw]{figures/pgan/62_base_iso_base.jpg}} &
+\unreal{\includegraphics[width=\pganw]{figures/pgan/63_base_iso_base.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/62_base_iso_reject.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/63_base_iso_reject.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/62_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{figures/pgan/63_base_iso_MH.jpg} \\
 \end{tabular}
 \end{center}
 \end{table*}
