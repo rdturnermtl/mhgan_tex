@@ -97,6 +97,7 @@
 \begin{icmlauthorlist}
 \icmlauthor{Ryan Turner}{uber}
 \icmlauthor{Jane Hung}{uber}
+\icmlauthor{Eric Frank}{uber}
 \icmlauthor{Yunus Saatci}{uber}
 \icmlauthor{Jason Yosinski}{uber}
 \end{icmlauthorlist}
@@ -129,7 +130,7 @@ We introduce the Metropolis-Hastings generative adversarial network (MH-GAN), wh
 The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to sampling in a standard GAN which draws samples from the distribution defined by the generator.
 It uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
 With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly even when the generator is imperfect.
-We demonstrate the benefits of the improved generator on multiple benchmark datasets, including CIFAR-10 and CelebA, using DCGAN and WGAN\@.
+We demonstrate the benefits of the improved generator on multiple benchmark datasets, including CIFAR-10 and CelebA, using the DCGAN, WGAN, and progressive GAN\@.
 \end{abstract}
 
 \section{Introduction}
