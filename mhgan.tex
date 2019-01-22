@@ -428,10 +428,9 @@ The MH-GAN has great potential for extension.
     Random samples using a pre-trained PGAN as the base GAN\@.
     Since the PGAN does not output a probability, we must calibrate the scores by isotonic regression.
     Here we compare 16 \emph{random samples} from the PGAN, calibrated (our improved) DRS, and calibrated MH-GAN; where MH-GAN and DRS select from the same sequence of $G$ samples.
-    %The MH-GAN almost perfectly produces the realistic images from the somewhat flawed PGAN\@.
     There are xxx cases where the PGAN produces substantial warpings (red border) while the MH-GAN does not, and xxx cases where the MH-GAN does and the PGAN does not;
     for comparison with DRS, there are xxx where only DRS are warped, and xxx where only MH-GAN are warped.
-    Even with 16 samples, the MH-GAN is significantly better under a pairwise trinomial test~\citep{Coakley1996} at $p=xxx$ vs DRS and $p=xxx$ vs PGAN\@.
+    Even with 16 samples, the MH-GAN is significantly better under a one-sided pairwise trinomial test~\citep{Coakley1996} at $p=xxx$ vs DRS and $p=xxx$ vs PGAN\@.
     }}
   \label{tbl:pgan}
 \setlength\tabcolsep{2pt} % default value: 6pt
