@@ -283,7 +283,7 @@ This means that for large values of $Z$, such as when $|Z| > 2$, we reject the h
 
 \paragraph{Correcting Calibration}
 While~\eqref{eq:calib score} may tell us a classifier is poorly calibrated, we also need to be able to fix it.
-Furthermore, some GANs (like WGAN) required calibration because their discriminator only outputs a score and not a probability.
+Furthermore, some GANs (like WGAN) require calibration because their discriminator only outputs a score and not a probability.
 To correct an uncalibrated classifier, denoted $\tilde{D} \in \setx \rightarrow \R$, we use a \emph{held out} calibration set (e.g., 10\% of training data) and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $\tilde{D}$.
 The held out calibration set contains an equal number of positive and negative examples, which in the case of GANs is an even mix of real samples and fake samples from $G$.
 After $\tilde{D}$ is learned, we train a probabilistic classifier $C \in \R \rightarrow [0,1]$ to map $\tilde{D}(\vec x_i)$ to $y_i$ using the calibration set.
@@ -295,7 +295,7 @@ We also avoid the burn-in issues that usually plague MCMC methods.
 Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ (\smash{$\vec x_k \sample \PD$}), then the marginal at time step $k+1$ will also follow $\PD$ (\smash{$\vec x_{k+1} \sample \PD$})\@.
 In most MCMC applications it is not possible to get an initial sample from the target distribution (\smash{$\vec x_0 \sample \PD$})\@.
 
-However, for MH-GAN, we have access to real data from the target distribution. 
+However, for MH-GAN, we have access to real data from the target distribution.
 By initializing the chain at a sample of real data (the correct distribution), we apply the detailed balance property and avoid burn-in.
 If no generated sample is accepted by the end of the chain, restart sampling from a synthetic sample to ensure the initial real sample is never output.
 To make restarts rare, we set $K$ large (often 640)\@.
@@ -396,7 +396,7 @@ We applied the MH-GAN to a PGAN using the same setup as with DCGAN, using $K=800
 We used the pre-trained network of~\citet{Karras2017} on CelebA-HQ (1024$\times$1024)\@.
 Large batches of samples are in the supplementary material.
 
-In Table~\ref{tbl:pgan}, we make the progressive GAN our base GAN and generate completely random samples from the base, as well as from the addition of DRS and MH-GAN selectors\@.
+In Table~\ref{tbl:pgan}, we make the progressive GAN our base GAN and generate completely random samples from the base, as well as from the addition of DRS and MH-GAN selectors.
 The different selectors (DRS and MH-GAN) are run on the same batches of images.
 Meaning, the same images may appear for both generators.
 
