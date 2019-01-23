@@ -426,9 +426,9 @@ The MH-GAN has great potential for extension.
     Random samples using a pre-trained PGAN as the base GAN\@.
     Since the PGAN does not output a probability, we must calibrate the scores by isotonic regression.
     Here we compare 16 \emph{random samples} from the PGAN, calibrated (improved) DRS, and calibrated MH-GAN; where DRS and MH-GAN select from the same sequence of $G$ samples.
-    There are 6 cases where the PGAN produces substantial warpings (red border) while the MH-GAN does not, and 2 cases where the MH-GAN does and the PGAN does not;
+    There are 5 cases where the PGAN produces substantial warpings (red border) while the MH-GAN does not, and 0 cases where the MH-GAN does and the PGAN does not;
     for comparison with DRS, there are 7 where only DRS is warped, and 1 where only MH-GAN is warped.
-    Even with 16 samples, the MH-GAN is better under a one-sided pairwise trinomial test~\citep{Coakley1996} at $p=0.01$ vs DRS and $p=0.07$ vs PGAN\@.
+    Even with 16 samples, the MH-GAN is better under a one-sided pairwise trinomial test~\citep{Coakley1996} at $p=0.017$ vs DRS and $p=0.013$ vs PGAN\@.
     }}
   \label{tbl:pgan}
 \setlength\tabcolsep{1pt} % default value: 6pt
@@ -440,7 +440,7 @@ The MH-GAN has great potential for extension.
 \unreal{\includegraphics[width=\pganw]{figures/pgan/48_base_iso_reject.jpg}} &
 \includegraphics[width=\pganw]{figures/pgan/49_base_iso_reject.jpg} &
 \includegraphics[width=\pganw]{figures/pgan/48_base_iso_MH.jpg} &
-\unreal{\includegraphics[width=\pganw]{figures/pgan/49_base_iso_MH.jpg}} \\
+\includegraphics[width=\pganw]{figures/pgan/49_base_iso_MH.jpg} \\
 \unreal{\includegraphics[width=\pganw]{figures/pgan/50_base_iso_base.jpg}} &
 \unreal{\includegraphics[width=\pganw]{figures/pgan/51_base_iso_base.jpg}} &
 \includegraphics[width=\pganw]{figures/pgan/50_base_iso_reject.jpg} &
@@ -461,7 +461,7 @@ The MH-GAN has great potential for extension.
 \includegraphics[width=\pganw]{figures/pgan/55_base_iso_MH.jpg} \\
 \includegraphics[width=\pganw]{figures/pgan/56_base_iso_base.jpg} &
 \includegraphics[width=\pganw]{figures/pgan/57_base_iso_base.jpg} &
-\unreal{\includegraphics[width=\pganw]{figures/pgan/56_base_iso_reject.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/56_base_iso_reject.jpg} &
 \unreal{\includegraphics[width=\pganw]{figures/pgan/57_base_iso_reject.jpg}} &
 \includegraphics[width=\pganw]{figures/pgan/56_base_iso_MH.jpg} &
 \includegraphics[width=\pganw]{figures/pgan/57_base_iso_MH.jpg} \\
@@ -469,7 +469,7 @@ The MH-GAN has great potential for extension.
 \includegraphics[width=\pganw]{figures/pgan/59_base_iso_base.jpg} &
 \unreal{\includegraphics[width=\pganw]{figures/pgan/58_base_iso_reject.jpg}} &
 \unreal{\includegraphics[width=\pganw]{figures/pgan/59_base_iso_reject.jpg}} &
-\unreal{\includegraphics[width=\pganw]{figures/pgan/58_base_iso_MH.jpg}} &
+\includegraphics[width=\pganw]{figures/pgan/58_base_iso_MH.jpg} &
 \includegraphics[width=\pganw]{figures/pgan/59_base_iso_MH.jpg} \\
 \includegraphics[width=\pganw]{figures/pgan/60_base_iso_base.jpg} &
 \includegraphics[width=\pganw]{figures/pgan/61_base_iso_base.jpg} &
@@ -482,7 +482,7 @@ The MH-GAN has great potential for extension.
 \includegraphics[width=\pganw]{figures/pgan/62_base_iso_reject.jpg} &
 \includegraphics[width=\pganw]{figures/pgan/63_base_iso_reject.jpg} &
 \includegraphics[width=\pganw]{figures/pgan/62_base_iso_MH.jpg} &
-\includegraphics[width=\pganw]{figures/pgan/63_base_iso_MH.jpg} \\
+\unreal{\includegraphics[width=\pganw]{figures/pgan/63_base_iso_MH.jpg}} \\
 \end{tabular}
 \end{center}
 \end{table*}
