@@ -128,7 +128,7 @@
 
 \begin{abstract}
 We introduce the Metropolis-Hastings generative adversarial network (MH-GAN), which combines aspects of Markov chain Monte Carlo and GANs.
-The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to sampling in a standard GAN which draws samples from the distribution defined by the generator.
+The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to standard GANs which draw samples from the distribution defined by only the generator.
 It uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
 With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly even when the generator is imperfect.
 We demonstrate the benefits of the improved generator on multiple benchmark datasets, including CIFAR-10 and CelebA, using the DCGAN, WGAN, and progressive GAN\@.
@@ -144,7 +144,7 @@ They implicitly represent the density of the data via a classifier that distingu
 % GAN uses D and G, but then D usually thrown away => use new method to capture knowledge captured in D, to wrap G and create a more intelligent G'
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
 In the typical setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
-In this work we propose the Metropolis-Hastings GAN (MH-GAN), a GAN that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
+In this work, we propose the Metropolis-Hastings GAN (MH-GAN), a GAN that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
 This principle is illustrated in Figure~\ref{fig:intro}.\footnote{A github link will be made available with the final version of this paper.}
 
 % Assume D is bayes optimal
@@ -154,8 +154,8 @@ This is built upon the notion that the discriminator classifies between the gene
   D(\vec x) = \frac{\PD(\vec x)}{\PD(\vec x) + \PG(\vec x)} \,, \label{eq:define PD}
 \end{align}
 where $\PG$ is the (intractable) density of samples from the generator $G$, and $\PD$ is the data density \emph{implied} by the discriminator $D$ with respect to $G$.
-If GAN training reaches its global optimum then this discriminator distribution $\PD$ is equal to the data distribution and the generator distribution ($\PD = \PR = \PG$)~\citep{Goodfellow2014}.
-Furthermore, if the discriminator $D$ is optimal for a fixed imperfect generator $G$ then the implied distribution still equals the data distribution ($\PD = \PR \neq \PG$)\@.
+If GAN training reaches its global optimum, then this discriminator distribution $\PD$ is equal to the data distribution and the generator distribution ($\PD = \PR = \PG$)~\citep{Goodfellow2014}.
+Furthermore, if the discriminator $D$ is optimal for a fixed imperfect generator, $G$ then the implied distribution still equals the data distribution ($\PD = \PR \neq \PG$)\@.
 
 \input{fig_intro}
 
@@ -173,7 +173,7 @@ The outline of this paper is as follows:
 Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
 In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
 We explain our methodology of combining these two seemingly disparate areas in Section~\ref{sec:Methods} where we derive the wrapped generator $G'$.
-Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN, WGAN, and PGAN) are shown in Section~\ref{sec:Results}.
+Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN, WGAN, and progressive GAN) are shown in Section~\ref{sec:Results}.
 Section~\ref{sec:conclusions} discusses implications and conclusions.
 
 \section{Related Work}
@@ -220,7 +220,7 @@ If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \v
 Note that when estimating the distribution $\target$, one must include the duplicates that are a result of rejections in $\vec x'$.
 
 \paragraph{Independent samples}
-Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain; in this case it is also the output of $G'$.
+Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is also the output of $G'$.
 Therefore, each MCMC chain results in a single sample $\vec x_K$, and independent chains are used for multiple samples from $G'$.
 
 \paragraph{Detailed balance}
@@ -282,8 +282,8 @@ This means that for large values of $Z$, such as when $|Z| > 2$, we reject the h
 %Note this statistic is \emph{not} used for recalibration, but rather to demonstrate that GAN discriminators are typically poorly calibrated.
 
 \paragraph{Correcting Calibration}
-While~\eqref{eq:calib score} may tell us a classifier is uncalibrated we also need to fix the poorly calibrated classifier.
-Furthermore, for WGAN, calibration is required as its discriminator only outputs a score and not a probability.
+While~\eqref{eq:calib score} may tell us a classifier is poorly calibrated, we also need to be able to fix it.
+Furthermore, some GANs (like WGAN) required calibration because their discriminator only outputs a score and not a probability.
 To correct an uncalibrated classifier, denoted $\tilde{D} \in \setx \rightarrow \R$, we use a \emph{held out} calibration set (e.g., 10\% of training data) and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $\tilde{D}$.
 The held out calibration set contains an equal number of positive and negative examples, which in the case of GANs is an even mix of real samples and fake samples from $G$.
 After $\tilde{D}$ is learned, we train a probabilistic classifier $C \in \R \rightarrow [0,1]$ to map $\tilde{D}(\vec x_i)$ to $y_i$ using the calibration set.
@@ -295,8 +295,8 @@ We also avoid the burn-in issues that usually plague MCMC methods.
 Recall that via the detailed balance property~\citep[Ch.~1]{Gilks1996}, if the marginal distribution of a Markov chain state $\vec x \in \setx$ at time step $k$ matches the target $\PD$ (\smash{$\vec x_k \sample \PD$}), then the marginal at time step $k+1$ will also follow $\PD$ (\smash{$\vec x_{k+1} \sample \PD$})\@.
 In most MCMC applications it is not possible to get an initial sample from the target distribution (\smash{$\vec x_0 \sample \PD$})\@.
 
-However, in MH-GANs, we are sampling from the \emph{data} distribution, so we may use a trick:
-Initialize the chain at a sample of real data (the correct distribution) to avoid burn-in.
+However, for MH-GAN, we have access to real data from the target distribution. 
+By initializing the chain at a sample of real data (the correct distribution), we can apply the detailed balance property and avoid burn-in.
 If no generated sample is accepted by the end of the chain, restart sampling from a synthetic sample to ensure the initial real sample is never output.
 To make these restarts rare, we set $K$ large (often 640)\@.
 
@@ -329,10 +329,9 @@ We used \num{64000} standardized training points and generated \num{10000} point
 \paragraph{Visual results}
 In Figure~\ref{fig:mog_example}, we show the original data along with samples generated by the GAN\@.
 We also show samples enhanced via the MH-GAN (with calibration) and with DRS\@.
-The standard GAN creates spurious links along the grid lines between modes.
-It also missed some modes along the bottom row.
-DRS is able to ``clean up'' some of the spurious links but not fill in the missing modes.
-The MH-GAN recovers these under-estimated modes and further ``clean up'' the spurious links.
+The standard GAN creates spurious links along the grid lines between modes and misses some modes along the bottom row.
+DRS is able to reduce some of the spurious links but not fill in the missing modes.
+The MH-GAN further reduces the spurious links and recovers these under-estimated modes.
 
 \paragraph{Quantitative results}
 These results are made more quantitative in Figure~\ref{fig:mog_metrics}, where we follow some of the metrics for the example from~\citet{Azadi2018}.
@@ -397,13 +396,13 @@ We applied the MH-GAN to a PGAN using the same setup as with DCGAN, using $K=800
 We used the pre-trained network of~\citet{Karras2017} on CelebA-HQ (1024$\times$1024)\@.
 Large batches of samples are in the supplementary material.
 
-In Table~\ref{tbl:pgan} we show completely random samples from the progressive GAN (the base GAN), as well as the enhanced GANs from DRS and the MH-GAN\@.
-The different selectors (MH-GAN and DRS) are run on the same batches of images.
+In Table~\ref{tbl:pgan}, we make the progressive GAN our base GAN and generate completely random samples from the base, as well as from the addition of DRS and MH-GAN selectors\@.
+The different selectors (DRS and MH-GAN) are run on the same batches of images.
 Meaning, the same images may appear for both generators.
 
 Although, the progressive GAN sometimes produces near photo realistic images, it also produces many flawed nightmare like images.
 Both DRS and MH-GAN show an ability to preserve just the realistic images.
-However, it is evident from the samples that the MH-GAN is near perfect in its samples, while DRS still has many flawed samples.
+However, MH-GAN is near perfect in its samples, while DRS still has many flawed samples.
 
 \section{Conclusions}
 \label{sec:conclusions}
