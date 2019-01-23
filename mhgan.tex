@@ -193,8 +193,8 @@ In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ wel
 The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
 \subsection{Discriminator Rejection Sampling}
-A very similar concurrent work from \citet{Azadi2018} proposes discriminator rejection sampling (DRS) for GANs, which performs rejection sampling of outputs of $G$ by using the probabilities given by $D$.
-This approach is conceptually simpler than our approach at first but suffers from two major shortcomings in practice.
+A concurrent work with similar aims from~\citet{Azadi2018} proposes discriminator rejection sampling (DRS) for GANs, which performs rejection sampling on the outputs of $G$ by using the probabilities given by $D$.
+While conceptually appealing at first, DRS suffers from two major shortcomings in practice.
 First, it is necessary to find an upper-bound on $D$ over all possible samples in order to obtain a valid proposal distribution for rejection sampling.
 Because this is not possible, one must instead rely on estimating this bound by drawing many pilot samples.
 Secondly, even if one were to find a good bound, the acceptance rate would become very low due to the high-dimensionality of the sampling space.
