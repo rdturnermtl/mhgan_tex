@@ -173,7 +173,7 @@ The outline of this paper is as follows:
 Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
 In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
 We explain our methodology of combining these two seemingly disparate areas in Section~\ref{sec:Methods} where we derive the wrapped generator $G'$.
-Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN and WGAN) are shown in Section~\ref{sec:Results}.
+Results on real data (CIFAR-10 and CelebA) and extending common GAN models (DCGAN, WGAN, and PGAN) are shown in Section~\ref{sec:Results}.
 Section~\ref{sec:conclusions} discusses implications and conclusions.
 
 \section{Related Work}
@@ -225,7 +225,8 @@ Therefore, each MCMC chain results in a single sample $\vec x_K$, and independen
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
-Additionally, even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ will always decrease as $k$ increases~\citep{Murray2008}.
+Even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullback-Leibler (KL) divergence between the implied density it is drawn from and $\target$ always decreases as $k$ increases~\citep{Murray2008}.
+We use detailed balance to motivate our approach to MH-GAN initialization.
 
 %The curious reader may wonder why we do not simply stop the chain after the first accept.
 %In general, allowing chain length $K$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.
@@ -268,7 +269,7 @@ In this example the MH-GAN is able to correctly reconstruct a missing mode in th
 
 \paragraph{Calibration}
 The probabilities for $D$ must not merely provide a good AUC score, but must also be well \emph{calibrated}.
-Put in other terms, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:define PD} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}, as it will result in erroneous density ratio values.
+In other words, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:define PD} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}, as it will result in erroneous density ratios.
 
 We can demonstrate the miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples \smash{$\vec x_{1:N}$} and real/fake labels \smash{$y_{1:N} \in \{0,1\}^N$}.
 If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \sample \bern(D(\vec x))$},
