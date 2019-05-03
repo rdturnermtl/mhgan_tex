@@ -423,11 +423,11 @@ The MH-GAN has great potential for extension.
 \vspace{-3mm}  % alignment looks a little better
 \begin{center}
   \caption{{\small
-    Random samples using a pre-trained PGAN as the base GAN\@.
-    Since the PGAN does not output a probability, we must calibrate the scores by isotonic regression.
-    Here we compare 16 \emph{random samples} from the PGAN, calibrated (improved) DRS, and calibrated MH-GAN; where DRS and MH-GAN select from the same sequence of $G$ samples.
-    There are 5 cases where the PGAN produces substantial warpings (red border) while the MH-GAN does not, and 0 cases where the MH-GAN does and the PGAN does not;
-    for comparison with DRS, there are 7 where only DRS is warped, and 1 where only MH-GAN is warped.
+    % Random samples using a pre-trained PGAN as the base GAN\@.
+    % Since the PGAN does not output a probability, we must calibrate the scores by isotonic regression.
+    We show 16 \emph{random samples} from the PGAN, calibrated (improved) DRS, and MH-GAN, from the same sequence of $G$ samples.
+    There are 5 cases where the PGAN produces bad warpings (red) while the MH-GAN does not, and 0 cases where the MH-GAN does and the PGAN does not;
+    for DRS, there are 7 where only DRS is warped, and 1 where only MH-GAN is warped.
     Even with 16 samples, the MH-GAN is better under a one-sided pairwise trinomial test~\citep{Coakley1996} at $p=0.017$ vs DRS and $p=0.013$ vs PGAN\@.
     }}
   \label{tbl:pgan}
