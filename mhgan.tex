@@ -145,7 +145,7 @@ They implicitly represent the density of the data via a classifier that distingu
 GANs iterate between updating a discriminator $D$ and a generator $G$, where $G$ generates new (synthetic) samples of data, and $D$ attempts to distinguish samples of $G$ from the real data.
 In the typical setup, $D$ is thrown away at the end of training, and only $G$ is kept for generating new synthetic data points.
 In this work, we propose the Metropolis-Hastings GAN (MH-GAN), a GAN that constructs a new generator $G'$ that ``wraps'' $G$ using the information contained in $D$.
-This principle is illustrated in Figure~\ref{fig:intro}.\footnote{A github link will be made available with the final version of this paper.}
+This principle is illustrated in Figure~\ref{fig:intro}.\footnote{Code found at:\\ \scriptsize{\url{github.com/uber-research/metropolis-hastings-gans}}}
 
 % Assume D is bayes optimal
 The MH-GAN uses Markov chain Monte Carlo (MCMC) methods to sample from the distribution implicitly defined by the discriminator $D$ learned for the generator $G$.
