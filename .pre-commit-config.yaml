@@ -1,0 +1,36 @@
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.2.3
+    hooks:
+    -   id: flake8
+        exclude: ^(rhino/contrib/*)|(docs/*)
+        args: [--max-line-length=120, --ignore=E203]
+    -   id: check-byte-order-marker
+    -   id: check-case-conflict
+    -   id: check-merge-conflict
+    -   id: end-of-file-fixer
+        exclude: ^(.*xml)|(.*key)
+    -   id: forbid-new-submodules
+    -   id: mixed-line-ending
+        args: [--fix=lf]
+        exclude: ^.*key
+    -   id: trailing-whitespace
+        exclude: ^.*key
+    -   id: debug-statements
+-   repo: https://github.com/ambv/black
+    rev: 19.3b0
+    hooks:
+    -   id: black
+        exclude: ^(rhino/contrib/*)|(docs/*)
+        args: [-l 120, --target-version=py36]
+- repo: https://github.com/jumanjihouse/pre-commit-hooks
+  sha: 1.11.0
+  hooks:
+    - id: require-ascii
+    - id: script-must-have-extension
+    - id: forbid-binary
+      exclude: ^(figures/*)
+-   repo: https://github.com/Lucas-C/pre-commit-hooks
+    sha: v1.1.6
+    hooks:
+    -   id: forbid-crlf
+    -   id: forbid-tabs
