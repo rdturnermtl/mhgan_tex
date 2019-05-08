@@ -22,15 +22,15 @@
     -   id: black
         exclude: ^(rhino/contrib/*)|(docs/*)
         args: [-l 120, --target-version=py36]
-- repo: https://github.com/jumanjihouse/pre-commit-hooks
-  sha: 1.11.0
-  hooks:
-    - id: require-ascii
-    - id: script-must-have-extension
-    - id: forbid-binary
-      exclude: ^(figures/*)
 -   repo: https://github.com/Lucas-C/pre-commit-hooks
     sha: v1.1.6
     hooks:
     -   id: forbid-crlf
     -   id: forbid-tabs
+- repo: https://github.com/jumanjihouse/pre-commit-hooks
+  sha: 1.11.0
+  hooks:
+    - id: script-must-have-extension
+    - id: forbid-binary
+      exclude: ^(figures/*)
+    - id: require-ascii
