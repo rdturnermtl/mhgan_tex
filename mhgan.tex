@@ -169,6 +169,11 @@ However, the Metropolis-Hastings (MH) algorithm requires only the ratio
 \end{align}
 which we can obtain using only evaluation of $D(\vec x)$.
 
+% Find space??
+% The compute cost of drawing a sample is more expensive than with a standard GAN\@.
+% However, this expense is only incurred at test time; the typically more expensive training compute cost remains unchanged.
+% Thus, the MH-GAN is best well-suited for applications where sample quality is more important then compute speed at test time.
+
 The outline of this paper is as follows:
 Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
 In Sections~\ref{sec:MCMC Methods} and~\ref{sec:GANs} we explain the necessary background on MCMC methods and GANs.
@@ -220,8 +225,10 @@ If $\vec x'$ is accepted, $\vec x_{k+1} = \vec x'$, otherwise $\vec x_{k+1} = \v
 Note that when estimating the distribution $\target$, one must include the duplicates that are a result of rejections in $\vec x'$.
 
 \paragraph{Independent samples}
-Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is also the output of $G'$.
-Therefore, each MCMC chain results in a single sample $\vec x_K$, and independent chains are used for multiple samples from $G'$.
+Many evaluation metrics assume perfectly iid samples.
+Although MCMC methods are typically used to produce correlated samples, we can produce iid samples by using one chain per sample:
+Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is the output of $G'$.
+Additionally, running multiple independent chains is embarrassingly parallel, which scales well on GPUs.
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
@@ -300,6 +307,11 @@ By initializing the chain at a sample of real data (the correct distribution), w
 If no generated sample is accepted by the end of the chain, restart sampling from a synthetic sample to ensure the initial real sample is never output.
 To make restarts rare, we set $K$ large (often 640)\@.
 
+Using a restart after a MCMC chain of only rejects results in a theoretical potential for bias.
+However, MCMC applications in practice often consider chain diagnostics as a stopping criterion, which suffers the same bias potential~\citep{Cowles1999}.
+Alternatively, we could never do a restart and just report the state after $K$ samples, which may sometimes include the initial real sample.
+This might be the right approach in certain statistical problem domains, where we care more about eliminating any potential source of bias, than in image generation.
+
 % Note how requirement not that strong with calibration and manifold
 \paragraph{Perfect Discriminator}
 The assumption of a perfect $D$ may be weakened for two reasons:
@@ -357,10 +369,11 @@ Using the principled approach of the MH-GAN along with calibrated probabilities 
 
 For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets modeled using the DCGAN~\citep{Radford2015} and WGAN~\citep{Arjovsky2017, Gulrajani2017}.
 To evaluate the generator $G'$, we plot Inception scores~\citep{Salimans2016} per epoch in Figure~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
-The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps due to fluctuations in the density ratio estimation performance per epoch.
-Accordingly the statistical significance of the boost from $G$ to $G'$ with calibration varies from no significant change to boost with \smash{$p < 10^{-4}$}.
+%The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps due to fluctuations in the density ratio estimation performance per epoch.
+%Accordingly the statistical significance of the boost from $G$ to $G'$ with calibration varies from no significant change to boost with \smash{$p < 10^{-4}$}.
 Figure~\ref{fig:incep_by_iter} shows Inception score per MCMC iteration:
 most gains are made in the first $k=100$ iterations, but gains continue to $k=400$.
+This shows that the MH-GAN allows a tunable trade-off between sample quality and computation cost.
 
 \input{fig_calibration}
 \input{tbl_inception}
@@ -376,6 +389,9 @@ All results are significantly better than the baseline GAN at \smash{$p < 0.05$}
 \paragraph{Score distribution}
 In Figure~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
 MCMC shifts the distribution of the fakes to match the distribution on true images.
+We observed that the MH acceptance rate is primarily determined by the overlap of the distributions on $D$ scores between real and fake samples.
+In other words, how good the generator $G$ is at tricking the discriminator $D$.
+For example, if the AUC of $D$ is less than 0.9 we typically see acceptance rates over 20\%; in some cases where the AUC of $D$ is 0.95, accept rates drop to 10\%.
 
 \paragraph{Calibration results}
 Figure~\ref{fig:calibration} shows the results per epoch for both CIFAR-10 and CelebA\@.
