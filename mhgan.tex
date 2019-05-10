@@ -288,7 +288,7 @@ This means that for large values of $Z$, such as when $|Z| > 2$, we reject the h
 \paragraph{Correcting Calibration}
 While~\eqref{eq:calib score} may tell us a classifier is poorly calibrated, we also need to be able to fix it.
 Furthermore, some GANs (like WGAN) require calibration because their discriminator only outputs a score and not a probability.
-To correct an uncalibrated classifier, denoted $\tilde{D} \in \setx \rightarrow \R$, we use a \emph{held out} calibration set (e.g., 10\% of training data) and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $\tilde{D}$.
+To correct an uncalibrated classifier, denoted $\tilde{D} \in \setx \rightarrow \R$, we use a \emph{held out} calibration set (e.g., 10\% of the training data) and either logistic, isotonic, or beta~\citep{Kull2017} regression to warp the output of $\tilde{D}$.
 The held out calibration set contains an equal number of positive and negative examples, which in the case of GANs is an even mix of real samples and fake samples from $G$.
 After $\tilde{D}$ is learned, we train a probabilistic classifier $C \in \R \rightarrow [0,1]$ to map $\tilde{D}(\vec x_i)$ to $y_i$ using the calibration set.
 The calibrated classifier is built via $D(\vec x_i) = C(\tilde{D}(\vec x_i))$.
