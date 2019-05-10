@@ -192,10 +192,11 @@ Similar to \citet{Song2017}, \citet{Kempinska2017} improve proposals in particle
 \citet{Song2017} was recently generalized by~\citet{Neklyudov2018}.
 
 % DRE analogy
-The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} (DRE) approach~\citep{Sugiyama2012}\@.
-In DRE the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
-In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
-The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
+% TODO bring back if space
+% The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} (DRE) approach~\citep{Sugiyama2012}\@.
+% In DRE the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
+% In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
+% The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
 \subsection{Discriminator Rejection Sampling}
 A concurrent work with similar aims from~\citet{Azadi2018} proposes discriminator rejection sampling (DRS) for GANs, which performs rejection sampling on the outputs of $G$ by using the probabilities given by $D$.
@@ -227,8 +228,9 @@ Note that when estimating the distribution $\target$, one must include the dupli
 \paragraph{Independent samples}
 Many evaluation metrics assume perfectly iid samples.
 Although MCMC methods are typically used to produce correlated samples, we can produce iid samples by using one chain per sample:
-Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is the output of $G'$.
-Additionally, running multiple independent chains is embarrassingly parallel, which scales well on GPUs.
+Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is the output of $G'$.\\
+1  % TODO fix
+%Additionally, running multiple independent chains is embarrassingly parallel, which scales well on GPUs.
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
@@ -281,8 +283,8 @@ In other words, if one were to warp the probabilities of the perfect discriminat
 We can demonstrate the miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples \smash{$\vec x_{1:N}$} and real/fake labels \smash{$y_{1:N} \in \{0,1\}^N$}.
 If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \sample \bern(D(\vec x))$},
 \begin{align}
-  Z &:= \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \label{eq:calib score} \\
-  \implies Z &\sample \norm(0,1)\,.
+  Z &:= \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \label{eq:calib score}
+  % \implies Z &\sample \norm(0,1)\,.  % TODO bring back
 \end{align}
 That is, we expect the $Z$ diagnostic to be a Gaussian in large $N$ for any well-calibrated classifier.
 This means that for large values of $Z$, such as when $|Z| > 2$, we reject the hypothesis that $D$ is well-calibrated.
@@ -307,10 +309,17 @@ By initializing the chain at a sample of real data (the correct distribution), w
 If no generated sample is accepted by the end of the chain, restart sampling from a synthetic sample to ensure the initial real sample is never output.
 To make restarts rare, we set $K$ large (often 640)\@.
 
-Using a restart after a MCMC chain of only rejects results in a theoretical potential for bias.
-However, MCMC applications in practice often consider chain diagnostics as a stopping criterion, which suffers the same bias potential~\citep{Cowles1999}.
-Alternatively, we could never do a restart and just report the state after $K$ samples, which may sometimes include the initial real sample.
-This might be the right approach in certain statistical problem domains, where we care more about eliminating any potential source of bias, than in image generation.
+Using a restart after a MCMC chain of only rejects results in a theoretical potential for bias.\\
+1\\ % TODO fix
+2\\
+3\\
+4\\
+5\\
+6\\
+7
+%However, MCMC applications in practice often consider chain diagnostics as a stopping criterion, which suffers the same bias potential~\citep{Cowles1999}.
+%Alternatively, we could never do a restart and just report the state after $K$ samples, which may sometimes include the initial real sample.
+%This might be the right approach in certain statistical problem domains, where we care more about eliminating any potential source of bias, than in image generation.
 
 % Note how requirement not that strong with calibration and manifold
 \paragraph{Perfect Discriminator}
@@ -388,10 +397,13 @@ All results are significantly better than the baseline GAN at \smash{$p < 0.05$}
 
 \paragraph{Score distribution}
 In Figure~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
-MCMC shifts the distribution of the fakes to match the distribution on true images.
-We observed that the MH acceptance rate is primarily determined by the overlap of the distributions on $D$ scores between real and fake samples.
-In other words, how good the generator $G$ is at tricking the discriminator $D$.
-For example, if the AUC of $D$ is less than 0.9 we typically see acceptance rates over 20\%; in some cases where the AUC of $D$ is 0.95, accept rates drop to 10\%.
+MCMC shifts the distribution of the fakes to match the distribution on true images.\\
+1\\ % TODO fix
+2\\
+3
+%We observed that the MH acceptance rate is primarily determined by the overlap of the distributions on $D$ scores between real and fake samples.
+%In other words, how good the generator $G$ is at tricking the discriminator $D$.
+%For example, if the AUC of $D$ is less than 0.9 we typically see acceptance rates over 20\%; in some cases where the AUC of $D$ is 0.95, accept rates drop to 10\%.
 
 \paragraph{Calibration results}
 Figure~\ref{fig:calibration} shows the results per epoch for both CIFAR-10 and CelebA\@.
