@@ -386,19 +386,16 @@ In Table~\ref{tbl:inception}, we summarize performance (Inception score) across 
 Behavior is qualitatively similar to that in Figure~\ref{fig:incep_by_epoch}.
 While DRS improves on a direct GAN, MH-GAN improves Inception score more in every case.
 Calibration helps in every case.
-There was not a substantial difference between different calibration methods, but we found a slight advantage for isotonic regression.
+We found a slight advantage for isotonic regression over other calibration methods.
 Results are computed at epoch 60, and as in Figure~\ref{fig:incep_by_epoch}, error bars and p-values are computed using a paired t-test across Inception score batches.
 All results are significantly better than the baseline GAN at \smash{$p < 0.05$}.
 
 \paragraph{Score distribution}
-In Figure~\ref{fig:score_dist_overlap}, we visualize what $G'$ does to the distribution on discriminator scores.
-MCMC shifts the distribution of the fakes to match the distribution on true images.\\
-1\\ % TODO fix
-2\\
-3
-%We observed that the MH acceptance rate is primarily determined by the overlap of the distributions on $D$ scores between real and fake samples.
+In Figure~\ref{fig:score_dist_overlap}, we show what $G'$ does to the distribution on discriminator scores.
+MCMC shifts the distribution of the fakes to match the distribution on true images.
+We also observed that the MH acceptance rate is primarily determined by the overlap of the distributions on $D$ scores between real and fake samples.
 %In other words, how good the generator $G$ is at tricking the discriminator $D$.
-%For example, if the AUC of $D$ is less than 0.9 we typically see acceptance rates over 20\%; in some cases where the AUC of $D$ is 0.95, accept rates drop to 10\%.
+If the AUC of $D$ is less than 0.9 we see acceptance rates over 20\%; but when the AUC of $D$ is 0.95, accept rates drop to 10\%.
 
 \paragraph{Calibration results}
 Figure~\ref{fig:calibration} shows the results per epoch for both CIFAR-10 and CelebA\@.
