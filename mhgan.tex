@@ -128,7 +128,7 @@
 
 \begin{abstract}
 We introduce the Metropolis-Hastings generative adversarial network (MH-GAN), which combines aspects of Markov chain Monte Carlo and GANs.
-The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to standard GANs which draw samples from the distribution defined by only the generator.
+The MH-GAN draws samples from the distribution implicitly defined by a GAN's discriminator-generator pair, as opposed to standard GANs which draw samples from the distribution defined only by the generator.
 It uses the discriminator from GAN training to build a wrapper around the generator for improved sampling.
 With a perfect discriminator, this wrapped generator samples from the true distribution on the data exactly even when the generator is imperfect.
 We demonstrate the benefits of the improved generator on multiple benchmark datasets, including CIFAR-10 and CelebA, using the DCGAN, WGAN, and progressive GAN\@.
@@ -169,8 +169,8 @@ However, the Metropolis-Hastings (MH) algorithm requires only the ratio:
 \end{align}
 which we can obtain using only evaluation of $D(\vec x)$.
 
-Sampling from an MH-GAN more computationally expensive than a standard GAN, but the typically more expensive training compute cost remains unchanged.
-Thus, the MH-GAN is best well-suited for applications where sample quality is more important then compute speed at test time.
+Sampling from an MH-GAN is more computationally expensive than a standard GAN, but the large training compute cost remains unchanged.
+Thus, the MH-GAN is best suited for applications where sample quality is more important than compute speed at test time.
 
 % TODO choice between this and the "outline of this paper is as follows":
 %The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} approach~\citep{Sugiyama2012}\@.
@@ -226,7 +226,7 @@ Note that when estimating the distribution $\target$, one must include the dupli
 Many evaluation metrics assume perfectly iid samples.
 Although MCMC methods are typically used to produce correlated samples, we can produce iid samples by using one chain per sample:
 Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is the output of $G'$.
-Multiple chains is also advantageous for GPU parallelization.
+Using multiple chains is also better for GPU parallelization.
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
@@ -312,7 +312,7 @@ This might be the right approach in certain statistical problems, where we care 
 % Note how requirement not that strong with calibration and manifold
 \paragraph{Perfect Discriminator}
 The assumption of a perfect $D$ may be weakened for two reasons:
-(A)~Because we recalibrate the discriminator, actual probabilities can be incorrect as long as the decision boundary between real and fake is correct.
+(A)~Because we recalibrate the discriminator, the actual probabilities can be incorrect as long as the decision boundary between real and fake is correct.
 (B)~Because the discriminator is only ever evaluated at samples from $G$ or the initial real sample $\vec x_0$, $D$ only needs to be accurate on the manifold of samples from the generator $\PG$ and the real data $\PR$.
 
 \input{fig_mog_example}
@@ -378,8 +378,8 @@ This shows that the MH-GAN allows a tunable trade-off between sample quality and
 In Table~\ref{tbl:inception}, we summarize performance (Inception score) across all experiments, running MCMC with $K=640$ iterations in all cases.
 Behavior is qualitatively similar to that in Figure~\ref{fig:incep_by_epoch}.
 While DRS improves on a direct GAN, MH-GAN improves Inception score more in every case.
-Calibration helps in every case.
-We found a slight advantage for isotonic regression over other calibration methods.
+Calibration helps in every case;
+and we found a slight advantage for isotonic regression over other calibration methods.
 Results are computed at epoch 60, and as in Figure~\ref{fig:incep_by_epoch}, error bars and p-values are computed using a paired t-test across Inception score batches.
 All results are significantly better than the baseline GAN at \smash{$p < 0.05$}.
 
@@ -388,7 +388,7 @@ In Figure~\ref{fig:score_dist_overlap}, we show what $G'$ does to the distributi
 MCMC shifts the distribution of the fakes to match the distribution on true images.
 We also observed that the MH acceptance rate is primarily determined by the overlap of the distributions on $D$ scores between real and fake samples.
 %In other words, how good the generator $G$ is at tricking the discriminator $D$.
-If the AUC of $D$ is less than 0.9 we see acceptance rates over 20\%; but when the AUC of $D$ is 0.95, accept rates drop to 10\%.
+If the AUC of $D$ is less than 0.90 we see acceptance rates over 20\%; but when the AUC of $D$ is 0.95, accept rates drop to 10\%.
 
 \paragraph{Calibration results}
 Figure~\ref{fig:calibration} shows the results per epoch for both CIFAR-10 and CelebA\@.
