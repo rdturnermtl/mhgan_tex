@@ -161,22 +161,22 @@ Furthermore, if the discriminator $D$ is optimal for a fixed imperfect generator
 
 % MCMC only needs the ratio of \PR/G and this can be found from D
 We use an MCMC \emph{independence sampler}~\citep{Tierney1994} to sample from $\PD$ by taking multiple samples from $G$\@.
-Amazingly, using the algorithm we present, one can show that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, one can obtain exact samples from the true data distribution $\PR$.
+Amazingly, using our algorithm, one can show that given a perfect discriminator $D$ and a decent (but imperfect) generator $G$, one can obtain exact samples from the true data distribution $\PR$.
 Standard MCMC implementations require (unnormalized) densities for the target $\PD$ and the proposal $\PG$, which are both unavailable for GANs.
-However, the Metropolis-Hastings (MH) algorithm requires only the ratio
+However, the Metropolis-Hastings (MH) algorithm requires only the ratio:
 \begin{align}
   \frac{\PD(\vec x)}{\PG(\vec x)} = \frac{D(\vec x)}{1 - D(\vec x)}\,, \label{eq:PD inv}
 \end{align}
-which we can obtain using only evaluation of $D(\vec x)$.\\
-1\\  % TODO fix
-2\\
-3\\
-4
+which we can obtain using only evaluation of $D(\vec x)$.
 
-% Find space??
-% The compute cost of drawing a sample is more expensive than with a standard GAN\@.
-% However, this expense is only incurred at test time; the typically more expensive training compute cost remains unchanged.
-% Thus, the MH-GAN is best well-suited for applications where sample quality is more important then compute speed at test time.
+Sampling from an MH-GAN more computationally expensive than a standard GAN, but the typically more expensive training compute cost remains unchanged.
+Thus, the MH-GAN is best well-suited for applications where sample quality is more important then compute speed at test time.
+
+% TODO choice between this and the "outline of this paper is as follows":
+%The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} approach~\citep{Sugiyama2012}\@.
+%In density ratio estimation the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
+%In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
+%The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
 The outline of this paper is as follows:
 Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
@@ -194,13 +194,6 @@ A few other works combine GANs and MCMC in some way.
 Whereas \citet{Song2017} use GANs to accelerate MCMC, we use MCMC to enhance the samples from a GAN\@.
 Similar to \citet{Song2017}, \citet{Kempinska2017} improve proposals in particle filters rather than MCMC\@.
 \citet{Song2017} was recently generalized by~\citet{Neklyudov2018}.
-
-% DRE analogy
-% TODO bring back if space
-% The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} (DRE) approach~\citep{Sugiyama2012}\@.
-% In DRE the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
-% In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
-% The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
 \subsection{Discriminator Rejection Sampling}
 A concurrent work with similar aims from~\citet{Azadi2018} proposes discriminator rejection sampling (DRS) for GANs, which performs rejection sampling on the outputs of $G$ by using the probabilities given by $D$.
