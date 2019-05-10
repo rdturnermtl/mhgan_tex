@@ -232,9 +232,8 @@ Note that when estimating the distribution $\target$, one must include the dupli
 \paragraph{Independent samples}
 Many evaluation metrics assume perfectly iid samples.
 Although MCMC methods are typically used to produce correlated samples, we can produce iid samples by using one chain per sample:
-Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is the output of $G'$.\\
-1  % TODO fix
-%Additionally, running multiple independent chains is embarrassingly parallel, which scales well on GPUs.
+Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is the output of $G'$.
+Multiple chains is also advantageous for GPU parallelization.
 
 \paragraph{Detailed balance}
 The detailed balance condition implies that if $\vec x_k \sample \target$ exactly then $\vec x_{k+1} \sample \target$ exactly as well.
