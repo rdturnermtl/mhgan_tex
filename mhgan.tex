@@ -284,10 +284,9 @@ The probabilities for $D$ must not merely provide a good AUC score, but must als
 In other words, if one were to warp the probabilities of the perfect discriminator in~\eqref{eq:define PD} it may still suffice for standard GAN training, but it will not work in the MCMC procedure defined in~\eqref{eq:alpha from D}, as it will result in erroneous density ratios.
 
 We can demonstrate the miscalibration of $D$ using the statistic of~\citet{Dawid1997} on held out samples \smash{$\vec x_{1:N}$} and real/fake labels \smash{$y_{1:N} \in \{0,1\}^N$}.
-If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \sample \bern(D(\vec x))$},
+If $D$ is well calibrated, i.e., $y$ is indistinguishable from a \smash{$y \sample \bern(D(\vec x))$}, then
 \begin{align}
-  Z &:= \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \in \R \label{eq:calib score}
-  % \implies Z &\sample \norm(0,1)\,.  % TODO bring back
+  Z = \frac{\sum_{i=1}^N y_i - D(\vec x_i)}{\sqrt{\sum_{i=1}^N D(\vec x_i) (1 - D(\vec x_i))}} \!\!\implies\!\! Z \sample \norm(0,1)\,. \label{eq:calib score}
 \end{align}
 That is, we expect the $Z$ diagnostic to be a Gaussian in large $N$ for any well-calibrated classifier.
 This means that for large values of $Z$, such as when $|Z| > 2$, we reject the hypothesis that $D$ is well-calibrated.
@@ -312,17 +311,10 @@ By initializing the chain at a sample of real data (the correct distribution), w
 If no generated sample is accepted by the end of the chain, restart sampling from a synthetic sample to ensure the initial real sample is never output.
 To make restarts rare, we set $K$ large (often 640)\@.
 
-Using a restart after a MCMC chain of only rejects results in a theoretical potential for bias.\\
-1\\ % TODO fix
-2\\
-3\\
-4\\
-5\\
-6\\
-7
-%However, MCMC applications in practice often consider chain diagnostics as a stopping criterion, which suffers the same bias potential~\citep{Cowles1999}.
-%Alternatively, we could never do a restart and just report the state after $K$ samples, which may sometimes include the initial real sample.
-%This might be the right approach in certain statistical problem domains, where we care more about eliminating any potential source of bias, than in image generation.
+Using a restart after a MCMC chain of only rejects has a theoretical potential for bias.
+However, MCMC in practice often uses chain diagnostics as a stopping criterion, which suffers the same bias potential~\citep{Cowles1999}.
+Alternatively, we could never restart and always report the state after $K$ samples, which will occasionally include the initial real sample.
+This might be the right approach in certain statistical problems, where we care more about eliminating any potential source of bias, than in image generation.
 
 % Note how requirement not that strong with calibration and manifold
 \paragraph{Perfect Discriminator}
