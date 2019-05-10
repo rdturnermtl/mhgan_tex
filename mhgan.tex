@@ -304,7 +304,7 @@ By initializing the chain at a sample of real data (the correct distribution), w
 If no generated sample is accepted by the end of the chain, restart sampling from a synthetic sample to ensure the initial real sample is never output.
 To make restarts rare, we set $K$ large (often 640)\@.
 
-Using a restart after a MCMC chain of only rejects has a theoretical potential for bias.
+Using a restart after an MCMC chain of only rejects has a theoretical potential for bias.
 However, MCMC in practice often uses chain diagnostics as a stopping criterion, which suffers the same bias potential~\citep{Cowles1999}.
 Alternatively, we could never restart and always report the state after $K$ samples, which will occasionally include the initial real sample.
 This might be the right approach in certain statistical problems, where we care more about eliminating any potential source of bias, than in image generation.
