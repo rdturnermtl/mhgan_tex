@@ -388,7 +388,7 @@ In Figure~\ref{fig:score_dist_overlap}, we show what $G'$ does to the distributi
 MCMC shifts the distribution of the fakes to match the distribution on true images.
 We also observed that the MH acceptance rate is primarily determined by the overlap of the distributions on $D$ scores between real and fake samples.
 %In other words, how good the generator $G$ is at tricking the discriminator $D$.
-If the AUC of $D$ is less than 0.90 we see acceptance rates over 20\%; but when the AUC of $D$ is 0.95, accept rates drop to 10\%.
+If the AUC of $D$ is less than 0.90 we see acceptance rates over 20\%; but when the AUC of $D$ is 0.95, acceptance rates drop to 10\%.
 
 \paragraph{Calibration results}
 Figure~\ref{fig:calibration} shows the results per epoch for both CIFAR-10 and CelebA\@.
@@ -445,7 +445,7 @@ The MH-GAN has great potential for extension. % TODO how
   \label{tbl:pgan}
 \setlength\tabcolsep{1pt} % default value: 6pt
 \begin{tabular}{cc|cc|cc}
-\multicolumn{2}{c|}{PGAN} & \multicolumn{2}{c|}{DRS (cal)} & \multicolumn{2}{c}{MH-GAN (cal)} \\
+\multicolumn{2}{c|}{PGAN (base)} & \multicolumn{2}{c|}{PGAN with DRS (cal)} & \multicolumn{2}{c}{PGAN with MH-GAN (cal)} \\
 \toprule
 \unreal{\includegraphics[width=\pganw]{figures/pgan/48_base_iso_base.jpg}} &
 \includegraphics[width=\pganw]{figures/pgan/49_base_iso_base.jpg} &
