@@ -409,7 +409,7 @@ We applied the MH-GAN to a PGAN using the same setup as with DCGAN, using $K=800
 We used the pre-trained network of~\citet{Karras2017} on CelebA-HQ (1024$\times$1024)\@.
 Large batches of samples are in the supplementary material.
 
-In Table~\ref{tbl:pgan}, we use the progressive GAN as our base GAN and generate random samples from the base, as well as from the addition of DRS and MH-GAN selectors.
+In Table~\ref{tbl:pgan}, we use the PGAN as our base GAN and generate random samples from the base, as well as from the addition of DRS and MH-GAN selectors.
 The different selectors (DRS and MH-GAN) are run on the same batches of images, so the same images may appear for both generators.
 
 Although, the progressive GAN sometimes produces near photo realistic images, it also produces many flawed nightmare like images.
@@ -426,7 +426,7 @@ This is the only method in the literature which has the property that given a pe
 
 We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
-The MH-GAN has great potential for extension. % TODO how
+Because the MH-GAN algorithm may be used to wrap any other GAN, there are countless possible use cases.
 
 \fboxsep=1.5pt  % padding thickness
 \newcommand{\unreal}[1]{\fcolorbox{white}{red}{#1}}
