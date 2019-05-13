@@ -409,25 +409,25 @@ We applied the MH-GAN to a PGAN using the same setup as with DCGAN, using $K=800
 We used the pre-trained network of~\citet{Karras2017} on CelebA-HQ (1024$\times$1024)\@.
 Large batches of samples are in the supplementary material.
 
-In Table~\ref{tbl:pgan}, we make the progressive GAN our base GAN and generate completely random samples from the base, as well as from the addition of DRS and MH-GAN selectors.
-The different selectors (DRS and MH-GAN) are run on the same batches of images.
-Meaning, the same images may appear for both generators.
+In Table~\ref{tbl:pgan}, we use the progressive GAN as our base GAN and generate random samples from the base, as well as from the addition of DRS and MH-GAN selectors.
+The different selectors (DRS and MH-GAN) are run on the same batches of images,
+so the same images may appear for both generators.
 
 Although, the progressive GAN sometimes produces near photo realistic images, it also produces many flawed nightmare like images.
-Both DRS and MH-GAN show an ability to preserve just the realistic images.
+Both DRS and MH-GAN show an ability to select just the realistic images.
 The MH-GAN samples are nearly perfect, while DRS still has many flawed samples.
 
 \section{Conclusions}
 \label{sec:conclusions}
 
 We have shown how to incorporate the knowledge in the discriminator $D$ into an improved generator $G'$.
-Our method is based on the premise that $D$ is better at density ratio estimation than $G$ is at sampling data, which is inherently a harder task.
+Our method is based on the premise that $D$ is better at density ratio estimation than $G$ is at sampling data, which may be a harder task.
 The principled MCMC setup selects among samples from $G$ to correct biases in $G$.
 This is the only method in the literature which has the property that given a perfect $D$ one can recover $G$ such that $\PG = \PR$.
 
 We have shown the raw discriminators in GANs and DRS are poorly calibrated.
 To our knowledge, this is the first work to evaluate the discriminator in this way and to rigorously show the poor calibration of the discriminator.
-The MH-GAN has great potential for extension.
+The MH-GAN has great potential for extension. \todo{how?}
 
 \fboxsep=1.5pt  % padding thickness
 \newcommand{\unreal}[1]{\fcolorbox{white}{red}{#1}}
