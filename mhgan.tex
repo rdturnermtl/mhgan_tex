@@ -174,12 +174,8 @@ which we can obtain using only evaluation of $D(\vec x)$.
 Sampling from an MH-GAN is more computationally expensive than a standard GAN, but the bigger and more relevant training compute cost remains unchanged.
 Thus, the MH-GAN is best suited for applications where sample quality is more important than compute speed at test time.
 
-% TODO choice between this and the "outline of this paper is as follows":
-% TODO SI
-%The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} approach~\citep{Sugiyama2012}\@.
-%In density ratio estimation the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
-%In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
-%The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
+% We would put the comprison to DRE here, but it has been moved to SI due to space. But still make sure ref is included in bib.
+\nocite{Sugiyama2012}
 
 The outline of this paper is as follows:
 Section~\ref{sec:Related Work} reviews diverse areas of relevant prior work.
