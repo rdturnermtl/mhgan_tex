@@ -94,6 +94,8 @@
 % in order of appearance and this is the preferred way.
 \icmlsetsymbol{equal}{*}
 
+% TODO double check format here
+
 \begin{icmlauthorlist}
 \icmlauthor{Ryan Turner}{uber}
 \icmlauthor{Jane Hung}{uber}
@@ -173,6 +175,7 @@ Sampling from an MH-GAN is more computationally expensive than a standard GAN, b
 Thus, the MH-GAN is best suited for applications where sample quality is more important than compute speed at test time.
 
 % TODO choice between this and the "outline of this paper is as follows":
+% TODO SI
 %The GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} approach~\citep{Sugiyama2012}\@.
 %In density ratio estimation the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
 %In GANs, the key is learning $G$ well; while in DRE, the key is learning $D$ well.
@@ -411,8 +414,10 @@ Large batches of samples are in the supplementary material.
 
 In Table~\ref{tbl:pgan}, we use the PGAN as our base GAN and generate random samples from the base, as well as from the addition of DRS and MH-GAN selectors.
 The different selectors (DRS and MH-GAN) are run on the same batches of images, so the same images may appear for both generators.
-
 Although, the progressive GAN sometimes produces near photo realistic images, it also produces many flawed nightmare like images.
+To assess image quality, five human labelers manually labeled images as warped or acceptable.
+As shown in Table~\ref{tbl:pgan}, MH-GAN selects significantly fewer warped images.
+
 Both DRS and MH-GAN show an ability to select just the realistic images.
 The MH-GAN samples are nearly perfect, while DRS still has many flawed samples.
 
@@ -500,6 +505,8 @@ Because the MH-GAN algorithm may be used to wrap any other GAN, there are countl
 \end{table*}
 
 \FloatBarrier
+
+% TODO little and big k
 
 \section*{Acknowledgements}
 We thank Rosanne Liu and Zoubin Ghahramani for useful discussions and comments.
