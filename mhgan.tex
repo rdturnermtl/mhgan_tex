@@ -74,6 +74,8 @@
 \newcommand{\exfactor}{1.0}
 \newcommand{\pganw}{0.95in}
 
+\newcommand{\chainK}{K}
+
 \begin{document}
 
 \twocolumn[
@@ -210,7 +212,7 @@ In this section, we briefly review the notation and equations with MCMC and GANs
 \subsection{MCMC Methods}
 \label{sec:MCMC Methods}
 
-MCMC methods attempt to draw a chain of samples $\vec x_{1:K} \in \setx^K$ that marginally come from a target distribution $\target$.
+MCMC methods attempt to draw a chain of samples $\vec x_{1:\chainK} \in \setx^\chainK$ that marginally come from a target distribution $\target$.
 We refer to the initial distribution as $\pinit$ and the proposal for the independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$.
 The proposal $\vec x' \in \setx$ is accepted with probability
 \begin{align}
@@ -222,7 +224,7 @@ Note that when estimating the distribution $\target$, one must include the dupli
 \paragraph{Independent samples}
 Many evaluation metrics assume perfectly iid samples.
 Although MCMC methods are typically used to produce correlated samples, we can produce iid samples by using one chain per sample:
-Each chain samples $\vec x_0 \sample \pinit$ and then does $K$ MH iterations to get $\vec x_K$ as the output of the chain, which is the output of $G'$.
+Each chain samples $\vec x_0 \sample \pinit$ and then does $\chainK$ MH iterations to get $\vec x_\chainK$ as the output of the chain, which is the output of $G'$.
 Using multiple chains is also better for GPU parallelization.
 
 \paragraph{Detailed balance}
@@ -231,7 +233,7 @@ Even if $\vec x_k$ is not exactly distributed according to $\target$, the Kullba
 We use detailed balance to motivate our approach to MH-GAN initialization.
 
 %The curious reader may wonder why we do not simply stop the chain after the first accept.
-%In general, allowing chain length $K$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.
+%In general, allowing chain length $\chainK$ to be conditioned in any way on the state of the chain (including which samples were accepted or rejected) has the potential to introduce bias to the samples~\citep{Cowles1999}.
 
 \subsection{GANs}
 \label{sec:GANs}
@@ -299,11 +301,11 @@ In most MCMC applications it is not possible to get an initial sample from the t
 However, for MH-GAN, we have access to real data from the target distribution.
 By initializing the chain at a sample of real data (the correct distribution), we apply the detailed balance property and avoid burn-in.
 If no generated sample is accepted by the end of the chain, we restart sampling from a synthetic sample to ensure the initial real sample is never output.
-To make restarts rare, we set $K$ large (often 640)\@.
+To make restarts rare, we set $\chainK$ large (often 640)\@.
 
 Using a restart after an MCMC chain of only rejects has a theoretical potential for bias.
 However, MCMC in practice often uses chain diagnostics as a stopping criterion, which suffers the same bias potential~\citep{Cowles1999}.
-Alternatively, we could never restart and always report the state after $K$ samples, which will occasionally include the initial real sample.
+Alternatively, we could never restart and always report the state after $\chainK$ samples, which will occasionally include the initial real sample.
 This might be a better approach in certain statistical problems, where we care more about eliminating any potential source of bias, than in image generation.
 
 % Note how requirement not that strong with calibration and manifold
