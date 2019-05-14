@@ -395,9 +395,9 @@ If the AUC of $D$ is less than 0.90 we see acceptance rates over 20\%; but when 
 
 \paragraph{Calibration results}
 Figure~\ref{fig:calibration} shows the results per epoch for both CIFAR-10 and CelebA\@.
-It shows that the raw discriminator is highly miscalibrated, but can be fixed with any of the standard calibration methods.
+It shows that the raw discriminator is highly miscalibrated, but can be fixed with any of the calibration methods.
 The $Z$ statistic for the raw discriminator $D$ (DCGAN on CIFAR-10) varies from $-77.57$ to $48.98$ in the first 60 epochs; even after Bonferroni correction at $N \!\!=\!\! 60$, we expect $|Z| < 3.35$ with 95\% confidence for a calibrated classifier.
-The calibrated discriminator varies from $-2.91$ to $3.60$, which shows it is almost perfectly calibrated.
+The calibrated discriminator varies from $-2.91$ to $3.60$, showing almost perfect calibration.
 Accordingly, it is unsurprising that the calibrated discriminator significantly boosts performance in the MH-GAN\@.
 
 \paragraph{Visual results}
@@ -414,9 +414,9 @@ Large batches of samples are in the supplementary material.
 
 In Table~\ref{tbl:pgan}, we use the PGAN as our base GAN and generate random samples from the base, as well as from the addition of DRS and MH-GAN selectors.
 The different selectors (DRS and MH-GAN) are run on the same batches of images, so the same images may appear for both generators.
-Although, the progressive GAN sometimes produces near photo realistic images, it also produces many flawed nightmare like images.
+Although, the PGAN sometimes produces near photo realistic images, it also produces many flawed nightmare like images.
 To assess image quality, five human labelers manually labeled images as warped or acceptable.
-As shown in Table~\ref{tbl:pgan}, MH-GAN selects significantly fewer warped images.
+Table~\ref{tbl:pgan} shows that MH-GAN selects significantly fewer warped images.
 
 Both DRS and MH-GAN show an ability to select just the realistic images.
 The MH-GAN samples are nearly perfect, while DRS still has many flawed samples.
