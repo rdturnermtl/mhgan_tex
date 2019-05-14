@@ -4,7 +4,7 @@
 \begin{algorithmic}
    \STATE {\bfseries Input:} generator $G$, calibrated disc.~$D$, real samples
    \STATE Assign random real sample $\vec x_0$ to $\vec x$
-   \FOR{$k=1$ {\bfseries to} $K$}
+   \FOR{$k=1$ {\bfseries to} $\chainK$}
    \STATE Draw $\vec x'$ from $G$
    \STATE Draw $U$ from $\textrm{Uniform}(0,1)$
    \IF{\smash{$U \leq (D(\vec x)^{-1} - 1) / (D(\vec x')^{-1} - 1)$}}
