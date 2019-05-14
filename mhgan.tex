@@ -362,7 +362,7 @@ Using the principled approach of the MH-GAN along with calibrated probabilities 
 \subsection{Real Data}
 
 For real data experiments we considered the CelebA~\citep{Liu2015} and CIFAR-10~\citep{Torralba2008} data sets modeled using the DCGAN~\citep{Radford2015} and WGAN~\citep{Arjovsky2017, Gulrajani2017}.
-To evaluate the generator $G'$, we plot Inception scores~\citep{Salimans2016} per epoch in Figure~\ref{fig:incep_by_epoch} after $K=640$ MCMC iterations.
+To evaluate the generator $G'$, we plot Inception scores~\citep{Salimans2016} per epoch in Figure~\ref{fig:incep_by_epoch} after $k=640$ MCMC iterations.
 %The actual performance boost realized by MH-GAN oscillates from one epoch to the next, perhaps due to fluctuations in the density ratio estimation performance per epoch.
 %Accordingly the statistical significance of the boost from $G$ to $G'$ with calibration varies from no significant change to boost with \smash{$p < 10^{-4}$}.
 Figure~\ref{fig:incep_by_iter} shows Inception score per MCMC iteration:
@@ -372,7 +372,7 @@ This shows that the MH-GAN allows a tunable trade-off between sample quality and
 \input{fig_calibration}
 \input{tbl_inception}
 
-In Table~\ref{tbl:inception}, we summarize performance (Inception score) across all experiments, running MCMC with $K=640$ iterations in all cases.
+In Table~\ref{tbl:inception}, we summarize performance (Inception score) across all experiments, running MCMC to $k=640$ iterations in all cases.
 Behavior is qualitatively similar to that in Figure~\ref{fig:incep_by_epoch}.
 While DRS improves on a direct GAN, MH-GAN improves Inception score more in every case.
 Calibration helps in every case;
@@ -402,7 +402,7 @@ For CIFAR-10, it enhances modes with animal-like outlines and vehicles.
 \subsection{Progressive GAN}
 
 To further illustrate the power of the MH-GAN approach we consider the progressive GAN (PGAN)~\citep{Karras2017}, which recently produced shockingly realistic images.
-We applied the MH-GAN to a PGAN using the same setup as with DCGAN, using $K=800$.
+We applied the MH-GAN to a PGAN using the same setup as with DCGAN, at $k=800$.
 We used the pre-trained network of~\citet{Karras2017} on CelebA-HQ (1024$\times$1024)\@.
 Large batches of samples are in the supplementary material.
 
