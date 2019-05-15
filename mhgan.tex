@@ -397,7 +397,7 @@ The calibrated discriminator varies from $-2.91$ to $3.60$, showing almost perfe
 Accordingly, it is unsurprising that the calibrated discriminator significantly boosts performance in the MH-GAN\@.
 
 \paragraph{Visual results}
-We also show example images from the CIFAR-10 and CelebA setups in the supplementary material.
+We show example images from the CIFAR-10 and CelebA setups in the Appendix~\ref{sec:SI} (Figures~\ref{fig:cifar_samples}--\ref{fig:celeba_samples})\@.
 The selectors (such as MH-GAN) result in a wider spread of probability mass across background colors.
 For CIFAR-10, it enhances modes with animal-like outlines and vehicles.
 
@@ -406,7 +406,7 @@ For CIFAR-10, it enhances modes with animal-like outlines and vehicles.
 To further illustrate the power of the MH-GAN approach we consider the progressive GAN (PGAN)~\citep{Karras2017}, which recently produced shockingly realistic images.
 We applied the MH-GAN to a PGAN using the same setup as with DCGAN, at $k=800$.
 We used the pre-trained network of~\citet{Karras2017} on CelebA-HQ (1024$\times$1024)\@.
-Large batches of samples are in the supplementary material.
+Large batches of samples are in Appendix~\ref{sec:SI} (Figures~\ref{fig:PGAN samples}--\ref{fig:MHGAN 64x})\@.
 
 In Table~\ref{tbl:pgan}, we use the PGAN as our base GAN and generate random samples from the base, as well as from the addition of DRS and MH-GAN selectors.
 The different selectors (DRS and MH-GAN) are run on the same batches of images, so the same images may appear for both generators.
@@ -513,7 +513,7 @@ We thank Rosanne Liu and Zoubin Ghahramani for useful discussions and comments.
 \appendix
 
 \section{Supplementary Material}
-\label{sec:supp}
+\label{sec:SI}
 
 \input{supp_contents}
 
