@@ -1,83 +1,51 @@
-\documentclass{article}
+In this section we present some of the samples from the various GAN setups in full page figures below.
 
-% Recommended, but optional, packages for figures and better typesetting:
-\usepackage{microtype}
-\usepackage{graphicx}
-%\usepackage{subfigure}
-\usepackage{booktabs} % for professional tables
+We also note that the GAN approach to density estimation is complementary to the earlier \emph{density ratio estimation} approach~\citep{Sugiyama2012}\@.
+In density ratio estimation, the generator $G$ is fixed, and the density is found by combining Bayes' rule and the learned classifier $D$.
+In GANs, the key is learning $G$ well; while in density ratio estimation, the key is learning $D$ well.
+The MH-GAN has flavors of both in that it uses both $G$ and $D$ to build $G'$.
 
-\usepackage[hyphens]{url}            % simple URL typesetting
-\usepackage{amsmath}
-\usepackage{amsfonts}       % blackboard math symbols
-\usepackage{nicefrac}       % compact symbols for 1/2, etc.
-\usepackage{subcaption}
-\usepackage[group-separator={,}]{siunitx}
-\usepackage{placeins}
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=\exfactor\textwidth]{figures/pgan/all_base_iso_base_lq.jpg}
+    \caption{
+    Set of 64 random samples from the (base) PGAN\@.
+    }
+    \label{fig:PGAN samples}
+\end{figure*}
 
-% hyperref makes hyperlinks in the resulting PDF.
-% If your build breaks (sometimes temporarily if a hyperlink spans a page)
-% please comment out the following usepackage line and replace
-% \usepackage{icml2019} with \usepackage[nohyperref]{icml2019} above.
-\usepackage{hyperref}
+\begin{figure*}[htbp]
+    \centering
+       \includegraphics[width=0.2\textwidth]{figures/pgan/4_base_iso_base.jpg}
+    \hfill
+       \includegraphics[width=0.2\textwidth]{figures/pgan/5_base_iso_base.jpg}
+    \hfill
+       \includegraphics[width=0.2\textwidth]{figures/pgan/8_base_iso_base.jpg}
+    \hfill
+       \includegraphics[width=0.2\textwidth]{figures/pgan/34_base_iso_base.jpg}
+    \caption{
+    Flawed examples from the PGAN\@.
+    Such a degree of non-realism is rarer in the DRS samples (Figure~\ref{fig:DRS 64x}) and nearly absent in the MH-GAN samples (Figure~\ref{fig:MHGAN 64x})\@.
+    }
+\end{figure*}
 
-% Attempt to make hyperref and algorithmic work together better:
-\newcommand{\theHalgorithm}{\arabic{algorithm}}
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=\exfactor\textwidth]{figures/pgan/all_base_iso_reject_lq.jpg}
+    \caption{
+    Set of 64 random samples from the calibrated DRS setup.
+    }
+    \label{fig:DRS 64x}
+\end{figure*}
 
-% Use the following line for the initial blind version submitted for review:
-% \usepackage{icml2019}
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=\exfactor\textwidth]{figures/pgan/all_base_iso_MH_lq.jpg}
+    \caption{
+    Set of 64 random samples from the calibrated MH-GAN\@.
+    }
+    \label{fig:MHGAN 64x}
+\end{figure*}
 
-% If accepted, instead use the following line for the camera-ready submission:
-\usepackage[accepted]{icml2019}
-
-% The \icmltitle you define below is probably too long as a header.
-% Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Metropolis-Hastings Generative Adversarial Networks: Supplementary Material}
-
-\newcommand{\exfactor}{1.0}
-
-\begin{document}
-
-\twocolumn[
-\icmltitle{Metropolis-Hastings Generative Adversarial Networks\texorpdfstring{\\}{ }Supplementary Material}
-
-% It is OKAY to include author information, even for blind
-% submissions: the style file will automatically remove it for you
-% unless you've provided the [accepted] option to the icml2019
-% package.
-
-% List of affiliations: The first argument should be a (short)
-% identifier you will use later to specify author affiliations
-% Academic affiliations should list Department, University, City, Region, Country
-% Industry affiliations should list Company, City, Region, Country
-
-% You can specify symbols, otherwise they are numbered in order.
-% Ideally, you should not use this facility. Affiliations will be numbered
-% in order of appearance and this is the preferred way.
-\icmlsetsymbol{equal}{*}
-
-\begin{icmlauthorlist}
-\icmlauthor{Ryan Turner}{uber}
-\icmlauthor{Jane Hung}{uber}
-\icmlauthor{Eric Frank}{uber}
-\icmlauthor{Yunus Saatci}{uber}
-\icmlauthor{Jason Yosinski}{uber}
-\end{icmlauthorlist}
-
-\icmlaffiliation{uber}{Uber AI Labs}
-
-\icmlcorrespondingauthor{Ryan Turner}{ryan.turner@uber.com}
-
-% You may provide any keywords that you
-% find helpful for describing your paper; these are used to populate
-% the "keywords" metadata in the PDF but will not be shown in the document
-\icmlkeywords{Metropolis Hastings, generative adversarial networks, Markov chain Monte Carlo}
-
-\vskip 0.3in
-]
-
-\input{supp_contents}
-
-\bibliography{mgan_refs}
-\bibliographystyle{icml2019}
-
-\end{document}
+\input{fig_cifar_samples}
+\input{fig_celeba_samples}
