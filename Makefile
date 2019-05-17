@@ -40,7 +40,7 @@ clean:
 
 arxiv:
 	pdflatex mhgan
-	bibtexall
+	bibtex mhgan.aux
 	mkdir -p arxiv arxiv/figures arxiv/figures/pgan arxiv/figures/cifar arxiv/figures/celeba
 	#cp -a mhgan.tex mhgan.bbl *.sty arxiv/
 	cp -a mhgan.tex mhgan.bbl mhgan.aux   *.sty arxiv/
