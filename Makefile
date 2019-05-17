@@ -37,15 +37,20 @@ clean:
 
 
 # The below targets are just used to produce an arXiv version
-# (old version; not updated for this paper yet...)
 
 arxiv:
-	pdflatex main
+	pdflatex mhgan
 	bibtexall
-	mkdir -p arxiv arxiv/figures
-	cp -a main.tex main.bbl authors.tex *.sty arxiv/
-	cp -aL ../figures/prediction_tree_mat-crop.pdf ../figures/stitching_conv1_results-crop.pdf ../figures/stitching_architecture-crop.pdf ../figures/match_vs_max_conv1_crop.pdf ../figures/average_correlation_all_conv_layers-crop.pdf ../figures/match_ims_top_bot_crop.pdf ../figures/cor_and_xcor_conv1_crop.pdf ../figures/conv5_metric.png ../figures/conv4_metric.png ../figures/conv3_metric.png ../figures/conv2_metric.png ../figures/conv1_metric.png ../figures/hierarchical.jpg ../figures/conv2_top8_200dpi.jpg ../figures/conv1_top12.jpg ../figures/conv5_spectral.pdf ../figures/conv4_spectral.jpg ../figures/conv3_spectral.jpg ../figures/conv2_spectral.jpg ../figures/conv1_spectral.pdf ../figures/match_mi_top_bot-crop.pdf ../figures/match_vs_max_conv5_crop.pdf ../figures/match_vs_max_conv4_crop.pdf ../figures/match_vs_max_conv3_crop.pdf ../figures/match_vs_max_conv2_crop.pdf ../figures/highest_lowest_conv2_crop.pdf ../figures/highest_lowest_conv1_crop.pdf ../figures/means_nets1234_crop.pdf ../figures/conv2_30_26_activation_cor_ori_crop.jpg ../figures/conv2_122_236_activation_cor_ori_crop.jpg ../figures/conv1_2_74_activation_cor_ori_crop.jpg ../figures/conv1_34_48_activation_cor_ori_crop.jpg ../figures/match_ims_top_bot_9_conv12345_crop.pdf   arxiv/figures/
+	mkdir -p arxiv arxiv/figures arxiv/figures/pgan arxiv/figures/cifar arxiv/figures/celeba
+	#cp -a mhgan.tex mhgan.bbl *.sty arxiv/
+	cp -a mhgan.tex mhgan.bbl mhgan.aux   *.sty arxiv/
+	cp -a alg_mhgan.tex fig_calibration.tex fig_celeba_samples.tex fig_cifar_samples.tex fig_inception.tex fig_intro.tex fig_mog_example.tex fig_mog_metrics.tex fig_univariate_example.tex supp.tex supp_mat.tex tbl_inception.tex arxiv/
+	#cp -a mhgan.tex            *.sty arxiv/
+	cp -aL figures/coord_descent.png figures/block_diag.png figures/univariate_example_flat.pdf figures/mog_unified_smaller.pdf figures/std_flat.pdf figures/hqr_flat.pdf figures/jsd_flat.pdf figures/per_epoch_flat.pdf figures/plot_per_mh_flat.pdf figures/score_dist_bta_flat.pdf figures/disc_calib_cifar_flat.pdf figures/disc_calib_celeba_flat.pdf arxiv/figures/
+	cp -aL figures/pgan/48_base_iso_base.jpg figures/pgan/49_base_iso_base.jpg figures/pgan/48_base_iso_reject.jpg figures/pgan/49_base_iso_reject.jpg figures/pgan/48_base_iso_MH.jpg figures/pgan/49_base_iso_MH.jpg figures/pgan/50_base_iso_base.jpg figures/pgan/51_base_iso_base.jpg figures/pgan/50_base_iso_reject.jpg figures/pgan/51_base_iso_reject.jpg figures/pgan/50_base_iso_MH.jpg figures/pgan/51_base_iso_MH.jpg figures/pgan/52_base_iso_base.jpg figures/pgan/53_base_iso_base.jpg figures/pgan/52_base_iso_reject.jpg figures/pgan/53_base_iso_reject.jpg figures/pgan/52_base_iso_MH.jpg figures/pgan/53_base_iso_MH.jpg figures/pgan/54_base_iso_base.jpg figures/pgan/55_base_iso_base.jpg figures/pgan/54_base_iso_reject.jpg figures/pgan/55_base_iso_reject.jpg figures/pgan/54_base_iso_MH.jpg figures/pgan/55_base_iso_MH.jpg figures/pgan/56_base_iso_base.jpg figures/pgan/57_base_iso_base.jpg figures/pgan/56_base_iso_reject.jpg figures/pgan/57_base_iso_reject.jpg figures/pgan/56_base_iso_MH.jpg figures/pgan/57_base_iso_MH.jpg figures/pgan/58_base_iso_base.jpg figures/pgan/59_base_iso_base.jpg figures/pgan/58_base_iso_reject.jpg figures/pgan/59_base_iso_reject.jpg figures/pgan/58_base_iso_MH.jpg figures/pgan/59_base_iso_MH.jpg figures/pgan/60_base_iso_base.jpg figures/pgan/61_base_iso_base.jpg figures/pgan/60_base_iso_reject.jpg figures/pgan/61_base_iso_reject.jpg figures/pgan/60_base_iso_MH.jpg figures/pgan/61_base_iso_MH.jpg figures/pgan/62_base_iso_base.jpg figures/pgan/63_base_iso_base.jpg figures/pgan/62_base_iso_reject.jpg figures/pgan/63_base_iso_reject.jpg figures/pgan/62_base_iso_MH.jpg figures/pgan/63_base_iso_MH.jpg figures/pgan/all_base_iso_base_llq.jpg figures/pgan/4_base_iso_base.jpg figures/pgan/5_base_iso_base.jpg figures/pgan/8_base_iso_base.jpg figures/pgan/34_base_iso_base.jpg figures/pgan/all_base_iso_reject_llq.jpg figures/pgan/all_base_iso_MH_llq.jpg arxiv/figures/pgan/
+	cp -aL figures/cifar/192_base_raw_base_smaller_bigger.png figures/cifar/192_base_raw_reject_smaller_bigger.png figures/cifar/192_base_raw_MH_smaller_bigger.png figures/cifar/192_base_iso_MH_smaller_bigger.png arxiv/figures/cifar/
+	cp -aL figures/celeba/31_base_raw_base.jpg figures/celeba/31_base_raw_reject.jpg figures/celeba/31_base_raw_MH.jpg figures/celeba/31_base_iso_MH.jpg arxiv/figures/celeba/
 	tar cvzf arxiv.tar.gz arxiv
 
 arxiv-test: arxiv
-	cd arxiv && pdflatex main
+	cd arxiv && pdflatex mhgan && pdflatex mhgan

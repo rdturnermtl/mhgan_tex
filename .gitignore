@@ -7,3 +7,5 @@
 *.out
 .ipynb_checkpoints
 mhgan.pdf
+arxiv/
+arxiv.tar.gz
