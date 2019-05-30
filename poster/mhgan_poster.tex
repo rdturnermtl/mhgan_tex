@@ -5,7 +5,7 @@
 %
 % The a0poster class was created by:
 % Gerlinde Kettl and Matthias Weiser (tex@kettl.de)
-% 
+%
 % This template has been downloaded from:
 % http://www.LaTeXTemplates.com
 %
@@ -15,10 +15,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %----------------------------------------------------------------------------------------
-%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%   PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass[a0,portrait]{a0poster}
+\documentclass[a0,landscape]{a0poster}
 
 \usepackage{multicol} % This is so we can have multiple columns of text side-by-side
 \columnsep=100pt % This is the amount of white space between the columns in the poster
@@ -92,17 +92,15 @@
 
 \usepackage{url}
 
-\usepackage{float} 
+\usepackage{float}
 
 \usepackage{array}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 
-\usepackage{makecell}
-
 \begin{document}
 
 %----------------------------------------------------------------------------------------
-%	POSTER HEADER 
+%   POSTER HEADER
 %----------------------------------------------------------------------------------------
 
 % The header is divided into three boxes:
@@ -111,32 +109,28 @@
 % The third is 19% wide and houses a logo for your university/organization or a photo of you
 % The widths of these boxes can be easily edited to accommodate your content as you see fit
 
-\begin{center}
 {
-\setlength\extrarowheight{20pt}
-\begin{tabular}{P{11cm}P{53cm}P{12cm}}
-\multirow{2}{*}{\makecell{
-\includegraphics[width=5cm]{qr.png}\\
-\url{eng.uber.com/mh-gan}}}
+\setlength\extrarowheight{35pt}
+\begin{tabular}{P{15cm}cP{15cm}}
+\multirow{2}{*}{\includegraphics[width=5cm]{qr.png}}
 &
-{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{\makecell{Metropolis-Hastings\\Generative Adversarial Networks}} \color{Black}}
+{\fontsize{100}{120} \selectfont \color{NavyBlue} \textbf{Metropolis-Hastings Generative Adversarial Networks} \color{Black}}
 &
-\multirow{2}{*}{\includegraphics[width=11cm]{uber_ai_logo_bootleg.pdf}} \\
+\multirow{2}{*}{\includegraphics[width=12cm]{uber_ai_logo_bootleg.pdf}} \\
 &
 \Huge \textbf{Ryan Turner, Jane Hung, Yunus Saatci, Jason Yosinski}
 &
 \end{tabular}
 }
-\end{center}
 %
-\vspace{1cm} % A bit of extra whitespace between the header and poster content
+\vspace{2cm} % A bit of extra whitespace between the header and poster content
 
 %----------------------------------------------------------------------------------------
 
-\begin{multicols}{2} % This is how many columns your poster will be broken into, a poster with many figures may benefit from less columns whereas a text-heavy poster benefits from more
+\begin{multicols}{3} % This is how many columns your poster will be broken into, a poster with many figures may benefit from less columns whereas a text-heavy poster benefits from more
 
 %----------------------------------------------------------------------------------------
-%	INTRODUCTION
+%   INTRODUCTION
 %----------------------------------------------------------------------------------------
 
 \Large
@@ -179,6 +173,8 @@
   \item $\gamma$-shift heuristic violates rejection sampling validity \frownie{}
 \end{itemize}
 
+\columnbreak
+
 \mysection{Metropolis-Hastings}
 
 \begin{itemize}
@@ -195,23 +191,6 @@
     \item Initialize as close to $\target$ as possible
   \end{itemize}
 \end{itemize}
-
-\vspace{9mm}
-\hrule
-\vspace{1mm}
-
-\begin{center}
-\begin{tabular}{rl}
-\textbf{Code} &
-\large {\url{github.com/uber-research/metropolis-hastings-gans}} \\
-\textbf{arXiv} &
-\large {\url{arxiv.org/abs/1811.11357}} \\
-\textbf{Blog} &
-\large {\url{eng.uber.com/mh-gan}}
-\end{tabular}
-\end{center}
-
-\columnbreak
 
 \mysection{MH-GAN Practical Details}
 
@@ -244,6 +223,8 @@ Weaken perfect $D$ assumption:
   \item $D$ only needs to be correct on $\PG$ and $\PR$ manifold
 \end{itemize}
 
+\columnbreak
+
 \mysection{Results}
 
 Consider 1D example to illustrate procedure:
@@ -262,6 +243,18 @@ Comparison on real data using CIFAR-10:
 \includegraphics[scale=2.5]{../figures/plot_per_mh.pdf}
 \end{center}
 
+~\\
+
+\begin{center}
+\begin{tabular}{rl}
+\textbf{Code} &
+\large {\url{github.com/uber-research/metropolis-hastings-gans}} \\
+\textbf{arXiv} &
+\large {\url{arxiv.org/abs/1811.11357}} \\
+\textbf{Blog} &
+\large {\url{eng.uber.com/mh-gan}}
+\end{tabular}
+\end{center}
+
 \end{multicols}
 \end{document}
-
