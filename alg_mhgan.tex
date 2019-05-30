@@ -1,0 +1,17 @@
+\begin{algorithm}[tb]
+   \caption{MH-GAN}
+   \label{alg:mhgan}
+\begin{algorithmic}
+   \STATE {\bfseries Input:} generator $G$, calibrated disc.~$D$, real samples
+   \STATE Assign random real sample $\vec x_0$ to $\vec x$
+   \FOR{$k=1$ {\bfseries to} $\chainK$}
+   \STATE Draw $\vec x'$ from $G$
+   \STATE Draw $U$ from $\textrm{Uniform}(0,1)$
+   \IF{\smash{$U \leq (D(\vec x)^{-1} - 1) / (D(\vec x')^{-1} - 1)$}}
+   \STATE $\vec x \leftarrow \vec x'$
+   \ENDIF
+   \ENDFOR
+   \STATE If $\vec x$ is still real sample $\vec x_0$ restart with draw from $G$ as $\vec x_0$
+   \STATE {\bfseries Output:} sample $\vec x$ from $G'$
+\end{algorithmic}
+\end{algorithm}
