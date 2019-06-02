@@ -163,36 +163,26 @@
 \includegraphics[scale=2.75]{../figures/block_diag.pdf}
 \vspace{-2cm}
 
-\mysection{Rejection Sampling}
-
-\begin{itemize}
-  \item Discriminator Rejection Sampling (DRS) corrects $G$ using the probabilities given by $D$
-  \item Rejection sampling uses $\accept = p_D/(Mp_G)$ with $M$ s.t.~$\alpha \leq 1$
-  \item $M$ must be estimated from many pilot samples \frownie{}
-  \item Very low accept probs.~in high dimensions without $\gamma$-shift heuristic \frownie{}
-  \item $\gamma$-shift heuristic violates rejection sampling validity \frownie{}
-\end{itemize}
-
-\columnbreak
-
 \mysection{Metropolis-Hastings}
 
 \begin{itemize}
-  \item Key idea: use MCMC instead as it is used precisely as a replacement for rejection sampling in high dimensions
+  %\item Key idea: use MCMC instead as it is used precisely as a replacement for rejection sampling in high dimensions
   \item Generates a Markov chain of samples $\vec x_{1:K} \in \setx^K$ whose stationary distribution is the desired density $\target$
   \item Use independence sampler as $\vec x' \sample \prop(\vec x' \given \vec x_k)=\prop(\vec x')$
   \item Accept with probability:
   \begin{align}
     \accept(\vec x', \vec x_k) = \min\left(1, \frac{\target(\vec x')\prop(\vec x_k)}{\target(\vec x_k)\prop(\vec x')}\right) \in [0,1]
   \end{align}
-  \item Independent samples: $\vec x_0 \sample \pinit$ and then $K$ MH steps for $\vec x_K$ as output
+  %\item Independent samples: $\vec x_0 \sample \pinit$ and then $K$ MH steps for $\vec x_K$ as output
   \item Detailed balance: $\vec x_k \sample \target \implies \vec x_{k+1} \sample \target$
   \begin{itemize}
     \item Initialize as close to $\target$ as possible
   \end{itemize}
 \end{itemize}
 
-\mysection{MH-GAN Practical Details}
+\columnbreak
+
+\mysection{MH-GAN}
 
 \begin{itemize}
   \item Implicit model on $\vec x$ via \smash{$G \in \R^{d} \rightarrow \setx$}:
@@ -210,20 +200,12 @@ Sample from target $\target=\PD$ using proposal $\prop=\PG$:
   \accept(\vec x', \vec x_k) = \min\left(1, \frac{D(\vec x_k)^{-1} - 1}{D(\vec x')^{-1} - 1}\right)
 \end{align}
 If $D$ is perfect $\PD = \PR$ (perfect target distribution)
-
-Modifications:
+%
+%Modifications:
 \begin{itemize}
   \item $D$ must be well calibrated to build valid $\accept$\\$\implies$ Correct using isotonic regression on held out data
   \item Avoid burn-in by initialization: \!sample from \emph{data} distribution $p_0 \!=\! \PR$\\$\implies$ Initialize at real sample
 \end{itemize}
-
-Weaken perfect $D$ assumption:
-\begin{itemize}
-  \item Apply recalibration $\implies$ Probabilities need not be correct
-  \item $D$ only needs to be correct on $\PG$ and $\PR$ manifold
-\end{itemize}
-
-\columnbreak
 
 \mysection{Results}
 
@@ -237,6 +219,9 @@ Use 25 Gaussians example using trained GAN:
 \hspace{7mm}
 \includegraphics[scale=2.0]{../figures/jsd.pdf}
 \end{center}
+
+\columnbreak
+
 Comparison on real data using CIFAR-10:
 \begin{center}
 \includegraphics[scale=2.5]{../figures/per_epoch.pdf}
