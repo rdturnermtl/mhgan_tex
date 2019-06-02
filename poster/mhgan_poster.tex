@@ -182,7 +182,7 @@
 
 \columnbreak
 
-\mysection{MH-GAN}
+\mysection{Metropolis-Hastings GANs}
 
 \begin{itemize}
   \item Implicit model on $\vec x$ via \smash{$G \in \R^{d} \rightarrow \setx$}:
@@ -228,18 +228,36 @@ Comparison on real data using CIFAR-10:
 \includegraphics[scale=2.5]{../figures/plot_per_mh.pdf}
 \end{center}
 
-~\\
+PGAN samples:
 
-\begin{center}
-\begin{tabular}{rl}
-\textbf{Code} &
-\large {\url{github.com/uber-research/metropolis-hastings-gans}} \\
-\textbf{arXiv} &
-\large {\url{arxiv.org/abs/1811.11357}} \\
-\textbf{Blog} &
-\large {\url{eng.uber.com/mh-gan}}
+%\fboxsep=1.5pt  % padding thickness
+\newcommand{\unreal}[1]{\fcolorbox{white}{red}{#1}}
+\newcommand{\pganw}{3.25in}
+%
+\begin{tabular}{cc|cc}
+\multicolumn{2}{c|}{PGAN (base)} & \multicolumn{2}{c}{PGAN with MH-GAN (cal)} \\
+\toprule
+\unreal{\includegraphics[width=\pganw]{../figures/pgan/48_base_iso_base.jpg}} &
+\includegraphics[width=\pganw]{../figures/pgan/49_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/48_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/49_base_iso_MH.jpg} \\
+\unreal{\includegraphics[width=\pganw]{../figures/pgan/50_base_iso_base.jpg}} &
+\unreal{\includegraphics[width=\pganw]{../figures/pgan/51_base_iso_base.jpg}} &
+\includegraphics[width=\pganw]{../figures/pgan/50_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/51_base_iso_MH.jpg} \\
+\includegraphics[width=\pganw]{../figures/pgan/52_base_iso_base.jpg} &
+\unreal{\includegraphics[width=\pganw]{../figures/pgan/53_base_iso_base.jpg}} &
+\includegraphics[width=\pganw]{../figures/pgan/52_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/53_base_iso_MH.jpg} \\
+\includegraphics[width=\pganw]{../figures/pgan/54_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/55_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/54_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/55_base_iso_MH.jpg} \\
+\includegraphics[width=\pganw]{../figures/pgan/56_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/57_base_iso_base.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/56_base_iso_MH.jpg} &
+\includegraphics[width=\pganw]{../figures/pgan/57_base_iso_MH.jpg} \\
 \end{tabular}
-\end{center}
-
+%
 \end{multicols}
 \end{document}
